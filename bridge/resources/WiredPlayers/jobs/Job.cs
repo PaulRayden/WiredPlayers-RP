@@ -60,7 +60,7 @@ namespace WiredPlayers.jobs
             player.SendChatMessage(Constants.COLOR_HELP + commands);
         }
 
-        private bool IsPlayerOnWorkPlace(Client player)
+        public static bool IsPlayerOnWorkPlace(Client player)
         {
             bool onWorkPlace = false;
 

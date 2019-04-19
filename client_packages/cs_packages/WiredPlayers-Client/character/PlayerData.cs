@@ -70,7 +70,7 @@ namespace WiredPlayers_Client.character
         private void RetrievePanelDataEvent(object[] args)
         {
             // Call the event from the parameters
-            Events.CallRemote(args[0].ToString());
+            Events.CallRemote(args[0].ToString(), target);
         }
     }
 }

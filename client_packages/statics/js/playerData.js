@@ -70,20 +70,20 @@ function populatePropertiesData(propertiesJson, rented) {
 	// Get the properties node and delete the children
 	let node = document.getElementById('property-list');
 
+	// Get the properties
+	let properties = JSON.parse(propertiesJson);
+
 	while(node.firstChild) {
 		// Remove each child
 		node.removeChild(node.firstChild);
 	}
 
-	if(propertiesJson === '[]') {
+	if(properties === null || properties === undefined || properties.length === 0) {
 		// Show the message
 		let child = document.createElement('li');
-		child.textContent = i18n.t('data.no-properties');
+		child.textContent = i18next.t('data.no-properties');
 		node.appendChild(child);
 	} else {
-		// Get the properties
-		let properties = JSON.parse(propertiesJson);
-
 		for(let i = 0; i < properties.length; i++) {
 			// Get the name of the property
 			let child = document.createElement('li');
@@ -92,8 +92,8 @@ function populatePropertiesData(propertiesJson, rented) {
 		}
 	}
 
-	document.getElementById('rented-property').textContent = rented.length > 0 ? rented : i18n.t('data.no-properties');
-	
+	document.getElementById('rented-property').textContent = rented.length > 0 ? rented : i18next.t('data.no-properties');
+
 	// Show the panel
 	document.getElementById('propertiesData').classList.remove('hidden');
 }

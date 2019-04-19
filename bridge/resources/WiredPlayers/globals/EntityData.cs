@@ -55,7 +55,6 @@
         public const string PLAYER_RIGHT_HAND = "PLAYER_RIGHT_HAND";
         public const string PLAYER_GARBAGE_BAG = "PLAYER_GARBAGE_BAG";
         public const string PLAYER_ON_AIR = "PLAYER_ON_AIR";
-        public const string PLAYER_JAIL_AREA = "PLAYER_JAIL_AREA";
         public const string PLAYER_JAIL_TYPE = "PLAYER_JAIL_TYPE";
         public const string PLAYER_JAILED = "PLAYER_JAILED";
         public const string PLAYER_SEARCHED_TARGET = "PLAYER_SEARCHED_TARGET";

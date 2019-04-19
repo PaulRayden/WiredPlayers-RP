@@ -38,6 +38,63 @@ namespace WiredPlayers.globals
         private static Timer playerListUpdater;
         private static Timer minuteTimer;
 
+        public Globals()
+        {
+            adminTicketList = new List<AdminTicketModel>();
+            fastFoodOrderList = new List<FastfoodOrderModel>();
+            truckerOrderList = new List<OrderModel>();
+
+            // Area in the lobby to change the character
+            NAPI.TextLabel.CreateTextLabel(GenRes.character_help, new Vector3(401.8016f, -1001.897f, -99.00404f), 20.0f, 0.75f, 4, new Color(255, 255, 255), false);
+
+            // Add car dealer's interior
+            NAPI.World.RequestIpl("shr_int");
+            NAPI.World.RequestIpl("shr_int_lod");
+            NAPI.World.RemoveIpl("fakeint");
+            NAPI.World.RemoveIpl("fakeint_lod");
+            NAPI.World.RemoveIpl("fakeint_boards");
+            NAPI.World.RemoveIpl("fakeint_boards_lod");
+            NAPI.World.RemoveIpl("shutter_closed");
+
+            // Add clubhouse's door
+            NAPI.World.RequestIpl("hei_bi_hw1_13_door");
+
+            // Close the doors from the lobby
+            NAPI.Object.CreateObject(NAPI.Util.GetHashKey("bkr_prop_biker_door_entry"), new Vector3(404.5286f, -996.5656f, -98.80404f), new Vector3(0.0f, 0.0f, 90.0f));
+            NAPI.Object.CreateObject(NAPI.Util.GetHashKey("bkr_prop_biker_door_entry"), new Vector3(401.2006f, -997.8686f, -98.80404f), new Vector3(0.0f, 0.0f, 270.0f));
+
+            // Avoid player's respawn
+            NAPI.Server.SetAutoRespawnAfterDeath(false);
+            NAPI.Server.SetAutoSpawnOnConnect(false);
+
+            // Disable global server chat
+            NAPI.Server.SetGlobalServerChat(false);
+
+            foreach (InteriorModel interior in Constants.INTERIOR_LIST)
+            {
+                if (interior.blipId > 0)
+                {
+                    interior.blip = NAPI.Blip.CreateBlip(interior.entrancePosition);
+                    interior.blip.Sprite = (uint)interior.blipId;
+                    interior.blip.Name = interior.blipName;
+                    interior.blip.ShortRange = true;
+                }
+
+                if (interior.captionMessage != string.Empty)
+                {
+                    interior.textLabel = NAPI.TextLabel.CreateTextLabel(interior.captionMessage, interior.entrancePosition, 20.0f, 0.75f, 4, new Color(255, 255, 255), false, 0);
+                }
+            }
+
+            // Fastfood orders
+            Random rnd = new Random();
+            orderGenerationTime = GetTotalSeconds() + rnd.Next(0, 1) * 60;
+
+            // Permanent timers
+            minuteTimer = new Timer(OnMinuteSpent, null, 60000, 60000);
+            playerListUpdater = new Timer(UpdatePlayerList, null, 750, 750);
+        }
+
         public static Client GetPlayerById(int id)
         {
             // Get the player with the selected identifier
@@ -630,28 +687,32 @@ namespace WiredPlayers.globals
         {
             List<InventoryModel> inventory = new List<InventoryModel>();
             int playerId = player.GetData(EntityData.PLAYER_SQL_ID);
-            foreach (ItemModel item in itemList)
-            {
-                if (item.ownerEntity == Constants.ITEM_ENTITY_PLAYER && item.ownerIdentifier == playerId)
-                {
-                    BusinessItemModel businessItem = Business.GetBusinessItemFromHash(item.hash);
-                    if (businessItem != null)
-                    {
-                        // Create the item into the inventory
-                        InventoryModel inventoryItem = new InventoryModel();
-                        {
-                            inventoryItem.id = item.id;
-                            inventoryItem.hash = item.hash;
-                            inventoryItem.description = businessItem.description;
-                            inventoryItem.type = businessItem.type;
-                            inventoryItem.amount = item.amount;
-                        }
+            List<string> owners = new List<string> { Constants.ITEM_ENTITY_PLAYER, Constants.ITEM_ENTITY_WHEEL, Constants.ITEM_ENTITY_RIGHT_HAND };
 
-                        // Add the item to the inventory
-                        inventory.Add(inventoryItem);
+            // Check the items on the owners list
+            List<ItemModel> items = itemList.Where(i => owners.Contains(i.ownerEntity) && i.ownerIdentifier == playerId).ToList();
+
+            foreach (ItemModel item in items)
+            {
+                BusinessItemModel businessItem = Business.GetBusinessItemFromHash(item.hash);
+
+                if (businessItem != null)
+                {
+                    // Create the item into the inventory
+                    InventoryModel inventoryItem = new InventoryModel();
+                    {
+                        inventoryItem.id = item.id;
+                        inventoryItem.hash = item.hash;
+                        inventoryItem.description = businessItem.description;
+                        inventoryItem.type = businessItem.type;
+                        inventoryItem.amount = item.amount;
                     }
+
+                    // Add the item to the inventory
+                    inventory.Add(inventoryItem);
                 }
             }
+
             return inventory;
         }
 
@@ -896,64 +957,6 @@ namespace WiredPlayers.globals
         public void OnPlayerEnterVehicle(Client player, Vehicle vehicle, sbyte seat)
         {
             //NAPI.Native.SendNativeToPlayer(player, Hash.SET_PED_HELMET, player, false);
-        }
-
-        [ServerEvent(Event.ResourceStart)]
-        public void OnResourceStart()
-        {
-            adminTicketList = new List<AdminTicketModel>();
-            fastFoodOrderList = new List<FastfoodOrderModel>();
-            truckerOrderList = new List<OrderModel>();
-
-            // Area in the lobby to change the character
-            NAPI.TextLabel.CreateTextLabel(GenRes.character_help, new Vector3(401.8016f, -1001.897f, -99.00404f), 20.0f, 0.75f, 4, new Color(255, 255, 255), false);
-
-            // Add car dealer's interior
-            NAPI.World.RequestIpl("shr_int");
-            NAPI.World.RequestIpl("shr_int_lod");
-            NAPI.World.RemoveIpl("fakeint");
-            NAPI.World.RemoveIpl("fakeint_lod");
-            NAPI.World.RemoveIpl("fakeint_boards");
-            NAPI.World.RemoveIpl("fakeint_boards_lod");
-            NAPI.World.RemoveIpl("shutter_closed");
-
-            // Add clubhouse's door
-            NAPI.World.RequestIpl("hei_bi_hw1_13_door");
-
-            // Close the doors from the lobby
-            NAPI.Object.CreateObject(NAPI.Util.GetHashKey("bkr_prop_biker_door_entry"), new Vector3(404.5286f, -996.5656f, -98.80404f), new Vector3(0.0f, 0.0f, 90.0f));
-            NAPI.Object.CreateObject(NAPI.Util.GetHashKey("bkr_prop_biker_door_entry"), new Vector3(401.2006f, -997.8686f, -98.80404f), new Vector3(0.0f, 0.0f, 270.0f));
-
-            // Avoid player's respawn
-            NAPI.Server.SetAutoRespawnAfterDeath(false);
-            NAPI.Server.SetAutoSpawnOnConnect(false);
-
-            // Disable global server chat
-            NAPI.Server.SetGlobalServerChat(false);
-
-            foreach (InteriorModel interior in Constants.INTERIOR_LIST)
-            {
-                if (interior.blipId > 0)
-                {
-                    interior.blip = NAPI.Blip.CreateBlip(interior.entrancePosition);
-                    interior.blip.Sprite = (uint)interior.blipId;
-                    interior.blip.Name = interior.blipName;
-                    interior.blip.ShortRange = true;
-                }
-
-                if (interior.captionMessage != string.Empty)
-                {
-                    interior.textLabel = NAPI.TextLabel.CreateTextLabel(interior.captionMessage, interior.entrancePosition, 20.0f, 0.75f, 4, new Color(255, 255, 255), false, 0);
-                }
-            }
-
-            // Fastfood orders
-            Random rnd = new Random();
-            orderGenerationTime = GetTotalSeconds() + rnd.Next(0, 1) * 60;
-
-            // Permanent timers
-            minuteTimer = new Timer(OnMinuteSpent, null, 60000, 60000);
-            playerListUpdater = new Timer(UpdatePlayerList, null, 750, 750);
         }
 
         [ServerEvent(Event.PlayerDisconnected)]

@@ -1,4 +1,5 @@
 ﻿using GTANetworkAPI;
+using WiredPlayers.jobs;
 using WiredPlayers.globals;
 using WiredPlayers.database;
 using WiredPlayers.model;
@@ -21,10 +22,12 @@ namespace WiredPlayers.factions
         public static List<CrimeModel> crimeList;
         public static List<PoliceControlModel> policeControlList;
 
+        private static Timer reinforcesTimer;
+
         public Police()
         {
             // Initialize reinforces updater
-            Timer reinforcesTimer = new Timer(UpdateReinforcesRequests, null, 250, 250);
+            reinforcesTimer = new Timer(UpdateReinforcesRequests, null, 250, 250);
 
             // Create all the equipment places
             foreach(Vector3 pos in Constants.EQUIPMENT_POSITIONS)
@@ -97,6 +100,12 @@ namespace WiredPlayers.factions
         {
             // Check if the player is close to any equipment label
             return Constants.EQUIPMENT_POSITIONS.Where(p => player.Position.DistanceTo(p) < 2.0f).Count() > 0;
+        }
+
+        private bool IsPlayerInJailArea(Client player)
+        {
+            // Check if the player is in any of the jail areas
+            return Constants.EQUIPMENT_POSITIONS.Where(p => player.Position.DistanceTo(p) < 5.0f).Count() > 0;
         }
 
         [RemoteEvent("applyCrimesToPlayer")]
@@ -347,7 +356,7 @@ namespace WiredPlayers.factions
         [Command(Commands.COM_INCRIMINATE, Commands.HLP_INCRIMINATE_COMMAND)]
         public void IncriminateCommand(Client player, string targetString)
         {
-            if (player.GetData(EntityData.PLAYER_JAIL_AREA) == null)
+            if (!Job.IsPlayerOnWorkPlace(player))
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_jail_area);
             }
@@ -854,7 +863,7 @@ namespace WiredPlayers.factions
             else
             {
                 // Get police department's members
-                List<Client> policeMembers = NAPI.Pools.GetAllPlayers().Where(p => Faction.IsPoliceMember(p)).ToList();
+                List<Client> policeMembers = NAPI.Pools.GetAllPlayers().Where(p => p.GetData(EntityData.PLAYER_PLAYING) != null && p.GetData(EntityData.PLAYER_ON_DUTY) == 1 && Faction.IsPoliceMember(p)).ToList();
 
                 if (player.GetData(EntityData.PLAYER_REINFORCES) != null)
                 {
@@ -862,19 +871,16 @@ namespace WiredPlayers.factions
 
                     foreach (Client target in policeMembers)
                     {
-                        if (target.GetData(EntityData.PLAYER_PLAYING) != null && target.GetData(EntityData.PLAYER_ON_DUTY) == 1)
-                        {
-                            // Remove the blip from the map
-                            target.TriggerEvent("reinforcesRemove", player.Value);
+                        // Remove the blip from the map
+                        target.TriggerEvent("reinforcesRemove", player.Value);
                             
-                            if (player == target)
-                            {
-                                player.SendChatMessage(Constants.COLOR_INFO + InfoRes.player_reinforces_canceled);
-                            }
-                            else
-                            {
-                               target.SendChatMessage(Constants.COLOR_INFO + targetMessage);
-                            }
+                        if (player == target)
+                        {
+                            player.SendChatMessage(Constants.COLOR_INFO + InfoRes.player_reinforces_canceled);
+                        }
+                        else
+                        {
+                            target.SendChatMessage(Constants.COLOR_INFO + targetMessage);
                         }
                     }
 
@@ -887,16 +893,13 @@ namespace WiredPlayers.factions
 
                     foreach (Client target in policeMembers)
                     {
-                        if (target.GetData(EntityData.PLAYER_PLAYING) != null && target.GetData(EntityData.PLAYER_ON_DUTY) == 1)
+                        if (player == target)
                         {
-                            if (player == target)
-                            {
-                                player.SendChatMessage(Constants.COLOR_INFO + InfoRes.player_reinforces_asked);
-                            }
-                            else
-                            {
-                               target.SendChatMessage(Constants.COLOR_INFO + targetMessage);
-                            }
+                            player.SendChatMessage(Constants.COLOR_INFO + InfoRes.player_reinforces_asked);
+                        }
+                        else
+                        {
+                            target.SendChatMessage(Constants.COLOR_INFO + targetMessage);
                         }
                     }
 

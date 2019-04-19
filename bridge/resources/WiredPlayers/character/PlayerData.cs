@@ -1,6 +1,7 @@
 ﻿using GTANetworkAPI;
 using WiredPlayers.model;
 using WiredPlayers.globals;
+using WiredPlayers.house;
 using WiredPlayers.messages.general;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,10 +65,57 @@ namespace WiredPlayers.character
         }
 
         [RemoteEvent("retrievePropertiesData")]
-        public static void RetrievePropertiesDataEvent(Client player)
+        public static void RetrievePropertiesDataEvent(Client player, Client target)
         {
+            // Initialize the variables
+            List<string> houseAddresses = new List<string>();
+            string rentedHouse = string.Empty;
+
+            // Get the houses where the player is the owner
+            List<HouseModel> houseList = House.houseList.Where(h => h.owner == target.Name).ToList();
+
+            foreach (HouseModel house in houseList)
+            {
+                // Add the name of the house to the list
+                houseAddresses.Add(house.name);
+            }
+
+            if (target.GetData(EntityData.PLAYER_RENT_HOUSE) > 0)
+            {
+                // Get the name of the rented house
+                int houseId = target.GetData(EntityData.PLAYER_RENT_HOUSE);
+                rentedHouse = House.houseList.Where(h => h.id == houseId).First().name;
+            }
+
             // Show the data for the player
-            player.TriggerEvent("showPropertiesData", NAPI.Util.ToJson(new List<string>()), string.Empty);
+            player.TriggerEvent("showPropertiesData", NAPI.Util.ToJson(houseAddresses), rentedHouse);
+        }
+
+        [RemoteEvent("retrieveVehiclesData")]
+        public static void RetrieveVehiclesDataEvent(Client player, Client target)
+        {
+            // Initialize the variables
+            List<string> houseAddresses = new List<string>();
+            string rentedHouse = string.Empty;
+
+            // Get the houses where the player is the owner
+            List<HouseModel> houseList = House.houseList.Where(h => h.owner == target.Name).ToList();
+
+            foreach (HouseModel house in houseList)
+            {
+                // Add the name of the house to the list
+                houseAddresses.Add(house.name);
+            }
+
+            if (target.GetData(EntityData.PLAYER_RENT_HOUSE) > 0)
+            {
+                // Get the name of the rented house
+                int houseId = target.GetData(EntityData.PLAYER_RENT_HOUSE);
+                rentedHouse = House.houseList.Where(h => h.id == houseId).First().name;
+            }
+
+            // Show the data for the player
+            player.TriggerEvent("showPropertiesData", NAPI.Util.ToJson(houseAddresses), rentedHouse);
         }
     }
 }
