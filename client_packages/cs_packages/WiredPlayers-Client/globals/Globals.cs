@@ -29,7 +29,9 @@ namespace WiredPlayers_Client.globals
             Events.Add("attachItemToPlayer", AttachItemToPlayerEvent);
             Events.Add("dettachItemFromPlayer", DettachItemFromPlayerEvent);
             Events.Add("playerLoggedIn", PlayerLoggedInEvent);
+
             Events.AddDataHandler("SERVER_TIME", PlayerConnectionStateChanged);
+
             Events.OnEntityStreamIn += OnEntityStreamInEvent;
             Events.OnEntityStreamOut += OnEntityStreamOutEvent;
             Events.OnGuiReady += OnGuiReadyEvent;
@@ -219,8 +221,9 @@ namespace WiredPlayers_Client.globals
             // Check if the player is connected
             if (playerLogged)
             {
-                // Disable reloading
+                // Disable hitting with the weapon
                 RAGE.Game.Pad.DisableControlAction(0, 140, true);
+                RAGE.Game.Pad.DisableControlAction(0, 141, true);
 
                 if (Vehicles.lastPosition != null)
                 {

@@ -18,8 +18,6 @@ namespace WiredPlayers.factions
 {
     public class Police : Script
     {
-        private readonly TextLabel equipmentLabel;
-
         public static List<CrimeModel> crimeList;
         public static List<PoliceControlModel> policeControlList;
 
@@ -27,19 +25,19 @@ namespace WiredPlayers.factions
         {
             // Initialize reinforces updater
             Timer reinforcesTimer = new Timer(UpdateReinforcesRequests, null, 250, 250);
-            equipmentLabel = NAPI.TextLabel.CreateTextLabel("/" + Commands.COM_EQUIPMENT, new Vector3(450.8223, -992.0941, 30.78958), 10.0f, 0.5f, 4, new Color(190, 235, 100), false, 0);
-            NAPI.TextLabel.CreateTextLabel(GenRes.equipment_help, new Vector3(450.8223, -992.0941, 30.68958), 10.0f, 0.5f, 4, new Color(255, 255, 255), false, 0);
 
-            // Create blips
-            Blip policePaleto = NAPI.Blip.CreateBlip(new Vector3(-436.4092f, 6022.894f, 31.22858f));
-            policePaleto.Name = GenRes.police_station;
-            policePaleto.ShortRange = true;
-            policePaleto.Sprite = 60;
+            // Create all the equipment places
+            foreach(Vector3 pos in Constants.EQUIPMENT_POSITIONS)
+            {
+                NAPI.TextLabel.CreateTextLabel("/" + Commands.COM_EQUIPMENT, pos, 10.0f, 0.5f, 4, new Color(190, 235, 100), false, 0);
+                NAPI.TextLabel.CreateTextLabel(GenRes.equipment_help, new Vector3(pos.X, pos.Y, pos.Z - 0.1f), 10.0f, 0.5f, 4, new Color(255, 255, 255), false, 0);
 
-            Blip policeSandy = NAPI.Blip.CreateBlip(new Vector3(1857.865f, 3679.907f, 33.55733f));
-            policeSandy.Name = GenRes.police_station;
-            policeSandy.ShortRange = true;
-            policeSandy.Sprite = 60;
+                // Create blips
+                Blip policeBlip = NAPI.Blip.CreateBlip(pos);
+                policeBlip.Name = GenRes.police_station;
+                policeBlip.ShortRange = true;
+                policeBlip.Sprite = 60;
+            }
         }
 
         private List<string> GetDifferentPoliceControls()
@@ -72,7 +70,7 @@ namespace WiredPlayers.factions
         private void UpdateReinforcesRequests(object unused)
         {
             List<ReinforcesModel> policeReinforces = new List<ReinforcesModel>();
-            List<Client> policeMembers = NAPI.Pools.GetAllPlayers().Where(x => Faction.IsPoliceMember(x)).ToList();
+            List<Client> policeMembers = NAPI.Pools.GetAllPlayers().Where(x => x.GetData(EntityData.PLAYER_PLAYING) != null && Faction.IsPoliceMember(x)).ToList();
             
             foreach (Client police in policeMembers)
             {
@@ -93,6 +91,12 @@ namespace WiredPlayers.factions
                     police.TriggerEvent("updatePoliceReinforces", reinforcesJsonList);
                 }
             }
+        }
+
+        private bool IsCloseToEquipmentLockers(Client player)
+        {
+            // Check if the player is close to any equipment label
+            return Constants.EQUIPMENT_POSITIONS.Where(p => player.Position.DistanceTo(p) < 2.0f).Count() > 0;
         }
 
         [RemoteEvent("applyCrimesToPlayer")]
@@ -246,7 +250,7 @@ namespace WiredPlayers.factions
         [Command(Commands.COM_CHECK)]
         public void CheckCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -293,7 +297,7 @@ namespace WiredPlayers.factions
         [Command(Commands.COM_FRISK, Commands.HLP_FRISK_COMMAND)]
         public void FriskCommand(Client player, string targetString)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -351,7 +355,7 @@ namespace WiredPlayers.factions
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_on_duty);
             }
-            else if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            else if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -389,7 +393,7 @@ namespace WiredPlayers.factions
             {
                 player.SendChatMessage(Constants.COLOR_HELP + Commands.HLP_FINE_COMMAND);
             }
-            else if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            else if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -457,7 +461,7 @@ namespace WiredPlayers.factions
         [Command(Commands.COM_HANDCUFF, Commands.HLP_HANDCUFF_COMMAND)]
         public void HandcuffCommand(Client player, string targetString)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -523,11 +527,11 @@ namespace WiredPlayers.factions
         [Command(Commands.COM_EQUIPMENT, Commands.HLP_EQUIPMENT_COMMAND, GreedyArg = true)]
         public void EquipmentCommand(Client player, string action, string type = "")
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
-            else if (player.Position.DistanceTo(equipmentLabel.Position) > 2.0f)
+            else if (!IsCloseToEquipmentLockers(player))
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_in_room_lockers);
             }
@@ -661,7 +665,7 @@ namespace WiredPlayers.factions
         [Command(Commands.COM_CONTROL, Commands.HLP_POLICE_CONTROL_COMMAND)]
         public void ControlCommand(Client player, string action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -742,7 +746,7 @@ namespace WiredPlayers.factions
         [Command(Commands.COM_PUT, Commands.HLP_POLICE_PUT_COMMAND)]
         public void PutCommand(Client player, string item)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
                 return;
@@ -797,7 +801,7 @@ namespace WiredPlayers.factions
         [Command(Commands.COM_REMOVE, Commands.HLP_POLICE_REMOVE_COMMAND)]
         public void RemoveCommand(Client player, string item)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -843,7 +847,7 @@ namespace WiredPlayers.factions
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_on_duty);
             }
-            else if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            else if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }

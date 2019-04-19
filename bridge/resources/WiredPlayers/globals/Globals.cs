@@ -990,7 +990,7 @@ namespace WiredPlayers.globals
         [RemoteEvent("checkPlayerEventKeyStopAnim")]
         public void CheckPlayerEventKeyStopAnimEvent(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_ANIMATION) == null && player.GetData(EntityData.PLAYER_KILLED) == 0)
+            if (player.GetData(EntityData.PLAYER_ANIMATION) == null)
             {
                 player.StopAnimation();
             }
@@ -1228,7 +1228,7 @@ namespace WiredPlayers.globals
                         player.Health = player.GetData(EntityData.PLAYER_HEALTH);
                         player.Armor = player.GetData(EntityData.PLAYER_ARMOR);
 
-                        if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+                        if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
                         {
                             Vector3 deathPosition = null;
                             string deathPlace = string.Empty;
@@ -1267,9 +1267,11 @@ namespace WiredPlayers.globals
                                 }
                             }
 
-                            player.Invincible =true;
                             player.SetData(EntityData.TIME_HOSPITAL_RESPAWN, GetTotalSeconds() + 240);
                             player.SendChatMessage(Constants.COLOR_INFO + InfoRes.emergency_warn);
+
+                            // Change the death state
+                            player.TriggerEvent("togglePlayerDead", true);
                         }
 
                         // Toggle connection flag
@@ -1957,7 +1959,7 @@ namespace WiredPlayers.globals
         [Command(Commands.COM_SHOW, Commands.HLP_SHOW_DOC_COMMAND)]
         public void ShowCommand(Client player, string targetString, string documentation)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -2074,7 +2076,7 @@ namespace WiredPlayers.globals
         [Command(Commands.COM_PAY, Commands.HLP_PAY_COMMAND)]
         public void PayCommand(Client player, string targetString, int price)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -2261,7 +2263,7 @@ namespace WiredPlayers.globals
         [Command(Commands.COM_ACCEPT, Commands.HLP_GLOBALS_ACCEPT_COMMAND)]
         public void AcceptCommand(Client player, string accept)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }

@@ -643,13 +643,13 @@ namespace WiredPlayers.admin
                         break;
                     case Commands.ARG_TOWNHALL:
                         player.Dimension = 0;
-                        player.Position = new Vector3(-1285.544f, -567.0439f, 31.71239f);
+                        player.Position = new Vector3(-136.4768f, 6198.505f, 32.38424f);
                         player.SetData(EntityData.PLAYER_BUSINESS_ENTERED, 0);
                         player.SetData(EntityData.PLAYER_HOUSE_ENTERED, 0);
                         break;
                     case Commands.ARG_LICENSE:
                         player.Dimension = 0;
-                        player.Position = new Vector3(-70f, -1100f, 28f);
+                        player.Position = new Vector3(-227.5136f, 6321.819f, 31.46245f);
                         player.SetData(EntityData.PLAYER_BUSINESS_ENTERED, 0);
                         player.SetData(EntityData.PLAYER_HOUSE_ENTERED, 0);
                         break;
@@ -714,15 +714,15 @@ namespace WiredPlayers.admin
                         case Commands.ARG_CREATE:
                             if (HasUserCommandPermission(player, Commands.COM_BUSINESS, Commands.ARG_CREATE) || player.GetData(EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_GAME_MASTER)
                             {
-                                if (arguments.Length == 2)
+                                if (arguments.Length == 3)
                                 {
                                     // We get the business type
-                                    if (int.TryParse(arguments[1], out int type) == true)
+                                    if (int.TryParse(arguments[1], out int type) && (arguments[2] == Commands.ARG_INNER || arguments[2] == Commands.ARG_OUTER))
                                     {
                                         business.type = type;
-                                        business.ipl = Business.GetBusinessTypeIpl(type);
-                                        business.position = player.Position;
-                                        business.dimension = player.Dimension;
+                                        business.ipl = arguments[2] == Commands.ARG_INNER ? Business.GetBusinessTypeIpl(type) : string.Empty;
+                                        business.position = new Vector3(player.Position.X, player.Position.Y, player.Position.Z - 0.4f);
+                                        business.dimension = arguments[2] == Commands.ARG_INNER ? player.Dimension : 0;
                                         business.multiplier = 3.0f;
                                         business.owner = string.Empty;
                                         business.locked = false;
@@ -734,7 +734,18 @@ namespace WiredPlayers.admin
                                             {
                                                 // Get the id from the business
                                                 business.id = Database.AddNewBusiness(business);
-                                                business.businessLabel = NAPI.TextLabel.CreateTextLabel(business.name, business.position, 20.0f, 0.75f, 4, new Color(255, 255, 255), false, business.dimension);
+
+                                                if(arguments[2] == Commands.ARG_INNER)
+                                                {
+                                                    // The business has a label to enter
+                                                    business.businessLabel = NAPI.TextLabel.CreateTextLabel(business.name, business.position, 20.0f, 0.75f, 4, new Color(255, 255, 255), false, business.dimension);
+                                                }
+                                                else
+                                                {
+                                                    business.businessCheckpoint = NAPI.Checkpoint.CreateCheckpoint(CheckpointType.Cyclinder, business.position, new Vector3(), 2.5f, new Color(198, 40, 40, 200));
+                                                }
+
+                                                // Add the business to the list
                                                 Business.businessList.Add(business);
                                             });
                                         });
@@ -795,7 +806,13 @@ namespace WiredPlayers.admin
                                                     {
                                                         // Changing business type
                                                         business.type = businessType;
-                                                        business.ipl = Business.GetBusinessTypeIpl(businessType);
+
+                                                        if(business.ipl.Length > 0)
+                                                        {
+                                                            // Check if the business is inner or outer
+                                                            business.ipl = Business.GetBusinessTypeIpl(businessType);
+                                                        }
+
                                                         message = string.Format(AdminRes.business_type_modified, businessType);
 
                                                         Task.Factory.StartNew(() =>
@@ -843,8 +860,18 @@ namespace WiredPlayers.admin
                                     {
                                         NAPI.Task.Run(() =>
                                         {
+                                            if(business.ipl.Length == 0)
+                                            {
+                                                // Delete the business checkpoint
+                                                business.businessCheckpoint.Delete();
+                                            }
+                                            else
+                                            {
+                                                // Delete the business label
+                                                business.businessLabel.Delete();
+                                            }
+
                                             // Delete the business
-                                            business.businessLabel.Delete();
                                             Database.DeleteBusiness(business.id);
                                             Business.businessList.Remove(business);
                                         });
@@ -1462,7 +1489,7 @@ namespace WiredPlayers.admin
 
                 if (target != null)
                 {
-                    if (target.GetData(EntityData.PLAYER_KILLED) != 0)
+                    if (target.GetSharedData(EntityData.PLAYER_KILLED) != 0)
                     {
                         Emergency.CancelPlayerDeath(target);
                         string playerMessage = string.Format(AdminRes.player_revived, target.Name);

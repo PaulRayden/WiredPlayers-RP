@@ -9,6 +9,7 @@ using WiredPlayers.messages.general;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Linq;
 using System;
 
 namespace WiredPlayers.drivingschool
@@ -60,22 +61,16 @@ namespace WiredPlayers.drivingschool
             vehicle.Position = vehicle.GetData(EntityData.VEHICLE_POSITION);
             vehicle.Rotation = vehicle.GetData(EntityData.VEHICLE_ROTATION);
 
-            // Checkpoint delete
             if (NAPI.Vehicle.GetVehicleDriver(vehicle) == player)
             {
-                Checkpoint licenseCheckpoint = player.GetData(EntityData.PLAYER_DRIVING_COLSHAPE);
+                // Delete the checkpoint
                 player.TriggerEvent("deleteLicenseCheckpoint");
-                licenseCheckpoint.Delete();
             }
 
             // Entity data cleanup
             player.ResetData(EntityData.PLAYER_VEHICLE);
             player.ResetData(EntityData.PLAYER_DRIVING_EXAM);
-            player.ResetData(EntityData.PLAYER_DRIVING_COLSHAPE);
             player.ResetData(EntityData.PLAYER_DRIVING_CHECKPOINT);
-
-            // Stop the vehicle's speedometer
-            player.TriggerEvent("removeSpeedometer");
 
             // Remove player from vehicle
             player.WarpOutOfVehicle();
@@ -119,18 +114,13 @@ namespace WiredPlayers.drivingschool
                             drivingSchoolTimer.Dispose();
                             drivingSchoolTimerList.Remove(player.Value);
                         }
-                        Checkpoint newCheckpoint = NAPI.Checkpoint.CreateCheckpoint(0, Constants.CAR_LICENSE_CHECKPOINTS[checkPoint], Constants.CAR_LICENSE_CHECKPOINTS[checkPoint + 1], 2.5f, new Color(198, 40, 40, 200));
-                        player.SetData(EntityData.PLAYER_DRIVING_COLSHAPE, newCheckpoint);
-                        player.SetData(EntityData.PLAYER_VEHICLE, vehicle);
 
                         // We place a mark on the map
-                        player.TriggerEvent("showLicenseCheckpoint", Constants.CAR_LICENSE_CHECKPOINTS[checkPoint]);
+                        player.SetData(EntityData.PLAYER_VEHICLE, vehicle);
+                        player.TriggerEvent("showLicenseCheckpoint", Constants.CAR_LICENSE_CHECKPOINTS[checkPoint], Constants.CAR_LICENSE_CHECKPOINTS[checkPoint + 1], CheckpointType.CylinderSingleArrow);
                     }
                     else
                     {
-                        // Stop the vehicle's speedometer
-                        player.TriggerEvent("removeSpeedometer");
-
                         player.WarpOutOfVehicle();
                         player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.vehicle_driving_not_suitable);
                     }
@@ -146,18 +136,13 @@ namespace WiredPlayers.drivingschool
                             drivingSchoolTimer.Dispose();
                             drivingSchoolTimerList.Remove(player.Value);
                         }
-                        Checkpoint newCheckpoint = NAPI.Checkpoint.CreateCheckpoint(0, Constants.BIKE_LICENSE_CHECKPOINTS[checkPoint], Constants.BIKE_LICENSE_CHECKPOINTS[checkPoint + 1], 2.5f, new Color(198, 40, 40, 200));
-                        player.SetData(EntityData.PLAYER_DRIVING_COLSHAPE, newCheckpoint);
-                        player.SetData(EntityData.PLAYER_VEHICLE, vehicle);
 
                         // We place a mark on the map
-                        player.TriggerEvent("showLicenseCheckpoint", Constants.BIKE_LICENSE_CHECKPOINTS[checkPoint]);
+                        player.SetData(EntityData.PLAYER_VEHICLE, vehicle);
+                        player.TriggerEvent("showLicenseCheckpoint", Constants.BIKE_LICENSE_CHECKPOINTS[checkPoint], Constants.BIKE_LICENSE_CHECKPOINTS[checkPoint + 1], CheckpointType.CylinderSingleArrow);
                     }
                     else
                     {
-                        // Stop the vehicle's speedometer
-                        player.TriggerEvent("removeSpeedometer");
-
                         player.WarpOutOfVehicle();
                         player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.vehicle_driving_not_suitable);
                     }
@@ -182,8 +167,6 @@ namespace WiredPlayers.drivingschool
                 if (player.GetData(EntityData.PLAYER_VEHICLE) == vehicle && vehicle.GetData(EntityData.VEHICLE_FACTION) == Constants.FACTION_DRIVING_SCHOOL)
                 {
                     string warn = string.Format(InfoRes.license_vehicle_exit, 15);
-                    Checkpoint playerDrivingCheckpoint = player.GetData(EntityData.PLAYER_DRIVING_COLSHAPE);
-                    playerDrivingCheckpoint.Delete();
                     player.SendChatMessage(Constants.COLOR_INFO + warn);
 
                     // Removing the checkpoint marker
@@ -196,111 +179,11 @@ namespace WiredPlayers.drivingschool
             }
         }
 
-        [ServerEvent(Event.PlayerEnterCheckpoint)]
-        public void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Client player)
-        {
-            if (player.GetData(EntityData.PLAYER_DRIVING_COLSHAPE) != null && player.GetData(EntityData.PLAYER_DRIVING_EXAM) != null)
-            {
-                if (player.IsInVehicle && player.GetData(EntityData.PLAYER_DRIVING_EXAM) == Constants.CAR_DRIVING_PRACTICE)
-                {
-                    Vehicle vehicle = player.Vehicle;
-                    if (checkpoint == player.GetData(EntityData.PLAYER_DRIVING_COLSHAPE) && vehicle.GetData(EntityData.VEHICLE_FACTION) == Constants.FACTION_DRIVING_SCHOOL)
-                    {
-                        Checkpoint currentCheckpoint = player.GetData(EntityData.PLAYER_DRIVING_COLSHAPE);
-                        int checkPoint = player.GetData(EntityData.PLAYER_DRIVING_CHECKPOINT);
-                        currentCheckpoint.Delete();
-
-                        if (checkPoint < Constants.CAR_LICENSE_CHECKPOINTS.Count - 2)
-                        {
-                            currentCheckpoint = NAPI.Checkpoint.CreateCheckpoint(CheckpointType.CylinderSingleArrow, Constants.CAR_LICENSE_CHECKPOINTS[checkPoint + 1], Constants.CAR_LICENSE_CHECKPOINTS[checkPoint + 2], 2.5f, new Color(198, 40, 40, 200));
-                            player.SetData(EntityData.PLAYER_DRIVING_CHECKPOINT, checkPoint + 1);
-
-                            // We place a mark on the map
-                            player.TriggerEvent("showLicenseCheckpoint", currentCheckpoint.Position);
-                        }
-                        else if (checkPoint == Constants.CAR_LICENSE_CHECKPOINTS.Count - 2)
-                        {
-                            currentCheckpoint = NAPI.Checkpoint.CreateCheckpoint(CheckpointType.CylinderSingleArrow, Constants.CAR_LICENSE_CHECKPOINTS[checkPoint + 1], vehicle.GetData(EntityData.VEHICLE_POSITION), 2.5f, new Color(198, 40, 40, 200));
-                            player.SetData(EntityData.PLAYER_DRIVING_CHECKPOINT, checkPoint + 1);
-
-                            // We place a mark on the map
-                            player.TriggerEvent("showLicenseCheckpoint", currentCheckpoint.Position);
-                        }
-                        else if (checkPoint == Constants.CAR_LICENSE_CHECKPOINTS.Count - 1)
-                        {
-                            currentCheckpoint = NAPI.Checkpoint.CreateCheckpoint(CheckpointType.CylinderCheckerboard, vehicle.GetData(EntityData.VEHICLE_POSITION), new Vector3(0.0f, 0.0f, 0.0f), 2.5f, new Color(198, 40, 40, 200));
-                            player.SetData(EntityData.PLAYER_DRIVING_CHECKPOINT, checkPoint + 1);
-
-                            // We place a mark on the map
-                            player.TriggerEvent("showLicenseCheckpoint", currentCheckpoint.Position);
-                        }
-                        else
-                        {
-                            // Exam finished
-                            FinishDrivingExam(player, vehicle);
-
-                            // We add points to the license
-                            SetPlayerLicense(player, Constants.LICENSE_CAR, 12);
-
-                            // Confirmation message sent to the player
-                            player.SendChatMessage(Constants.COLOR_SUCCESS + SuccRes.license_drive_passed);
-                        }
-                    }
-                }
-                else if (player.IsInVehicle && player.GetData(EntityData.PLAYER_DRIVING_EXAM) == Constants.MOTORCYCLE_DRIVING_PRACTICE)
-                {
-                    Vehicle vehicle = player.Vehicle;
-                    if (checkpoint == player.GetData(EntityData.PLAYER_DRIVING_COLSHAPE) && vehicle.GetData(EntityData.VEHICLE_FACTION) == Constants.FACTION_DRIVING_SCHOOL)
-                    {
-                        Checkpoint currentCheckpoint = player.GetData(EntityData.PLAYER_DRIVING_COLSHAPE);
-                        int checkPoint = player.GetData(EntityData.PLAYER_DRIVING_CHECKPOINT);
-                        currentCheckpoint.Delete();
-
-                        if (checkPoint < Constants.BIKE_LICENSE_CHECKPOINTS.Count - 2)
-                        {
-                            currentCheckpoint = NAPI.Checkpoint.CreateCheckpoint(CheckpointType.CylinderSingleArrow, Constants.BIKE_LICENSE_CHECKPOINTS[checkPoint + 1], Constants.BIKE_LICENSE_CHECKPOINTS[checkPoint + 2], 2.5f, new Color(198, 40, 40, 200));
-                            player.SetData(EntityData.PLAYER_DRIVING_CHECKPOINT, checkPoint + 1);
-
-                            // We place a mark on the map
-                            player.TriggerEvent("showLicenseCheckpoint", currentCheckpoint.Position);
-                        }
-                        else if (checkPoint == Constants.BIKE_LICENSE_CHECKPOINTS.Count - 2)
-                        {
-                            currentCheckpoint = NAPI.Checkpoint.CreateCheckpoint(CheckpointType.CylinderSingleArrow, Constants.BIKE_LICENSE_CHECKPOINTS[checkPoint + 1], vehicle.GetData(EntityData.VEHICLE_POSITION), 2.5f, new Color(198, 40, 40, 200));
-                            player.SetData(EntityData.PLAYER_DRIVING_CHECKPOINT, checkPoint + 1);
-
-                            // We place a mark on the map
-                            player.TriggerEvent("showLicenseCheckpoint", currentCheckpoint.Position);
-                        }
-                        else if (checkPoint == Constants.BIKE_LICENSE_CHECKPOINTS.Count - 1)
-                        {
-                            currentCheckpoint = NAPI.Checkpoint.CreateCheckpoint(CheckpointType.CylinderCheckerboard, vehicle.GetData(EntityData.VEHICLE_POSITION), new Vector3(0.0f, 0.0f, 0.0f), 2.5f, new Color(198, 40, 40, 200));
-                            player.SetData(EntityData.PLAYER_DRIVING_CHECKPOINT, checkPoint + 1);
-
-                            // We place a mark on the map
-                            player.TriggerEvent("showLicenseCheckpoint", currentCheckpoint.Position);
-                        }
-                        else
-                        {
-                            // Exam finished
-                            FinishDrivingExam(player, vehicle);
-
-                            // We add points to the license
-                            SetPlayerLicense(player, Constants.LICENSE_MOTORCYCLE, 12);
-
-                            // Confirmation message sent to the player
-                            player.SendChatMessage(Constants.COLOR_SUCCESS + SuccRes.license_drive_passed);
-                        }
-                    }
-                }
-            }
-        }
-
         [ServerEvent(Event.VehicleDamage)]
         public void OnVehicleDamage(Vehicle vehicle, float lossFirst, float lossSecond)
         {
             Client player = NAPI.Vehicle.GetVehicleDriver(vehicle);
-            if (player != null && player.GetData(EntityData.PLAYER_DRIVING_COLSHAPE) != null && player.GetData(EntityData.PLAYER_DRIVING_EXAM) != null)
+            if (player != null && player.GetData(EntityData.PLAYER_DRIVING_CHECKPOINT) != null && player.GetData(EntityData.PLAYER_DRIVING_EXAM) != null)
             {
                 if (lossFirst - vehicle.Health > 5.0f)
                 {
@@ -316,26 +199,26 @@ namespace WiredPlayers.drivingschool
         [ServerEvent(Event.Update)]
         public void OnUpdate()
         {
-            foreach (Client player in NAPI.Pools.GetAllPlayers())
-            {
-                if (player.GetData(EntityData.PLAYER_PLAYING) != null && player.GetData(EntityData.PLAYER_DRIVING_EXAM) != null)
-                {
-                    // Check if is driving a vehicle
-                    if (player.IsInVehicle && player.VehicleSeat == (int)VehicleSeat.Driver)
-                    {
-                        Vehicle vehicle = player.Vehicle;
-                        if (vehicle.GetData(EntityData.VEHICLE_FACTION) == Constants.FACTION_DRIVING_SCHOOL)
-                        {
-                            Vector3 velocity = NAPI.Entity.GetEntityVelocity(vehicle);
-                            double speed = Math.Sqrt(velocity.X * velocity.X + velocity.Y * velocity.Y + velocity.Z * velocity.Z);
-                            if (Math.Round(speed * 3.6f) > Constants.MAX_DRIVING_VEHICLE)
-                            {
-                                // Exam finished
-                                FinishDrivingExam(player, vehicle);
+            // Get all the players driving for the license
+            List<Client> licenseDrivers = NAPI.Pools.GetAllPlayers().Where(d => d.GetData(EntityData.PLAYER_PLAYING) != null && d.GetData(EntityData.PLAYER_DRIVING_EXAM) != null).ToList();
 
-                                // Inform the player about his failure
-                                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.license_drive_failed);
-                            }
+            foreach (Client player in licenseDrivers)
+            {
+                // Check if is driving a vehicle
+                if (player.IsInVehicle && player.VehicleSeat == (int)VehicleSeat.Driver)
+                {
+                    Vehicle vehicle = player.Vehicle;
+                    if (vehicle.GetData(EntityData.VEHICLE_FACTION) == Constants.FACTION_DRIVING_SCHOOL)
+                    {
+                        Vector3 velocity = NAPI.Entity.GetEntityVelocity(vehicle);
+                        double speed = Math.Sqrt(velocity.X * velocity.X + velocity.Y * velocity.Y + velocity.Z * velocity.Z);
+                        if (Math.Round(speed * 3.6f) > Constants.MAX_DRIVING_VEHICLE)
+                        {
+                            // Exam finished
+                            FinishDrivingExam(player, vehicle);
+
+                            // Inform the player about his failure
+                            player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.license_drive_failed);
                         }
                     }
                 }
@@ -388,6 +271,67 @@ namespace WiredPlayers.drivingschool
                     player.TriggerEvent("finishLicenseExam");
                 }
             });
+        }
+
+        [RemoteEvent("playerEnteredCheckpoint")]
+        public void PlayerEnteredCheckpointEvent(Client player)
+        {
+            // Check if the player is driving the correct vehicle
+            if (player.Vehicle.GetData(EntityData.VEHICLE_FACTION) != Constants.FACTION_DRIVING_SCHOOL) return;
+
+            // Get the checkpoints and license
+            int license = 0;
+            List<Vector3> checkpointList = new List<Vector3>();
+
+            if (player.GetData(EntityData.PLAYER_DRIVING_EXAM) == Constants.CAR_DRIVING_PRACTICE)
+            {
+                // Get the car checkpoints
+                license = Constants.LICENSE_CAR;
+                checkpointList = Constants.CAR_LICENSE_CHECKPOINTS;
+            }
+            else if (player.GetData(EntityData.PLAYER_DRIVING_EXAM) == Constants.MOTORCYCLE_DRIVING_PRACTICE)
+            {
+                // Get the motorcycle checkpoints
+                license = Constants.LICENSE_MOTORCYCLE;
+                checkpointList = Constants.BIKE_LICENSE_CHECKPOINTS;
+            }
+
+            // Obtain the current checkpoint and increase the counter
+            int checkpointNumber = player.GetData(EntityData.PLAYER_DRIVING_CHECKPOINT);
+            player.SetData(EntityData.PLAYER_DRIVING_CHECKPOINT, checkpointNumber + 1);
+
+            if (checkpointNumber < checkpointList.Count - 2)
+            {
+                // Get the next checkpoint
+                player.TriggerEvent("showLicenseCheckpoint", checkpointList[checkpointNumber + 1], checkpointList[checkpointNumber + 2], CheckpointType.CylinderSingleArrow);
+            }
+            else if (checkpointNumber == checkpointList.Count - 2)
+            {
+                // Get the starting point
+                Vector3 initialPosition = player.Vehicle.GetData(EntityData.VEHICLE_POSITION);
+
+                // Get the next checkpoint
+                player.TriggerEvent("showLicenseCheckpoint", checkpointList[checkpointNumber + 1], initialPosition, CheckpointType.CylinderSingleArrow);
+            }
+            else if (checkpointNumber == Constants.CAR_LICENSE_CHECKPOINTS.Count - 1)
+            {
+                // Get the starting point
+                Vector3 initialPosition = player.Vehicle.GetData(EntityData.VEHICLE_POSITION);
+
+                // Get the next checkpoint
+                player.TriggerEvent("showLicenseCheckpoint", new Vector3(initialPosition.X, initialPosition.Y, initialPosition.Z - 0.4f), new Vector3(), CheckpointType.CylinderCheckerboard);
+            }
+            else
+            {
+                // Exam finished
+                FinishDrivingExam(player, player.Vehicle);
+
+                // We add points to the license
+                SetPlayerLicense(player, license, 12);
+
+                // Confirmation message sent to the player
+                player.SendChatMessage(Constants.COLOR_SUCCESS + SuccRes.license_drive_passed);
+            }
         }
 
         [Command(Commands.COM_DRIVING_SCHOOL, Commands.HLP_DRIVING_SCHOOL_COMMAND)]

@@ -13,17 +13,22 @@ namespace WiredPlayers_Client.character
         public PlayerData()
         {
             Events.Add("showPlayerData", ShowPlayerDataEvent);
+            Events.Add("showPropertiesData", ShowPropertiesDataEvent);
+            Events.Add("showVehiclesData", ShowVehiclesDataEvent);
+            Events.Add("showExtendedData", ShowExtendedDataEvent);
+            Events.Add("retrievePanelData", RetrievePanelDataEvent);
         }
 
         private void ShowPlayerDataEvent(object[] args)
         {
             // Get the data from the input
-            string age = args[1].ToString();
-            string sex = args[2].ToString();
-            string money = args[3].ToString();
-            string bank = args[4].ToString();
-            string job = args[5].ToString();
-            string rank = args[6].ToString();
+            string name = args[1].ToString();
+            string age = args[2].ToString();
+            string sex = args[3].ToString();
+            string money = args[4].ToString();
+            string bank = args[5].ToString();
+            string job = args[6].ToString();
+            string rank = args[7].ToString();
 
             if (args[0] != null)
             {
@@ -32,18 +37,40 @@ namespace WiredPlayers_Client.character
                 target = Entities.Players.GetAtRemote((ushort)playerId);
             }
 
-            if(Browser.customBrowser == null)
+            if (Browser.customBrowser == null)
             {
-                // Check if the extended information should be shown
-
                 // Create the window with the basic data
-                Browser.CreateBrowserEvent(null);
+                Browser.CreateBrowserEvent(new object[] { "package://statics/html/playerData.html", "initializePlayerData", name, age, sex, money, bank, job, rank, args[8].ToString() });
             }
             else
             {
                 // Update the window
-                Browser.ExecuteFunctionEvent(null);
+                Browser.ExecuteFunctionEvent(new object[] { "populateBasicData", name, age, sex, money, bank, job, rank });
             }
+        }
+
+        private void ShowPropertiesDataEvent(object[] args)
+        {
+            // Update the window
+            Browser.ExecuteFunctionEvent(new object[] { "populatePropertiesData", args[0].ToString(), args[1].ToString() });
+        }
+
+        private void ShowVehiclesDataEvent(object[] args)
+        {
+            // Update the window
+            Browser.ExecuteFunctionEvent(new object[] { "populateVehiclesData", args[0].ToString(), args[1].ToString() });
+        }
+
+        private void ShowExtendedDataEvent(object[] args)
+        {
+            // Update the window
+            Browser.ExecuteFunctionEvent(new object[] { "populateExtendedData", args[0].ToString(), args[1].ToString() });
+        }
+
+        private void RetrievePanelDataEvent(object[] args)
+        {
+            // Call the event from the parameters
+            Events.CallRemote(args[0].ToString());
         }
     }
 }

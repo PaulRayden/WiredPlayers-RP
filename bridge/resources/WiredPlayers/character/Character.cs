@@ -11,7 +11,7 @@ namespace WiredPlayers.character
     {
         public static void InitializePlayerData(Client player)
         {
-            Vector3 worldSpawn = new Vector3(200.6641f, -932.0939f, 30.68681f);
+            Vector3 worldSpawn = new Vector3(-136.0034f, 6198.949f, 32.38448f);
             Vector3 rotation = new Vector3(0.0f, 0.0f, 0.0f);
             player.Position = new Vector3(402.9364f, -996.7154f, -99.00024f);
             player.Dimension = Convert.ToUInt32(player.Value);
@@ -26,6 +26,7 @@ namespace WiredPlayers.character
             player.SetData(EntityData.PLAYER_SEX, 0);
             player.SetSharedData(EntityData.PLAYER_MONEY, 0);
             player.SetSharedData(EntityData.PLAYER_BANK, 3500);
+            player.SetSharedData(EntityData.PLAYER_KILLED, 0);
 
             // Initialize entity data
             player.SetData(EntityData.PLAYER_NAME, string.Empty);
@@ -38,7 +39,6 @@ namespace WiredPlayers.character
             player.SetData(EntityData.PLAYER_ARMOR, 0);
             player.SetData(EntityData.PLAYER_PHONE, 0);
             player.SetData(EntityData.PLAYER_RADIO, 0);
-            player.SetData(EntityData.PLAYER_KILLED, 0);
             player.SetData(EntityData.PLAYER_JAILED, -1);
             player.SetData(EntityData.PLAYER_JAIL_TYPE, -1);
             player.SetData(EntityData.PLAYER_FACTION, 0);
@@ -73,7 +73,7 @@ namespace WiredPlayers.character
                 character.id = player.GetData(EntityData.PLAYER_SQL_ID);
                 character.phone = player.GetData(EntityData.PLAYER_PHONE);
                 character.radio = player.GetData(EntityData.PLAYER_RADIO);
-                character.killed = player.GetData(EntityData.PLAYER_KILLED);
+                character.killed = player.GetSharedData(EntityData.PLAYER_KILLED);
                 character.faction = player.GetData(EntityData.PLAYER_FACTION);
                 character.job = player.GetData(EntityData.PLAYER_JOB);
                 character.rank = player.GetData(EntityData.PLAYER_RANK);
@@ -111,20 +111,20 @@ namespace WiredPlayers.character
 
             player.SetSharedData(EntityData.PLAYER_MONEY, character.money);
             player.SetSharedData(EntityData.PLAYER_BANK, character.bank);
-            player.SetData(EntityData.PLAYER_SEX, character.sex);
+            player.SetSharedData(EntityData.PLAYER_KILLED, character.killed);
 
             player.SetData(EntityData.PLAYER_SQL_ID, character.id);
             player.SetData(EntityData.PLAYER_NAME, character.realName);
             player.SetData(EntityData.PLAYER_HEALTH, character.health);
             player.SetData(EntityData.PLAYER_ARMOR, character.armor);
             player.SetData(EntityData.PLAYER_AGE, character.age);
+            player.SetData(EntityData.PLAYER_SEX, character.sex);
             player.SetData(EntityData.PLAYER_ADMIN_RANK, character.adminRank);
             player.SetData(EntityData.PLAYER_ADMIN_NAME, character.adminName);
             player.SetData(EntityData.PLAYER_SPAWN_POS, character.position);
             player.SetData(EntityData.PLAYER_SPAWN_ROT, character.rotation);
             player.SetData(EntityData.PLAYER_PHONE, character.phone);
             player.SetData(EntityData.PLAYER_RADIO, character.radio);
-            player.SetData(EntityData.PLAYER_KILLED, character.killed);
             player.SetData(EntityData.PLAYER_JAIL_TYPE, int.Parse(jail[0]));
             player.SetData(EntityData.PLAYER_JAILED, int.Parse(jail[1]));
             player.SetData(EntityData.PLAYER_FACTION, character.faction);

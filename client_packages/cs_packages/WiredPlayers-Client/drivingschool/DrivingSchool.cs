@@ -12,6 +12,7 @@ namespace WiredPlayers_Client.drivingschool
     class DrivingSchool : Events.Script
     {
         private Blip licenseBlip = null;
+        private Checkpoint licenseCheckpoint = null;
         private List<DrivingTest> questionsList;
         private List<DrivingTest> answersList;
 
@@ -23,6 +24,8 @@ namespace WiredPlayers_Client.drivingschool
             Events.Add("finishLicenseExam", FinishLicenseExamEvent);
             Events.Add("showLicenseCheckpoint", ShowLicenseCheckpointEvent);
             Events.Add("deleteLicenseCheckpoint", DeleteLicenseCheckpointEvent);
+
+            Events.OnPlayerEnterCheckpoint += OnPlayerEnterCheckpoint;
         }
 
         private void StartLicenseExamEvent(object[] args)
@@ -80,25 +83,44 @@ namespace WiredPlayers_Client.drivingschool
         private void ShowLicenseCheckpointEvent(object[] args)
         {
             // Get the variables from the arguments
-            Vector3 position = (Vector3)args[0];
+            Vector3 checkpoint = (Vector3)args[0];
+            Vector3 nextCheckpoint = (Vector3)args[1];
+            uint checkpointType = Convert.ToUInt32(args[2]);
 
             if (licenseBlip == null)
             {
-                // Create a blip on the map
-                licenseBlip = new Blip(1, position, string.Empty, 1, 1);
+                // Create a checkpoint and a blip on the map
+                licenseBlip = new Blip(1, checkpoint, string.Empty, 1, 1);
+                licenseCheckpoint = new Checkpoint(checkpointType, checkpoint, 2.5f, nextCheckpoint, new RGBA(198, 40, 40, 200));
             }
             else
             {
-                // Update blip's position
-                licenseBlip.SetCoords(position.X, position.Y, position.Z);
+                // Update checkpoint and blip
+                licenseBlip.Position = checkpoint;
+                licenseCheckpoint.Position = checkpoint;
+                licenseCheckpoint.Direction = nextCheckpoint;
+                licenseCheckpoint.Model = checkpointType;
             }
         }
 
         private void DeleteLicenseCheckpointEvent(object[] args)
         {
+            // Destroy the checkpoint
+            licenseCheckpoint.Destroy();
+            licenseCheckpoint = null;
+
             // Destroy the blip on the map
             licenseBlip.Destroy();
             licenseBlip = null;
+        }
+
+        private void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Events.CancelEventArgs cancel)
+        {
+            if(checkpoint == licenseCheckpoint && Player.LocalPlayer.Vehicle != null)
+            {
+                // Get the next checkpoint
+                Events.CallRemote("playerEnteredCheckpoint");
+            }
         }
     }
 }

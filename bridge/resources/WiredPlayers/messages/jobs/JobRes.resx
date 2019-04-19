@@ -357,4 +357,40 @@
   <data name="trucker_m" xml:space="preserve">
     <value>Camionero</value>
   </data>
+  <data name="lssd_1_f" xml:space="preserve">
+    <value>Ayudante del Sheriff</value>
+  </data>
+  <data name="lssd_1_m" xml:space="preserve">
+    <value>Ayudante del Sheriff</value>
+  </data>
+  <data name="lssd_2_f" xml:space="preserve">
+    <value>Ayudante del Sheriff 2</value>
+  </data>
+  <data name="lssd_2_m" xml:space="preserve">
+    <value>Ayudante del Sheriff 2</value>
+  </data>
+  <data name="lssd_3_f" xml:space="preserve">
+    <value>Detective</value>
+  </data>
+  <data name="lssd_3_m" xml:space="preserve">
+    <value>Detective</value>
+  </data>
+  <data name="lssd_4_f" xml:space="preserve">
+    <value>Sargento</value>
+  </data>
+  <data name="lssd_4_m" xml:space="preserve">
+    <value>Sargento</value>
+  </data>
+  <data name="lssd_5_f" xml:space="preserve">
+    <value>Teniente</value>
+  </data>
+  <data name="lssd_5_m" xml:space="preserve">
+    <value>Teniente</value>
+  </data>
+  <data name="lssd_6_f" xml:space="preserve">
+    <value>Sheriff</value>
+  </data>
+  <data name="lssd_6_m" xml:space="preserve">
+    <value>Sheriff</value>
+  </data>
 </root>

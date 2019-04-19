@@ -509,7 +509,7 @@ namespace WiredPlayers.vehicles
         [Command(Commands.COM_LOCK)]
         public void LockCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -544,7 +544,7 @@ namespace WiredPlayers.vehicles
         [Command(Commands.COM_HOOD)]
         public void HoodCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -590,7 +590,7 @@ namespace WiredPlayers.vehicles
         [Command(Commands.COM_TRUNK, Commands.HLP_TRUNK_COMMAND)]
         public void TrunkCommand(Client player, string action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }

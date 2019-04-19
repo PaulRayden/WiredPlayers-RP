@@ -190,7 +190,7 @@ namespace WiredPlayers.jobs
             int playerJob = player.GetData(EntityData.PLAYER_JOB);
             int playerFaction = player.GetData(EntityData.PLAYER_FACTION);
 
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -239,7 +239,7 @@ namespace WiredPlayers.jobs
         [Command(Commands.COM_ORDERS)]
         public void OrdersCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }

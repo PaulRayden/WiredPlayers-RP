@@ -12,6 +12,7 @@ namespace WiredPlayers_Client.cardealer
     {
         private string carShopVehiclesJson = null;
         private Blip carShopTestBlip = null;
+        private Checkpoint carShopTestCheckpoint = null;
         private Vehicle previewVehicle = null;
         private int previewCamera;
         private int dealership;
@@ -28,7 +29,8 @@ namespace WiredPlayers_Client.cardealer
             Events.Add("purchaseVehicle", PurchaseVehicleEvent);
             Events.Add("testVehicle", TestVehicleEvent);
             Events.Add("showCarshopCheckpoint", ShowCarshopCheckpointEvent);
-            Events.Add("deleteCarshopCheckpoint", DeleteCarshopCheckpointEvent);
+
+            Events.OnPlayerEnterCheckpoint += OnPlayerEnterCheckpoint;
         }
 
         private void ShowVehicleCatalogEvent(object[] args)
@@ -233,13 +235,24 @@ namespace WiredPlayers_Client.cardealer
 
             // Add a blip with the delivery place
             carShopTestBlip = new Blip(1, position, string.Empty, 1f, 1);
+            carShopTestCheckpoint = new Checkpoint(4, position, 2.5f, new Vector3(), new RGBA(198, 40, 40, 200));
         }
 
-        private void DeleteCarshopCheckpointEvent(object[] args)
+        private void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Events.CancelEventArgs cancel)
         {
-            // Delete the blip
-            carShopTestBlip.Destroy();
-            carShopTestBlip = null;
+            if(checkpoint == carShopTestCheckpoint && Player.LocalPlayer.Vehicle != null)
+            {
+                // Destroy the checkpoint
+                carShopTestCheckpoint.Destroy();
+                carShopTestCheckpoint = null;
+
+                // Delete the blip
+                carShopTestBlip.Destroy();
+                carShopTestBlip = null;
+
+                // Deliver the test vehicle
+                Events.CallRemote("deliverTestVehicle");
+            }
         }
     }
 }

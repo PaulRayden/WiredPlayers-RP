@@ -13,7 +13,7 @@ namespace WiredPlayers.globals
         public const int ENVIRONMENT_KILL = 65535;
         public const int ITEMS_PER_INVENTORY_PAGE = 16;
         public const decimal ITEMS_ROBBED_PER_TIME = 1.5m;
-        public const int MAX_GARBAGE_ROUTES = 4;
+        public const int MAX_GARBAGE_ROUTES = 1;
         public const int TOTAL_COLOR_ELEMENTS = 3;
         public const int MAX_BANK_OPERATIONS = 25;
         public const int MAX_LICENSE_QUESTIONS = 3;
@@ -409,10 +409,10 @@ namespace WiredPlayers.globals
         // Generic interiors
         public static List<InteriorModel> INTERIOR_LIST = new List<InteriorModel>
         {
-            new InteriorModel(GenRes.townhall, new Vector3(-329.399f, 6153.957f, 32.3133f), new Vector3(-141.1987f, -620.913f, 168.8205f), "ex_dt1_02_office_02b", 498, GenRes.townhall),
+            new InteriorModel(GenRes.townhall, new Vector3(-136.4768f, 6198.505f, 32.38424f), new Vector3(-141.1987f, -620.913f, 168.8205f), "ex_dt1_02_office_02b", 498, GenRes.townhall),
             new InteriorModel(GenRes.hospital, new Vector3(1838.892f, 3673.627f, 34.27668f), new Vector3(275.446f, -1361.11f, 24.5378f), "Coroner_Int_On", 153, GenRes.hospital),
             new InteriorModel(GenRes.driving_school, new Vector3(-227.6895f, 6333.742f, 32.41962f), new Vector3(-227.6895f, 6333.742f, 32.41962f), string.Empty, 269, GenRes.driving_school),
-            new InteriorModel(GenRes.weazel_news, new Vector3(-598.51, -929.95, 23.87), new Vector3(-1082.433f, -258.7667f, 37.76331f), "facelobby", 459, GenRes.weazel_news)
+            new InteriorModel(GenRes.weazel_news, new Vector3(-145.5413f, 6304.209f, 31.55754f), new Vector3(-1082.433f, -258.7667f, 37.76331f), "facelobby", 459, GenRes.weazel_news)
         };
 
         // Business IPLs from the game
@@ -568,7 +568,15 @@ namespace WiredPlayers.globals
             new FactionModel(JobRes.lstd_2_m, JobRes.lstd_2_f, FACTION_TAXI_DRIVER, 2, 1180),
             new FactionModel(JobRes.lstd_3_m, JobRes.lstd_3_f, FACTION_TAXI_DRIVER, 3, 1360),
             new FactionModel(JobRes.lstd_4_m, JobRes.lstd_4_f, FACTION_TAXI_DRIVER, 4, 1600),
-            new FactionModel(JobRes.lstd_5_m, JobRes.lstd_5_f, FACTION_TAXI_DRIVER, 5, 1890)
+            new FactionModel(JobRes.lstd_5_m, JobRes.lstd_5_f, FACTION_TAXI_DRIVER, 5, 1890),
+
+            // Sherif
+            new FactionModel(JobRes.lssd_1_m, JobRes.lssd_1_f, FACTION_SHERIFF, 1, 1250),
+            new FactionModel(JobRes.lssd_2_m, JobRes.lssd_2_f, FACTION_SHERIFF, 2, 1388),
+            new FactionModel(JobRes.lssd_3_m, JobRes.lssd_3_f, FACTION_SHERIFF, 3, 1685),
+            new FactionModel(JobRes.lssd_4_m, JobRes.lssd_4_f, FACTION_SHERIFF, 4, 2056),
+            new FactionModel(JobRes.lssd_5_m, JobRes.lssd_5_f, FACTION_SHERIFF, 5, 2420),
+            new FactionModel(JobRes.lssd_6_m, JobRes.lssd_6_f, FACTION_SHERIFF, 6, 2901)
         };
 
         // Job description and salary
@@ -3036,17 +3044,32 @@ namespace WiredPlayers.globals
         public static List<GarbageModel> GARBAGE_LIST = new List<GarbageModel>()
         {
             // North
-            new GarbageModel(NORTH_ROUTE, 0, new Vector3(-240.8727f, -1346.671f, 30.65419f)),
-            new GarbageModel(NORTH_ROUTE, 1, new Vector3(-179.5796f, -1287.857f, 30.87206f)),
-            new GarbageModel(NORTH_ROUTE, 2, new Vector3(24.35715f, -366.3141f, 38.88739f)),
-            new GarbageModel(NORTH_ROUTE, 3, new Vector3(59.67919f, -226.7723f, 50.62339f)),
-            new GarbageModel(NORTH_ROUTE, 4, new Vector3(243.1429f, 169.5262f, 104.5475f)),
-            new GarbageModel(NORTH_ROUTE, 5, new Vector3(203.9238f, -159.6877f, 56.32127f)),
-            new GarbageModel(NORTH_ROUTE, 6, new Vector3(63.24953f, -398.8811f, 39.49602f)),
-            new GarbageModel(NORTH_ROUTE, 7, new Vector3(-13.14317f, -1031.041f, 28.54547f)),
-            new GarbageModel(NORTH_ROUTE, 8, new Vector3(-10.67894f, -1085.547f, 26.25084f)),
-            new GarbageModel(NORTH_ROUTE, 9, new Vector3(-53.21499f, -1262.405f, 28.6037f)),
-            new GarbageModel(NORTH_ROUTE, 10, new Vector3(-151.2484f, -1345.604f, 29.44017f)),
+            new GarbageModel(NORTH_ROUTE, 0, new Vector3(-81.96722f, 6478.826f, 31.09088f)),
+            new GarbageModel(NORTH_ROUTE, 1, new Vector3(-93.95376f, 6495.34f, 31.09092f)),
+            new GarbageModel(NORTH_ROUTE, 2, new Vector3(-74.22137f, 6503.464f, 31.09098f)),
+            new GarbageModel(NORTH_ROUTE, 3, new Vector3(-29.01638f, 6529.239f, 31.09091f)),
+            new GarbageModel(NORTH_ROUTE, 4, new Vector3(-5.041111f, 6511.063f, 31.14442f)),
+            new GarbageModel(NORTH_ROUTE, 5, new Vector3(-136.5993f, 6474.146f, 31.06843f)),
+            new GarbageModel(NORTH_ROUTE, 6, new Vector3(-189.9569f, 6430.725f, 31.11271f)),
+            new GarbageModel(NORTH_ROUTE, 7, new Vector3(-360.819f, 6320.19f, 29.35117f)),
+            new GarbageModel(NORTH_ROUTE, 8, new Vector3(-347.5222f, 6243.716f, 31.08796f)),
+            new GarbageModel(NORTH_ROUTE, 9, new Vector3(-435.6904f, 6143.878f, 31.07823f)),
+            new GarbageModel(NORTH_ROUTE, 10, new Vector3(-397.4097f, 6094.936f, 31.06692f)),
+            new GarbageModel(NORTH_ROUTE, 11, new Vector3(-400.0103f, 6081.856f, 31.10014f)),
+            new GarbageModel(NORTH_ROUTE, 12, new Vector3(-377.2241f, 6073.637f, 31.08218f)),
+            new GarbageModel(NORTH_ROUTE, 13, new Vector3(-386.2651f, 6043.054f, 31.10082f)),
+            new GarbageModel(NORTH_ROUTE, 14, new Vector3(-343.0647f, 6068.65f, 31.07741f)),
+            new GarbageModel(NORTH_ROUTE, 15, new Vector3(-318.6424f, 6082.256f, 30.9172f)),
+            new GarbageModel(NORTH_ROUTE, 16, new Vector3(-128.3863f, 6230.171f, 30.94285f)),
+            new GarbageModel(NORTH_ROUTE, 17, new Vector3(-120.422f, 6207.901f, 30.80298f)),
+            new GarbageModel(NORTH_ROUTE, 18, new Vector3(-203.6863f, 6246.423f, 31.09464f)),
+            new GarbageModel(NORTH_ROUTE, 19, new Vector3(-255.7751f, 6250.462f, 31.08915f)),
+            new GarbageModel(NORTH_ROUTE, 20, new Vector3(-154.0765f, 6349.84f, 31.19388f)),
+            new GarbageModel(NORTH_ROUTE, 21, new Vector3(-138.2741f, 6342.727f, 31.09089f)),
+            new GarbageModel(NORTH_ROUTE, 22, new Vector3(-126.1147f, 6345.387f, 31.09039f)),
+            new GarbageModel(NORTH_ROUTE, 23, new Vector3(-52.59103f, 6355.281f, 30.98548f)),
+            new GarbageModel(NORTH_ROUTE, 24, new Vector3(-20.58008f, 6386.159f, 30.92557f)),
+            new GarbageModel(NORTH_ROUTE, 25, new Vector3(5.711287f, 6411.328f, 30.93486f)),
 
             // South
             new GarbageModel(SOUTH_ROUTE, 0, new Vector3(-223.4353f, -1559.368f, 33.44161f)),
@@ -3250,8 +3273,9 @@ namespace WiredPlayers.globals
         public static List<JobPickModel> JOB_PICK_LIST = new List<JobPickModel>()
         {
             new JobPickModel(JOB_FASTFOOD, 501, GenRes.fastfood_job, new Vector3(-133.24f, 6377.585f, 32.17684f), DescRes.job_fastfood),
-            new JobPickModel(JOB_HOOKER, 121, GenRes.hooker, new Vector3(136.58f, -1278.55f, 29.45f), DescRes.job_hooker),
-            new JobPickModel(JOB_GARBAGE, 318, GenRes.garbage_job, new Vector3(-322.088f, -1546.014f, 31.01991f), DescRes.job_garbage),
+            new JobPickModel(JOB_HOOKER, 121, GenRes.hooker, new Vector3(-309.9488f, 6272.006f, 31.49236f), DescRes.job_hooker),
+            new JobPickModel(JOB_HOOKER, 121, GenRes.hooker, new Vector3(2467.066f, 4100.877f, 37.58295f), DescRes.job_hooker),
+            new JobPickModel(JOB_GARBAGE, 318, GenRes.garbage_job, new Vector3(35.9787f, 6549.255f, 31.42562f), DescRes.job_garbage),
             new JobPickModel(JOB_MECHANIC, 72, GenRes.mechanic_job, new Vector3(119.923f, 6627.261f, 31.94834f), DescRes.job_mechanic),
             new JobPickModel(JOB_MECHANIC, 72, GenRes.mechanic_job, new Vector3(1187.899f, 2646.012f, 38.36409f), DescRes.job_mechanic),
             new JobPickModel(JOB_THIEF, 0, GenRes.thief_job, new Vector3(1529.182f, 3794.486f, 34.46811f), DescRes.job_thief),
@@ -3384,37 +3408,41 @@ namespace WiredPlayers.globals
             new Vector3(-717.6539,-915.6808,19.21559),
             new Vector3(-1391.023, -590.3637, 30.31957),
             new Vector3(1138.311, -468.941, 66.73091),
-            new Vector3(1167.086, -456.1151, 66.79015)
+            new Vector3(1167.086, -456.1151, 66.79015),
+            new Vector3(-132.8289f, 6366.315f, 31.4737f),
+            new Vector3(1735.206f, 6410.597f, 35.03722f),
+            new Vector3(540.5155f, 2671.07f, 42.15653f),
+            new Vector3(1968.255f, 3743.691f, 32.34375f),
+            new Vector3(1702.953f, 4933.514f, 42.06368f),
+            new Vector3(-133.399f, 6366.865f, 31.479f)
         };
 
         public static List<Vector3> CAR_LICENSE_CHECKPOINTS = new List<Vector3>()
         {
-            new Vector3(-210.185f, 6332.839f, 30.82618f),
-            new Vector3(-292.3593f, 6245.958f, 30.93763f),
-            new Vector3(-357.4913f, 6301.83f, 29.39157f),
-            new Vector3(-180.3696f, 6465.34f, 30.14923f),
-            new Vector3(-126.9398f, 6431.469f, 30.97843f),
-            new Vector3(-40.52503f, 6491.655f, 30.91457f),
-            new Vector3(68.51f, 6600.582f, 30.90891f),
-            new Vector3(136.5284f, 6538.029f, 30.97347f),
-            new Vector3(-95.59881f, 6292.953f, 30.86639f),
-            new Vector3(-162.9532f, 6351.154f, 30.98549f),
-            new Vector3(-216.7924f, 6345.928f, 31.24967f)
+            new Vector3(-210.185f, 6332.839f, 30.42618f),
+            new Vector3(-292.3593f, 6245.958f, 30.53763f),
+            new Vector3(-357.4913f, 6301.83f, 28.99157f),
+            new Vector3(-180.3696f, 6465.34f, 29.74923f),
+            new Vector3(-126.9398f, 6431.469f, 30.57843f),
+            new Vector3(-40.52503f, 6491.655f, 30.51457f),
+            new Vector3(68.51f, 6600.582f, 30.50891f),
+            new Vector3(136.5284f, 6538.029f, 30.57347f),
+            new Vector3(-95.59881f, 6292.953f, 30.46639f),
+            new Vector3(-162.9532f, 6351.154f, 30.58549f)
         };
 
         public static List<Vector3> BIKE_LICENSE_CHECKPOINTS = new List<Vector3>()
         {
-            new Vector3(-210.185f, 6332.839f, 30.82618f),
-            new Vector3(-292.3593f, 6245.958f, 30.93763f),
-            new Vector3(-357.4913f, 6301.83f, 29.39157f),
-            new Vector3(-180.3696f, 6465.34f, 30.14923f),
-            new Vector3(-126.9398f, 6431.469f, 30.97843f),
-            new Vector3(-40.52503f, 6491.655f, 30.91457f),
-            new Vector3(68.51f, 6600.582f, 30.90891f),
-            new Vector3(136.5284f, 6538.029f, 30.97347f),
-            new Vector3(-95.59881f, 6292.953f, 30.86639f),
-            new Vector3(-162.9532f, 6351.154f, 30.98549f),
-            new Vector3(-216.7924f, 6345.928f, 31.24967f)
+            new Vector3(-210.185f, 6332.839f, 30.42618f),
+            new Vector3(-292.3593f, 6245.958f, 30.53763f),
+            new Vector3(-357.4913f, 6301.83f, 28.99157f),
+            new Vector3(-180.3696f, 6465.34f, 29.74923f),
+            new Vector3(-126.9398f, 6431.469f, 30.57843f),
+            new Vector3(-40.52503f, 6491.655f, 30.51457f),
+            new Vector3(68.51f, 6600.582f, 30.50891f),
+            new Vector3(136.5284f, 6538.029f, 30.57347f),
+            new Vector3(-95.59881f, 6292.953f, 30.46639f),
+            new Vector3(-162.9532f, 6351.154f, 30.58549f)
         };
 
         public static List<Vector3> FISHING_POSITION_LIST = new List<Vector3>()
@@ -3427,6 +3455,12 @@ namespace WiredPlayers.globals
             new Vector3(-284.8904f, 6631.555f, 7.339838f),
             new Vector3(-287.5817f, 6629.255f, 7.186343f),
             new Vector3(-287.5817f, 6629.255f, 7.186343f)
+        };
+
+        public static List<Vector3> EQUIPMENT_POSITIONS = new List<Vector3>()
+        {
+            new Vector3(-450.0351f, 6016.23f, 31.71639f),
+            new Vector3(1856.94f, 3689.781f, 34.26704f)
         };
 
         public static Dictionary<WeaponHash, string> WEAPON_ITEM_MODELS = new Dictionary<WeaponHash, string>()

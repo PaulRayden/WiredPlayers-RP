@@ -501,19 +501,22 @@ namespace WiredPlayers.weapons
         [RemoteEvent("updateWeaponBullets")]
         public void UpdateWeaponBullets(Client player, int bullets)
         {
-            // Get the weapon from the hand
-            string rightHand = player.GetSharedData(EntityData.PLAYER_RIGHT_HAND).ToString();
-            int itemId = NAPI.Util.FromJson<AttachmentModel>(rightHand).itemId;
-            ItemModel item = Globals.GetItemModelFromId(itemId);
-
-            Task.Factory.StartNew(() =>
+            if(player.GetSharedData(EntityData.PLAYER_RIGHT_HAND) != null)
             {
-                // Set the bullets on the weapon
-                item.amount = bullets;
+                // Get the weapon from the hand
+                string rightHand = player.GetSharedData(EntityData.PLAYER_RIGHT_HAND).ToString();
+                int itemId = NAPI.Util.FromJson<AttachmentModel>(rightHand).itemId;
+                ItemModel item = Globals.GetItemModelFromId(itemId);
 
-                // Update the remaining bullets
-                Database.UpdateItem(item);
-            });
+                Task.Factory.StartNew(() =>
+                {
+                    // Set the bullets on the weapon
+                    item.amount = bullets;
+
+                    // Update the remaining bullets
+                    Database.UpdateItem(item);
+                });
+            }
         }
 
         [Command(Commands.COM_WEAPONS_EVENT)]

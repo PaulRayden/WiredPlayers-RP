@@ -43,6 +43,23 @@
 		"name": "NOMBRE",
 		"ping": "LATENCIA" 
 	},
+	"data": {
+		"title": "Información del ciudadano",
+		"basic": "Información",
+		"properties": "Propiedades",
+		"vehicles": "Vehículos",
+		"extended": "Otros datos",
+		"name": "Nombre completo",
+		"age": "Edad",
+		"sex": "Sexo",
+		"money": "Dinero",
+		"bank": "Banco",
+		"job": "Trabajo",
+		"rank": "Rango",
+		"owned-properties": "Propiedades adquiridas: ",
+		"rented-properties": "Propiedades alquiladas: ",
+		"no-properties": "Ninguna propiedad"
+	},
 	"phone": {
 		"number": "Número",
 		"sms": "Envío de SMS",

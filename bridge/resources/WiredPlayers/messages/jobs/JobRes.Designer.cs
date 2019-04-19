@@ -439,6 +439,114 @@ namespace WiredPlayers.messages.jobs {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a Ayudante del Sheriff.
+        /// </summary>
+        public static string lssd_1_f {
+            get {
+                return ResourceManager.GetString("lssd_1_f", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Ayudante del Sheriff.
+        /// </summary>
+        public static string lssd_1_m {
+            get {
+                return ResourceManager.GetString("lssd_1_m", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Ayudante del Sheriff 2.
+        /// </summary>
+        public static string lssd_2_f {
+            get {
+                return ResourceManager.GetString("lssd_2_f", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Ayudante del Sheriff 2.
+        /// </summary>
+        public static string lssd_2_m {
+            get {
+                return ResourceManager.GetString("lssd_2_m", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Detective.
+        /// </summary>
+        public static string lssd_3_f {
+            get {
+                return ResourceManager.GetString("lssd_3_f", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Detective.
+        /// </summary>
+        public static string lssd_3_m {
+            get {
+                return ResourceManager.GetString("lssd_3_m", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Sargento.
+        /// </summary>
+        public static string lssd_4_f {
+            get {
+                return ResourceManager.GetString("lssd_4_f", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Sargento.
+        /// </summary>
+        public static string lssd_4_m {
+            get {
+                return ResourceManager.GetString("lssd_4_m", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Teniente.
+        /// </summary>
+        public static string lssd_5_f {
+            get {
+                return ResourceManager.GetString("lssd_5_f", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Teniente.
+        /// </summary>
+        public static string lssd_5_m {
+            get {
+                return ResourceManager.GetString("lssd_5_m", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Sheriff.
+        /// </summary>
+        public static string lssd_6_f {
+            get {
+                return ResourceManager.GetString("lssd_6_f", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Sheriff.
+        /// </summary>
+        public static string lssd_6_m {
+            get {
+                return ResourceManager.GetString("lssd_6_m", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a Conductora.
         /// </summary>
         public static string lstd_1_f {

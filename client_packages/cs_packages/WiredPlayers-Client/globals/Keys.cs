@@ -59,7 +59,7 @@ namespace WiredPlayers_Client.globals
             switch (key)
             {
                 case (int)ConsoleKey.E:
-                    if (Player.LocalPlayer.Vehicle == null && !Police.handcuffed)
+                    if (Player.LocalPlayer.Vehicle == null && !Police.handcuffed && !Emergency.dead)
                     {
                         // Reset the player's animation
                         Events.CallRemote("checkPlayerEventKeyStopAnim");

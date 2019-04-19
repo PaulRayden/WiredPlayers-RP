@@ -151,6 +151,9 @@ namespace WiredPlayers.character
 
             // Save sex entity shared data
             player.SetData(EntityData.PLAYER_SEX, sex);
+
+            // Force the player's animation
+            player.PlayAnimation("amb@world_human_hang_out_street@female_arms_crossed@base", "base", (int)Constants.AnimationFlags.Loop);
         }
 
         [RemoteEvent("createCharacter")]
@@ -179,8 +182,8 @@ namespace WiredPlayers.character
                     player.SetData(EntityData.PLAYER_NAME, playerName);
                     player.SetData(EntityData.PLAYER_AGE, playerAge);
                     player.SetData(EntityData.PLAYER_SEX, playerSex);
-                    player.SetSharedData(EntityData.PLAYER_SPAWN_POS, new Vector3(402.9364f, -996.7154f, -99.00024f));
-                    player.SetSharedData(EntityData.PLAYER_SPAWN_ROT, new Vector3(0.0f, 0.0f, 180.0f));
+                    player.SetData(EntityData.PLAYER_SPAWN_POS, new Vector3(-136.0034f, 6198.949f, 32.38448f));
+                    player.SetData(EntityData.PLAYER_SPAWN_ROT, new Vector3(0.0f, 0.0f, 180.0f));
 
                     Database.UpdateLastCharacter(player.SocialClubName, playerId);
 

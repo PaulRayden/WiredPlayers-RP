@@ -9,7 +9,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_GRAB)]
         public void GrabCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -23,7 +23,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_FACEPALM)]
         public void FacepalmCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -37,7 +37,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_LOCO)]
         public void LocoCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -51,7 +51,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_FREAKOUT)]
         public void FreakoutCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -65,7 +65,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_THUMB_ON_EARS)]
         public void ThumbOnEarsCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -79,7 +79,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_VICTORY)]
         public void VictoryCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -93,7 +93,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_CROUCH)]
         public void CrouchCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -107,7 +107,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_DJ)]
         public void DjCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -121,7 +121,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_KNEEL)]
         public void KneelCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -135,7 +135,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_SPEAK)]
         public void SpeakCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -149,7 +149,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_MECHANIC, Commands.HLP_ANIMS_MECHANIC)]
         public void MechanicCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -179,7 +179,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_DIG)]
         public void DigCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -193,7 +193,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_CRY)]
         public void CryCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -207,7 +207,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_CLEAN, Commands.HLP_ANIMS_CLEAN)]
         public void CleanCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -245,7 +245,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_SHOWER, Commands.HLP_ANIMS_SHOWER)]
         public void ShowerCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -271,7 +271,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_HURRY_UP)]
         public void HurryUpCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -285,7 +285,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_SPORTS, Commands.HLP_ANIMS_SPORTS)]
         public void SportsCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -363,7 +363,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_TYPE)]
         public void TypeCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -377,7 +377,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_KNOCK_DOOR)]
         public void KnockDoorCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -391,7 +391,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_TAGGING)]
         public void TaggingCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -405,7 +405,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_STRIPTEASE, Commands.HLP_ANIMS_STRIPTEASE)]
         public void StripteaseCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -479,7 +479,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_DRINK)]
         public void DrinkCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -493,7 +493,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_KISS)]
         public void KissCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -507,7 +507,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_AIM)]
         public void AimCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -521,7 +521,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_SALUTE, Commands.HLP_ANIMS_SALUTE)]
         public void SaluteCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -564,7 +564,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_FUCKU)]
         public void FuckUCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -578,7 +578,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_WALK, Commands.HLP_ANIMS_WALK)]
         public void WalkCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -680,7 +680,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_KNUCKLES)]
         public void KnucklesCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -694,7 +694,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_SURRENDER, Commands.HLP_ANIMS_SURRENDER)]
         public void SurrenderCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -756,7 +756,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_EAT)]
         public void EatCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -770,7 +770,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_PUKE)]
         public void PukeCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -784,7 +784,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_PLANT)]
         public void PlantCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -798,7 +798,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_CPR, Commands.HLP_ANIMS_CPR)]
         public void CprCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -832,7 +832,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_CAR_SEX, Commands.HLP_ANIMS_CAR_SEX)]
         public void CarSexCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -930,7 +930,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_SEXY_DANCE, Commands.HLP_ANIMS_SEXY_DANCE)]
         public void SexyDanceCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -972,7 +972,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_SIT, Commands.HLP_ANIMS_SIT)]
         public void SitCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1034,7 +1034,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_SMOKE, Commands.HLP_ANIMS_SMOKING)]
         public void SmokeCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1064,7 +1064,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_LIE_DOWN, Commands.HLP_ANIMS_LIE_DOWN)]
         public void LieDownCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1106,7 +1106,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_ARMS, Commands.HLP_ANIMS_ARMS)]
         public void ArmsCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1140,7 +1140,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_GUARD, Commands.HLP_ANIMS_GUARD)]
         public void GuardCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1174,7 +1174,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_DEAD, Commands.HLP_ANIMS_DEAD)]
         public void DeadCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1212,7 +1212,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_IDLE, Commands.HLP_ANIMS_IDLE)]
         public void IdleCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1266,7 +1266,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_PHONE, Commands.HLP_ANIMS_TLF)]
         public void PhoneCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1304,7 +1304,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_LEAN, Commands.HLP_ANIMS_LEAN)]
         public void LeanCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1370,7 +1370,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_CHEER, Commands.HLP_ANIMS_CHEER)]
         public void CheerCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1416,7 +1416,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_DANCE, Commands.HLP_ANIMS_DANCE)]
         public void DanceCommand(Client player, int action)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1458,7 +1458,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_PISS)]
         public void PissCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1472,7 +1472,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_APLAUSE)]
         public void AplauseCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1486,7 +1486,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_DRUNK)]
         public void DrunkCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1500,7 +1500,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_SHRUG)]
         public void ShrugCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1514,7 +1514,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_DESPERATE)]
         public void DesperateCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1528,7 +1528,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_PENSIVE)]
         public void PensiveCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1542,7 +1542,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_HANDS_HEAT)]
         public void HandsHeatCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1556,7 +1556,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_ROCK)]
         public void RockCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1570,7 +1570,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_INJURED)]
         public void InjuredCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -1584,7 +1584,7 @@ namespace WiredPlayers.character
         [Command(Commands.COM_STUMBLE)]
         public void StumbleCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }

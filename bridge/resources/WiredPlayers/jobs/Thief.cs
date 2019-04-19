@@ -236,7 +236,7 @@ namespace WiredPlayers.jobs
         [Command(Commands.COM_FORCE)]
         public void ForceCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -290,7 +290,7 @@ namespace WiredPlayers.jobs
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_thief_area);
             }
-            else if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            else if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -372,7 +372,7 @@ namespace WiredPlayers.jobs
         [Command(Commands.COM_HOTWIRE)]
         public void HotwireCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }

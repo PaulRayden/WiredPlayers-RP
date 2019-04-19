@@ -16,5 +16,6 @@ namespace WiredPlayers.model
         public float multiplier { get; set; }
         public bool locked { get; set; }
         public TextLabel businessLabel { get; set; }
+        public Checkpoint businessCheckpoint { get; set; }
     }
 }

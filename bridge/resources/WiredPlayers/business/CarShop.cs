@@ -125,36 +125,6 @@ namespace WiredPlayers.business
             shipShopBlip.Sprite = 455;
         }
 
-        [ServerEvent(Event.PlayerEnterCheckpoint)]
-        public void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Client player)
-        {
-            if (player.GetData(EntityData.PLAYER_DRIVING_COLSHAPE) != null && player.GetData(EntityData.PLAYER_TESTING_VEHICLE) != null)
-            {
-                if (player.IsInVehicle && player.GetData(EntityData.PLAYER_DRIVING_COLSHAPE) == checkpoint)
-                {
-                    Vehicle vehicle = player.GetData(EntityData.PLAYER_TESTING_VEHICLE);
-                    if (player.Vehicle == vehicle)
-                    {
-                        // Stop the vehicle's speedometer
-                        player.TriggerEvent("removeSpeedometer");
-
-                        // We destroy the vehicle and the checkpoint
-                        Checkpoint testCheckpoint = player.GetData(EntityData.PLAYER_DRIVING_COLSHAPE);
-                        player.WarpOutOfVehicle();
-                        testCheckpoint.Delete();
-                        vehicle.Delete();
-
-                        // Variable cleaning
-                        player.ResetData(EntityData.PLAYER_TESTING_VEHICLE);
-                        player.ResetData(EntityData.PLAYER_DRIVING_COLSHAPE);
-
-                        // Deleting checkpoint
-                        player.TriggerEvent("deleteCarshopCheckpoint");
-                    }
-                }
-            }
-        }
-
         [RemoteEvent("purchaseVehicle")]
         public void PurchaseVehicleEvent(Client player, string hash, string firstColor, string secondColor)
         {
@@ -199,22 +169,22 @@ namespace WiredPlayers.business
         public void TestVehicleEvent(Client player, string hash)
         {
             Vehicle vehicle = null;
-            Checkpoint testFinishCheckpoint = null;
+            Vector3 testFinishCheckpoint = null;
             VehicleHash vehicleModel = (VehicleHash)uint.Parse(hash);
 
             switch (GetClosestCarShop(player))
             {
                 case 0:
-                    vehicle = NAPI.Vehicle.CreateVehicle(vehicleModel, new Vector3(-51.54087f, -1076.941f, 26.94754f), 75.0f, new Color(0, 0, 0), new Color(0, 0, 0));
-                    testFinishCheckpoint = NAPI.Checkpoint.CreateCheckpoint(4, new Vector3(-28.933f, -1085.566f, 25.565f), new Vector3(0.0f, 0.0f, 0.0f), 2.5f, new Color(198, 40, 40, 200));
+                    vehicle = NAPI.Vehicle.CreateVehicle(vehicleModel, new Vector3(-238.6294f, 6196.433f, 31.48921f), 128.0f, new Color(0, 0, 0), new Color(0, 0, 0));
+                    testFinishCheckpoint = new Vector3(-239.7822f, 6231.539f, 30.70019f);
                     break;
                 case 1:
                     vehicle = NAPI.Vehicle.CreateVehicle(vehicleModel, new Vector3(307.0036f, -1162.707f, 29.29191f), 180.0f, new Color(0, 0, 0), new Color(0, 0, 0));
-                    testFinishCheckpoint = NAPI.Checkpoint.CreateCheckpoint(4, new Vector3(267.412f, -1159.755f, 28.263f), new Vector3(0.0f, 0.0f, 0.0f), 2.5f, new Color(198, 40, 40, 200));
+                    testFinishCheckpoint = new Vector3(267.412f, -1159.755f, 28.263f);
                     break;
                 case 2:
                     vehicle = NAPI.Vehicle.CreateVehicle(vehicleModel, new Vector3(-717.3467f, -1319.792f, -0.42f), 180.0f, new Color(0, 0, 0), new Color(0, 0, 0));
-                    testFinishCheckpoint = NAPI.Checkpoint.CreateCheckpoint(4, new Vector3(-711.267f, -1351.501f, -1.359f), new Vector3(0.0f, 0.0f, 0.0f), 2.5f, new Color(198, 40, 40, 200));
+                    testFinishCheckpoint = new Vector3(-711.267f, -1351.501f, -1.359f);
                     break;
             }
 
@@ -229,10 +199,28 @@ namespace WiredPlayers.business
 
             // Adding the checkpoint
             player.SetData(EntityData.PLAYER_DRIVING_COLSHAPE, testFinishCheckpoint);
-            player.TriggerEvent("showCarshopCheckpoint", testFinishCheckpoint.Position);
+            player.TriggerEvent("showCarshopCheckpoint", testFinishCheckpoint);
 
             // Confirmation message sent to the player
             player.SendChatMessage(Constants.COLOR_INFO + InfoRes.player_test_vehicle);
+        }
+
+        [RemoteEvent("deliverTestVehicle")]
+        public void DeliverTestVehicleEvent(Client player)
+        {
+            // Get the current vehicle
+            Vehicle vehicle = player.GetData(EntityData.PLAYER_TESTING_VEHICLE);
+
+            if (player.Vehicle == vehicle)
+            {
+                // We destroy the vehicle
+                player.WarpOutOfVehicle();
+                vehicle.Delete();
+
+                // Variable cleaning
+                player.ResetData(EntityData.PLAYER_TESTING_VEHICLE);
+                player.ResetData(EntityData.PLAYER_DRIVING_COLSHAPE);
+            }
         }
 
         [Command(Commands.COM_CATALOG)]

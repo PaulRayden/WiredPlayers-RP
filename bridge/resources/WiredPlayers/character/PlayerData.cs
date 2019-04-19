@@ -1,14 +1,15 @@
 ﻿using GTANetworkAPI;
-using System.Linq;
 using WiredPlayers.model;
 using WiredPlayers.globals;
 using WiredPlayers.messages.general;
-using WiredPlayers.factions;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace WiredPlayers.character
 {
     public class PlayerData : Script
     {
+        [RemoteEvent("retrieveBasicData")]
         public static void RetrieveBasicDataEvent(Client asker, Client player)
         {
             // Get the basic data
@@ -22,12 +23,12 @@ namespace WiredPlayers.character
             // Get the job
             JobModel jobModel = Constants.JOB_LIST.Where(j => player.GetData(EntityData.PLAYER_JOB) == j.job).First();
 
-            if (jobModel == null)
+            if (jobModel.job == 0)
             {
                 // Get the player's faction
                 FactionModel factionModel = Constants.FACTION_RANK_LIST.Where(f => player.GetData(EntityData.PLAYER_FACTION) == f.faction && player.GetData(EntityData.PLAYER_RANK) == f.rank).First();
 
-                if (factionModel != null)
+                if (factionModel.faction > 0)
                 {
                     switch (factionModel.faction)
                     {
@@ -59,7 +60,14 @@ namespace WiredPlayers.character
             }
 
             // Show the data for the player
-            asker.TriggerEvent("showPlayerData", player.Value, age, sex, money, bank, job, rank, !Faction.IsPoliceMember(asker));
+            asker.TriggerEvent("showPlayerData", player.Value, player.Name, age, sex, money, bank, job, rank, asker == player || asker.GetData(EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE);
+        }
+
+        [RemoteEvent("retrievePropertiesData")]
+        public static void RetrievePropertiesDataEvent(Client player)
+        {
+            // Show the data for the player
+            player.TriggerEvent("showPropertiesData", NAPI.Util.ToJson(new List<string>()), string.Empty);
         }
     }
 }

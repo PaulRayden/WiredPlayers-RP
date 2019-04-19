@@ -123,7 +123,7 @@ namespace WiredPlayers.chat
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_cant_chat);
             }
-            else if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            else if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -160,7 +160,7 @@ namespace WiredPlayers.chat
         [Command(Commands.COM_SAY, Commands.HLP_SAY_COMMAND, GreedyArg = true)]
         public void DecirCommand(Client player, string message)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -173,7 +173,7 @@ namespace WiredPlayers.chat
         [Command(Commands.COM_YELL, Alias = Commands.COM_YELL_ALIAS, Description = Commands.HLP_YELL_COMMAND, GreedyArg = true)]
         public void GritarCommand(Client player, string message)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -186,7 +186,7 @@ namespace WiredPlayers.chat
         [Command(Commands.COM_WHISPER, Alias = Commands.COM_WHISPER_ALIAS, Description = Commands.HLP_WHISPER_COMMAND, GreedyArg = true)]
         public void SusurrarCommand(Client player, string message)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -217,7 +217,7 @@ namespace WiredPlayers.chat
         [Command(Commands.COM_LUCK)]
         public void SuCommand(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }

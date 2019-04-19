@@ -118,7 +118,7 @@ namespace WiredPlayers.factions
         [Command(Commands.COM_R, Commands.HLP_R_COMMAND, GreedyArg = true)]
         public void RCommand(Client player, string message)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -153,7 +153,7 @@ namespace WiredPlayers.factions
         [Command(Commands.COM_DP, Commands.HLP_DP_COMMAND, GreedyArg = true)]
         public void DpCommand(Client player, string message)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -188,7 +188,7 @@ namespace WiredPlayers.factions
         [Command(Commands.COM_DE, Commands.HLP_DE_COMMAND, GreedyArg = true)]
         public void DeCommand(Client player, string message)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -223,7 +223,7 @@ namespace WiredPlayers.factions
         [Command(Commands.COM_FR, Commands.HLP_FR_COMMAND, GreedyArg = true)]
         public void FrCommand(Client player, string message)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }

@@ -15,6 +15,7 @@ namespace WiredPlayers_Client.globals
         public static readonly string ITEM_ENTITY_RIGHT_HAND = "PLAYER_RIGHT_HAND";
         public static readonly string ITEM_ENTITY_WEAPON_CRATE = "PLAYER_WEAPON_CRATE";
         public static readonly string ITEM_ENTITY_HANDCUFFS = "PLAYER_HANDCUFFED";
+        public static readonly string PLAYER_KILLED_STATE = "PLAYER_KILLED";
 
         public static readonly float CONSUME_PER_METER = 0.00065f;
 

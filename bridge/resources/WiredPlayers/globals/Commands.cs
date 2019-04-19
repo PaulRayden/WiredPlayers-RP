@@ -301,6 +301,8 @@
         public const string ARG_GLASSES = "gafas";
         public const string ARG_EARRINGS = "pendientes";
         public const string ARG_HELP = "ayuda";
+        public const string ARG_INNER = "interior";
+        public const string ARG_OUTER = "exterior";
 
         #endregion
 
@@ -326,13 +328,13 @@
         public const string HLP_VEHICLE_BRING_COMMAND = "USO: /vehiculo traer [Id. vehículo]";
         public const string HLP_VEHICLE_GOTO_COMMAND = "USO: /vehiculo tpa [Id. vehículo]";
         public const string HLP_BUSINESS_COMMAND = "USO: /negocio [Info|Crear|Modificar|Eliminar]";
-        public const string HLP_BUSINESS_CREATE_COMMAND = "USO: /negocio crear [Tipo negocio]";
+        public const string HLP_BUSINESS_CREATE_COMMAND = "USO: /negocio crear [Tipo negocio] [Interior|Exterior]";
         public const string HLP_BUSINESS_MODIFY_COMMAND = "USO: /negocio modificar [Nombre|Tipo]";
         public const string HLP_BUSINESS_MODIFY_NAME_COMMAND = "USO: /negocio modificar nombre [Texto]";
         public const string HLP_BUSINESS_MODIFY_TYPE_COMMAND = "USO: /negocio modificar tipo [Valor]";
         public const string HLP_BUSINESS_CREATE_TYPES_FIRST_COMMAND = "Tipos: 1 24/7 | 2 Electrónica | 3 Ferretería | 4 Ropa | 5 Bar | 6 Disco | 7 AmmuNation | 8 Almacén | 9 Joyería ";
         public const string HLP_BUSINESS_CREATE_TYPES_FIRST_COMMAND2 = "| 10 Despacho | 11 Clubhouse | 12 Gasolinera | 13 Matadero | 14 Barberia | 15 Textil | 16 Sala tortura | 17 Zulo ";
-        public const string HLP_BUSINESS_CREATE_TYPES_FIRST_COMMAND3 = "| 18 Almacén mediano | 19 Casa | 21 Tattoo | 22 Taller Bennys | 23 Vanilla | 24 Tienda de pesca";
+        public const string HLP_BUSINESS_CREATE_TYPES_FIRST_COMMAND3 = "| 18 Almacén mediano | 19 Casa | 20 Taller | 21 Tattoo | 22 Taller Bennys | 23 Vanilla | 24 Tienda de pesca";
         public const string HLP_CHARACTER_COMMAND = "USO: /personaje [Banco|Dinero|Faccion|Rango|Trabajo|Dimension]";
         public const string HLP_CHARACTER_BANK_COMMAND = "USO: /personaje banco [Id. jugador/Nombre jugador] [Cantidad]";
         public const string HLP_CHARACTER_MONEY_COMMAND = "USO: /personaje dinero [Id. jugador/Nombre jugador] [Cantidad]";

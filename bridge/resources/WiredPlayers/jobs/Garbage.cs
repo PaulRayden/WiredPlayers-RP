@@ -67,6 +67,12 @@ namespace WiredPlayers.jobs
             Client player = (Client)playerObject;
             Client driver = player.GetData(EntityData.PLAYER_JOB_PARTNER);
 
+            if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == true)
+            {
+                garbageTimer.Dispose();
+                garbageTimerList.Remove(player.Value);
+            }
+
             NAPI.Task.Run(() =>
             {
                 // Get garbage bag
@@ -79,54 +85,38 @@ namespace WiredPlayers.jobs
                 int checkPoint = driver.GetData(EntityData.PLAYER_JOB_CHECKPOINT) + 1;
                 int totalCheckPoints = Constants.GARBAGE_LIST.Where(x => x.route == route).Count();
 
-                // Get the current checkpoint
-                Checkpoint garbageCheckpoint = player.GetData(EntityData.PLAYER_JOB_COLSHAPE);
-                garbageCheckpoint.Delete();
-
                 if (checkPoint < totalCheckPoints)
                 {
                     Vector3 currentGarbagePosition = GetGarbageCheckPointPosition(route, checkPoint);
                     Vector3 nextGarbagePosition = GetGarbageCheckPointPosition(route, checkPoint + 1);
 
-                    // Show the next checkpoint
-                    garbageCheckpoint = NAPI.Checkpoint.CreateCheckpoint(CheckpointType.CylinderSingleArrow, currentGarbagePosition, nextGarbagePosition, 2.5f, new Color(198, 40, 40, 200));
-
                     driver.SetData(EntityData.PLAYER_JOB_CHECKPOINT, checkPoint);
                     player.SetData(EntityData.PLAYER_JOB_CHECKPOINT, checkPoint);
-
-                    driver.TriggerEvent("showGarbageCheckPoint", currentGarbagePosition);
-                    player.TriggerEvent("showGarbageCheckPoint", currentGarbagePosition);
 
                     // Add the garbage bag
                     garbageBag = NAPI.Object.CreateObject(628215202, currentGarbagePosition, new Vector3(0.0f, 0.0f, 0.0f));
                     player.SetData(EntityData.PLAYER_GARBAGE_BAG, garbageBag);
+
+                    // Create the checkpoints
+                    driver.TriggerEvent("showGarbageCheckPoint", currentGarbagePosition, nextGarbagePosition, CheckpointType.CylinderSingleArrow);
+                    player.TriggerEvent("showGarbageCheckPoint", currentGarbagePosition, nextGarbagePosition, CheckpointType.CylinderSingleArrow);
                 }
                 else
                 {
-                    garbageCheckpoint = NAPI.Checkpoint.CreateCheckpoint(CheckpointType.CylinderCheckerboard, new Vector3(-339.0206f, -1560.117f, 25.23038f), new Vector3(), 2.5f, new Color(198, 40, 40, 200));
-
                     driver.SendChatMessage(Constants.COLOR_INFO + InfoRes.route_finished);
 
-                    driver.TriggerEvent("showGarbageCheckPoint", garbageCheckpoint.Position);
+                    driver.TriggerEvent("showGarbageCheckPoint", new Vector3(49.44239f, 6558.004f, 32.18963f), new Vector3(), CheckpointType.CylinderCheckerboard);
                     player.TriggerEvent("deleteGarbageCheckPoint");
                 }
 
                 player.SendChatMessage(Constants.COLOR_INFO + InfoRes.garbage_collected);
             });
-
-            if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == true)
-            {
-                garbageTimer.Dispose();
-                garbageTimerList.Remove(player.Value);
-            }
         }
 
         private Vector3 GetGarbageCheckPointPosition(int route, int checkPoint)
         {
-            // Get the garbage
-            GarbageModel garbage = Constants.GARBAGE_LIST.Where(garbageModel => garbageModel.route == route && garbageModel.checkPoint == checkPoint).FirstOrDefault();
-
-            return garbage?.position;
+            // Get the garbage position
+            return Constants.GARBAGE_LIST.Where(garbageModel => garbageModel.route == route && garbageModel.checkPoint == checkPoint).FirstOrDefault()?.position;
         }
 
         private void FinishGarbageRoute(Client driver, bool canceled = false)
@@ -136,13 +126,10 @@ namespace WiredPlayers.jobs
             RespawnGarbageVehicle(driver.Vehicle);
 
             // Destroy the previous checkpoint
-            Checkpoint garbageCheckpoint = driver.GetData(EntityData.PLAYER_JOB_COLSHAPE);
             driver.TriggerEvent("deleteGarbageCheckPoint");
-            garbageCheckpoint.Delete();
 
             // Entity data reset
             driver.ResetData(EntityData.PLAYER_JOB_PARTNER);
-            driver.ResetData(EntityData.PLAYER_JOB_COLSHAPE);
             driver.ResetData(EntityData.PLAYER_JOB_ROUTE);
             driver.ResetData(EntityData.PLAYER_JOB_CHECKPOINT);
             driver.ResetData(EntityData.PLAYER_JOB_VEHICLE);
@@ -168,9 +155,6 @@ namespace WiredPlayers.jobs
                 partner.SendChatMessage(Constants.COLOR_INFO + message);
             }
 
-            // Stop the vehicle's speedometer
-            driver.TriggerEvent("removeSpeedometer");
-
             // Remove players from the vehicle
             driver.WarpOutOfVehicle();
             partner.WarpOutOfVehicle();
@@ -185,17 +169,11 @@ namespace WiredPlayers.jobs
                 {
                     if (player.GetData(EntityData.PLAYER_JOB_ROUTE) == null && player.GetData(EntityData.PLAYER_JOB_VEHICLE) == null)
                     {
-                        // Stop the vehicle's speedometer
-                        player.TriggerEvent("removeSpeedometer");
-
                         player.WarpOutOfVehicle();
                         player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_in_route);
                     }
                     else if (player.GetData(EntityData.PLAYER_JOB_VEHICLE) != null && player.GetData(EntityData.PLAYER_JOB_VEHICLE) != vehicle)
                     {
-                        // Stop the vehicle's speedometer
-                        player.TriggerEvent("removeSpeedometer");
-
                         player.WarpOutOfVehicle();
                         player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_your_job_vehicle);
                     }
@@ -220,10 +198,20 @@ namespace WiredPlayers.jobs
                             Client partner = player.GetData(EntityData.PLAYER_JOB_PARTNER);
                             int garbageRoute = player.GetData(EntityData.PLAYER_JOB_ROUTE);
                             int checkPoint = player.GetData(EntityData.PLAYER_JOB_CHECKPOINT);
+                            int totalCheckPoints = Constants.GARBAGE_LIST.Where(x => x.route == garbageRoute).Count();
                             Vector3 garbagePosition = GetGarbageCheckPointPosition(garbageRoute, checkPoint);
 
-                            player.TriggerEvent("showGarbageCheckPoint", garbagePosition);
-                            partner.TriggerEvent("showGarbageCheckPoint", garbagePosition);
+                            if(checkPoint < totalCheckPoints)
+                            {
+                                Vector3 nextPosition = GetGarbageCheckPointPosition(garbageRoute, checkPoint + 1);
+                                player.TriggerEvent("showGarbageCheckPoint", garbagePosition, nextPosition, CheckpointType.CylinderSingleArrow);
+                                partner.TriggerEvent("showGarbageCheckPoint", garbagePosition, nextPosition, CheckpointType.CylinderSingleArrow);
+                            }
+                            else
+                            {
+                                // Show the last checkpoint
+                                player.TriggerEvent("showGarbageCheckPoint", garbagePosition, new Vector3(), CheckpointType.CylinderCheckerboard);
+                            }
                         }
                     }
                 }
@@ -252,15 +240,13 @@ namespace WiredPlayers.jobs
                                     // Create the first checkpoint
                                     Vector3 currentGarbagePosition = GetGarbageCheckPointPosition(garbageRoute, 0);
                                     Vector3 nextGarbagePosition = GetGarbageCheckPointPosition(garbageRoute, 1);
-                                    Checkpoint garbageCheckpoint = NAPI.Checkpoint.CreateCheckpoint(CheckpointType.CylinderSingleArrow, currentGarbagePosition, nextGarbagePosition, 2.5f, new Color(198, 40, 40, 200));
-                                    player.SetData(EntityData.PLAYER_JOB_COLSHAPE, garbageCheckpoint);
 
                                     // Add garbage bag
                                     GTANetworkAPI.Object trashBag = NAPI.Object.CreateObject(628215202, currentGarbagePosition, new Vector3(0.0f, 0.0f, 0.0f));
                                     player.SetData(EntityData.PLAYER_GARBAGE_BAG, trashBag);
 
-                                    driver.TriggerEvent("showGarbageCheckPoint", currentGarbagePosition);
-                                    player.TriggerEvent("showGarbageCheckPoint", currentGarbagePosition);
+                                    driver.TriggerEvent("showGarbageCheckPoint", currentGarbagePosition, nextGarbagePosition, CheckpointType.CylinderSingleArrow);
+                                    player.TriggerEvent("showGarbageCheckPoint", currentGarbagePosition, nextGarbagePosition, CheckpointType.CylinderSingleArrow);
                                 }
                                 else
                                 {
@@ -299,26 +285,23 @@ namespace WiredPlayers.jobs
             }
         }
 
-        [ServerEvent(Event.PlayerEnterCheckpoint)]
-        public void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Client player)
+        [RemoteEvent("garbageCheckpointEntered")]
+        public void OnPlayerEnterCheckpoint(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_JOB_COLSHAPE) != null && player.GetData(EntityData.PLAYER_JOB) == Constants.JOB_GARBAGE)
-            {
-                // Get garbage checkpoint
-                Checkpoint garbageCheckpoint = player.GetData(EntityData.PLAYER_JOB_COLSHAPE);
+            int route = player.GetData(EntityData.PLAYER_JOB_ROUTE);
+            int checkPoint = player.GetData(EntityData.PLAYER_JOB_CHECKPOINT);
+            int totalCheckPoints = Constants.GARBAGE_LIST.Where(x => x.route == route).Count();
 
-                if (player.VehicleSeat == (int)VehicleSeat.Driver && garbageCheckpoint == checkpoint)
+            if (player.VehicleSeat == (int)VehicleSeat.Driver && checkPoint < totalCheckPoints)
+            {
+                if (player.GetData(EntityData.PLAYER_JOB_VEHICLE) == player.Vehicle)
                 {
-                    NetHandle vehicle = player.Vehicle;
-                    if (player.GetData(EntityData.PLAYER_JOB_VEHICLE) == vehicle)
-                    {
-                        // Finish the route
-                        FinishGarbageRoute(player);
-                    }
-                    else
-                    {
-                        player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_in_vehicle_job);
-                    }
+                    // Finish the route
+                    FinishGarbageRoute(player);
+                }
+                else
+                {
+                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_in_vehicle_job);
                 }
             }
         }
@@ -370,14 +353,16 @@ namespace WiredPlayers.jobs
                         {
                             player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.garbage_in_vehicle);
                         }
-                        else if (player.GetData(EntityData.PLAYER_JOB_COLSHAPE) == null)
+                        else if (player.GetData(EntityData.PLAYER_GARBAGE_BAG) == null)
                         {
                             player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_garbage_near);
                         }
                         else
                         {
-                            Checkpoint garbageCheckpoint = player.GetData(EntityData.PLAYER_JOB_COLSHAPE);
-                            if (player.Position.DistanceTo(garbageCheckpoint.Position) < 3.5f)
+                            // Get the closest garbage bag
+                            GTANetworkAPI.Object trashBag = player.GetData(EntityData.PLAYER_GARBAGE_BAG);
+
+                            if (player.Position.DistanceTo(trashBag.Position) < 3.5f)
                             {
                                 if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == false)
                                 {
@@ -406,30 +391,29 @@ namespace WiredPlayers.jobs
                             if (partner != player)
                             {
                                 GTANetworkAPI.Object trashBag = null;
-                                Checkpoint garbageCheckpoint = null;
 
                                 if (player.VehicleSeat == (int)VehicleSeat.Driver)
                                 {
                                     // Driver canceled
                                     trashBag = player.GetData(EntityData.PLAYER_GARBAGE_BAG);
-                                    garbageCheckpoint = player.GetData(EntityData.PLAYER_JOB_COLSHAPE);
                                     player.SendChatMessage(Constants.COLOR_INFO + InfoRes.route_finished);
                                     partner.TriggerEvent("deleteGarbageCheckPoint");
+
+                                    // Create finish checkpoint
+                                    player.TriggerEvent("showGarbageCheckPoint", new Vector3(49.44239f, 6558.004f, 32.18963f), new Vector3(), CheckpointType.CylinderCheckerboard);
                                 }
                                 else
                                 {
                                     // Passenger canceled
                                     trashBag = partner.GetData(EntityData.PLAYER_GARBAGE_BAG);
-                                    garbageCheckpoint = partner.GetData(EntityData.PLAYER_JOB_COLSHAPE);
-                                    trashBag = partner.GetData(EntityData.PLAYER_GARBAGE_BAG);
                                     player.TriggerEvent("deleteGarbageCheckPoint");
+
+                                    // Create finish checkpoint
+                                    partner.TriggerEvent("showGarbageCheckPoint", new Vector3(49.44239f, 6558.004f, 32.18963f), new Vector3(), CheckpointType.CylinderCheckerboard);
                                 }
 
+                                // Delete the garbage bag
                                 trashBag.Delete();
-                                garbageCheckpoint.Delete();
-
-                                // Create finish checkpoint
-                                garbageCheckpoint = NAPI.Checkpoint.CreateCheckpoint(CheckpointType.CylinderCheckerboard, new Vector3(-339.0206f, -1560.117f, 25.23038f), new Vector3(), 2.5f, new Color(198, 40, 40, 200));
                             }
                             else
                             {

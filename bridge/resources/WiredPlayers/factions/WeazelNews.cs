@@ -52,7 +52,7 @@ namespace WiredPlayers.factions
         [Command(Commands.COM_INTERVIEW, Commands.HLP_OFFER_ON_AIR_COMMAND)]
         public void EntrevistarCommand(Client player, string targetString)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -89,7 +89,7 @@ namespace WiredPlayers.factions
         [Command(Commands.COM_CUT_INTERVIEW, Commands.HLP_CUT_ON_AIR_COMMAND)]
         public void CutInterviewCommand(Client player, string targetString)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -133,7 +133,7 @@ namespace WiredPlayers.factions
         [Command(Commands.COM_PRIZE, Commands.HLP_PRIZE_COMMAND, GreedyArg = true)]
         public void PrizeCommand(Client player, string targetString, int prize, string contest)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -192,7 +192,7 @@ namespace WiredPlayers.factions
         [Command(Commands.COM_ANNOUNCE, Commands.HLP_ANNOUCEMENT_COMMAND, GreedyArg = true)]
         public void AnnounceCommand(Client player, string message)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
@@ -232,7 +232,7 @@ namespace WiredPlayers.factions
         [Command(Commands.COM_NEWS, Commands.HLP_NEWS_COMMAND, GreedyArg = true)]
         public void NewsCommand(Client player, string message)
         {
-            if (player.GetData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }

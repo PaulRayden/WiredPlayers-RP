@@ -21,8 +21,16 @@ namespace WiredPlayers.business
             businessList = Database.LoadAllBusiness();
             foreach (BusinessModel businessModel in businessList)
             {
-                // We create the entrance TextLabel for each business
-                businessModel.businessLabel = NAPI.TextLabel.CreateTextLabel(businessModel.name, businessModel.position, 30.0f, 0.75f, 4, new Color(255, 255, 255), false, businessModel.dimension);
+                if(businessModel.ipl.Length == 0)
+                {
+                    // We create the mark for each business
+                    businessModel.businessCheckpoint = NAPI.Checkpoint.CreateCheckpoint(CheckpointType.Cyclinder, businessModel.position, new Vector3(), 2.5f, new Color(198, 40, 40, 200));
+                }
+                else
+                {
+                    // We create the entrance TextLabel for each business
+                    businessModel.businessLabel = NAPI.TextLabel.CreateTextLabel(businessModel.name, businessModel.position, 30.0f, 0.75f, 4, new Color(255, 255, 255), false, businessModel.dimension);
+                }
 
                 // We mark the blip in the map
                 foreach (BusinessBlipModel blipModel in Constants.BUSINESS_BLIP_LIST)
@@ -48,14 +56,26 @@ namespace WiredPlayers.business
         public static BusinessModel GetClosestBusiness(Client player, float distance = 2.0f)
         {
             BusinessModel business = null;
-            foreach (BusinessModel businessModel in businessList)
+
+            int businessId = player.GetData(EntityData.PLAYER_BUSINESS_ENTERED);
+
+            if (businessId > 0 && player.Dimension == 0)
             {
-                if (player.Position.DistanceTo(businessModel.position) < distance)
+                // He's standing over a checkpoint
+                business = GetBusinessById(businessId);
+            }
+            else
+            {
+                foreach (BusinessModel businessModel in businessList)
                 {
-                    business = businessModel;
-                    distance = player.Position.DistanceTo(business.position);
+                    if (player.Position.DistanceTo(businessModel.position) < distance)
+                    {
+                        business = businessModel;
+                        distance = player.Position.DistanceTo(business.position);
+                    }
                 }
             }
+
             return business;
         }
 
@@ -114,6 +134,23 @@ namespace WiredPlayers.business
         {
             // Get the tattoos matching a body part
             return Constants.TATTOO_LIST.Where(tattoo => tattoo.slot == zone && ((tattoo.maleHash.Length > 0 && sex == Constants.SEX_MALE) || (tattoo.femaleHash.Length > 0 && sex == Constants.SEX_FEMALE))).ToList();
+        }
+
+        [ServerEvent(Event.PlayerEnterCheckpoint)]
+        public void PlayerEnterCheckpointEvent(Checkpoint checkpoint, Client player)
+        {
+            // Check if the checkpoint corresponds to a business
+            BusinessModel business = businessList.Where(b => b.businessCheckpoint == checkpoint).FirstOrDefault();
+
+            // Set the business entered
+            player.SetData(EntityData.PLAYER_BUSINESS_ENTERED, business == null ? 0 : business.id);
+        }
+
+        [ServerEvent(Event.PlayerExitCheckpoint)]
+        public void PlayerExitCheckpointEvent(Checkpoint checkpoint, Client player)
+        {
+            // Set the business entered
+            player.SetData(EntityData.PLAYER_BUSINESS_ENTERED, 0);
         }
 
         [RemoteEvent("businessPurchaseMade")]
