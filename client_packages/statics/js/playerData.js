@@ -98,6 +98,68 @@ function populatePropertiesData(propertiesJson, rented) {
 	document.getElementById('propertiesData').classList.remove('hidden');
 }
 
+function populateVehiclesData(ownedVehiclesJson, lentVehiclesJson) {
+	// Hide all the panels
+	hidePanels();
+
+	// Get the vehicles nodes and delete the children
+	let ownedNode = document.getElementById('owned-vehicles');
+	let lentNode = document.getElementById('lent-vehicles');
+
+	// Get the vehicles
+	let ownedVehicles = JSON.parse(ownedVehiclesJson);
+	let lentVehicles = JSON.parse(lentVehiclesJson);
+
+	while(ownedNode.firstChild) {
+		// Remove each child
+		ownedNode.removeChild(ownedNode.firstChild);
+	}
+
+	while(lentNode.firstChild) {
+		// Remove each child
+		lentNode.removeChild(lentNode.firstChild);
+	}
+
+	if(ownedVehicles === null || ownedVehicles === undefined || ownedVehicles.length === 0) {
+		// Show the message
+		let child = document.createElement('li');
+		child.textContent = i18next.t('data.no-vehicles');
+		ownedNode.appendChild(child);
+	} else {
+		for(let i = 0; i < ownedVehicles.length; i++) {
+			// Get the name of the vehicle
+			let child = document.createElement('li');
+			child.textContent = ownedVehicles[i];
+			ownedNode.appendChild(child);
+		}
+	}
+
+	if(extendedData) {
+		if(lentVehicles === null || lentVehicles === undefined || lentVehicles.length === 0) {
+			// Show the message
+			let child = document.createElement('li');
+			child.textContent = i18next.t('data.no-vehicles');
+			lentNode.appendChild(child);
+		} else {
+			for(let i = 0; i < lentVehicles.length; i++) {
+				// Get the name of the vehicle
+				let child = document.createElement('li');
+				child.textContent = lentVehicles[i];
+				lentNode.appendChild(child);
+			}
+		}
+
+		// Show the lent vehicles
+		lentNode.classList.remove('hidden');
+	} else {
+		// Hide the lent vehicles
+		lentNode.classList.add('hidden');
+	}
+
+	// Show the panel
+	document.getElementById('vehiclesData').classList.remove('hidden');
+}
+
 function showPanel(panel) {
 	// Get the data from the server
 	let event = 'retrieve' + panel.charAt(0).toUpperCase() + panel.slice(1);

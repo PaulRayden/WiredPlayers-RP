@@ -64,7 +64,7 @@ namespace WiredPlayers_Client.character
         private void ShowExtendedDataEvent(object[] args)
         {
             // Update the window
-            Browser.ExecuteFunctionEvent(new object[] { "populateExtendedData", args[0].ToString(), args[1].ToString() });
+            Browser.ExecuteFunctionEvent(new object[] { "populateExtendedData", args[0].ToString() });
         }
 
         private void RetrievePanelDataEvent(object[] args)

@@ -193,6 +193,7 @@
         public const string COM_PLAYER = "jugador";
         public const string COM_DELIVER = "repartir";
         public const string COM_SIREN = "sirena";
+        public const string COM_COMPUTER = "ordenador";
 
         #endregion
 
@@ -451,9 +452,10 @@
         public const string HLP_INFO_COMMAND = "USO: /info [Id. jugador/Nombre jugador]";
         public const string HLP_FRISK_COMMAND = "USO: /cachear [Id. jugador/Nombre jugador]";
         public const string HLP_INCRIMINATE_COMMAND = "USO: /inculpar [Id. jugador/Nombre jugador]";
+        public const string HLP_COMPUTER_COMMAND = "USO: /ordenador [Id. jugador/Nombre jugador]";
 
         #endregion
-        
+
         #region Command Aliases
 
         public const string COM_OOC_ALIAS = "b";

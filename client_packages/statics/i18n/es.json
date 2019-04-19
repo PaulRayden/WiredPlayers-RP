@@ -58,7 +58,10 @@
 		"rank": "Rango",
 		"owned-properties": "Propiedades adquiridas: ",
 		"rented-properties": "Propiedades alquiladas: ",
-		"no-properties": "Ninguna propiedad"
+		"no-properties": "Ninguna propiedad",
+		"owned-vehicles": "Vehículos adquiridos",
+		"lent-vehicles": "Vehículos prestados",
+		"no-vehicles": "Ningún vehículo"
 	},
 	"phone": {
 		"number": "Número",

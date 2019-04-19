@@ -6,6 +6,7 @@ using WiredPlayers.model;
 using WiredPlayers.drivingschool;
 using WiredPlayers.weapons;
 using WiredPlayers.vehicles;
+using WiredPlayers.character;
 using WiredPlayers.messages.error;
 using WiredPlayers.messages.information;
 using WiredPlayers.messages.general;
@@ -1035,6 +1036,34 @@ namespace WiredPlayers.factions
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_police_faction);
             }
+        }
+
+        [Command(Commands.COM_COMPUTER, Commands.HLP_COMPUTER_COMMAND)]
+        public void ComputerCommand(Client player, string targetString)
+        {
+            if(!Faction.IsPoliceMember(player))
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_police_faction);
+                return;
+            }
+
+            if (!player.IsInVehicle)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_in_vehicle);
+                return;
+            }
+
+            if (player.Vehicle.GetData(EntityData.VEHICLE_FACTION) != Constants.FACTION_POLICE || player.Vehicle.GetData(EntityData.VEHICLE_FACTION) != Constants.FACTION_SHERIFF)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_your_job_vehicle);
+                return;
+            }
+
+            // Get the player from the input string
+            Client target = int.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+
+            // Show the data from the player
+            PlayerData.RetrieveBasicDataEvent(player, target);
         }
     }
 }
