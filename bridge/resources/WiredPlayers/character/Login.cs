@@ -244,7 +244,7 @@ namespace WiredPlayers.character
             Task.Factory.StartNew(() =>
             {
                 // Get random questions
-                List<TestModel> applicationQuestions = Database.GetRandomQuestions(Constants.APPLICATION_TEST);
+                List<TestModel> applicationQuestions = Database.GetRandomQuestions(Constants.APPLICATION_TEST, 10);
 
                 // Get the ids from each question
                 List<int> questionIds = applicationQuestions.Select(q => q.id).Distinct().ToList();

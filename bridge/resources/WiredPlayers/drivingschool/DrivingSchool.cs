@@ -363,7 +363,7 @@ namespace WiredPlayers.drivingschool
                                         Task.Factory.StartNew(() =>
                                         {
                                             // Add the questions
-                                            questions = Database.GetRandomQuestions(Constants.LICENSE_CAR + 1);
+                                            questions = Database.GetRandomQuestions(Constants.LICENSE_CAR + 1, Constants.MAX_LICENSE_QUESTIONS);
                                             foreach (TestModel question in questions)
                                             {
                                                 answers.AddRange(Database.GetQuestionAnswers(question.id));
@@ -421,7 +421,7 @@ namespace WiredPlayers.drivingschool
                                         Task.Factory.StartNew(() =>
                                         {
                                             // Add the questions
-                                            questions = Database.GetRandomQuestions(Constants.LICENSE_MOTORCYCLE + 1);
+                                            questions = Database.GetRandomQuestions(Constants.LICENSE_MOTORCYCLE + 1, Constants.MAX_LICENSE_QUESTIONS);
                                             foreach (TestModel question in questions)
                                             {
                                                 answers.AddRange(Database.GetQuestionAnswers(question.id));

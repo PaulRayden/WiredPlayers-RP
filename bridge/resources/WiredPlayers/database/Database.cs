@@ -2552,7 +2552,7 @@ namespace WiredPlayers.database
             }
         }
 
-        public static List<TestModel> GetRandomQuestions(int license)
+        public static List<TestModel> GetRandomQuestions(int license, int questions)
         {
             List<TestModel> testList = new List<TestModel>();
 
@@ -2562,7 +2562,7 @@ namespace WiredPlayers.database
                 MySqlCommand command = connection.CreateCommand();
                 command.CommandText = "SELECT DISTINCT(id) AS id, question FROM questions WHERE license = @license ORDER BY RAND() LIMIT @questions";
                 command.Parameters.AddWithValue("@license", license);
-                command.Parameters.AddWithValue("@questions", Constants.MAX_LICENSE_QUESTIONS);
+                command.Parameters.AddWithValue("@questions", questions);
 
                 using (MySqlDataReader reader = command.ExecuteReader())
                 {
