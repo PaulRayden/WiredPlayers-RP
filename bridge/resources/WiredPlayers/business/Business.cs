@@ -140,7 +140,7 @@ namespace WiredPlayers.business
         public void PlayerEnterCheckpointEvent(Checkpoint checkpoint, Client player)
         {
             // Check if the checkpoint corresponds to a business
-            BusinessModel business = businessList.Where(b => b.businessCheckpoint == checkpoint).FirstOrDefault();
+            BusinessModel business = businessList.Where(b => player.Position.DistanceTo(b.position) <= 3.5f).FirstOrDefault();
 
             // Set the business entered
             player.SetData(EntityData.PLAYER_BUSINESS_ENTERED, business == null ? 0 : business.id);

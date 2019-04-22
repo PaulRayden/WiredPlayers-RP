@@ -74,22 +74,11 @@ namespace WiredPlayers.factions
             return faction == Constants.FACTION_TOWNHALL && (target.GetData(EntityData.PLAYER_FACTION) == Constants.FACTION_POLICE && target.GetData(EntityData.PLAYER_RANK) == 7);
         }
 
-        [ServerEvent(Event.PlayerEnterCheckpoint)]
-        public void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Client player)
+        [RemoteEvent("removeWarning")]
+        public void RemoveWarningEvent(Client player)
         {
-            if (player.GetData(EntityData.PLAYER_FACTION_WARNING) != null)
-            {
-                Checkpoint locationCheckpoint = player.GetData(EntityData.PLAYER_FACTION_WARNING);
-                locationCheckpoint.Delete();
-
-                // Delete map blip
-                player.TriggerEvent("deleteFactionWarning");
-                
-                player.ResetData(EntityData.PLAYER_FACTION_WARNING);
-
-                // Remove the report
-                factionWarningList.RemoveAll(x => x.takenBy == player.Value);
-            }
+            // Remove the report
+            factionWarningList.RemoveAll(x => x.takenBy == player.Value);
         }
 
         [Command(Commands.COM_F, Commands.HLP_F_COMMAND, GreedyArg = true)]
@@ -859,7 +848,7 @@ namespace WiredPlayers.factions
         {
             int faction = player.GetData(EntityData.PLAYER_FACTION);
 
-            if (faction == Constants.FACTION_POLICE || faction == Constants.FACTION_EMERGENCY)
+            if (IsPoliceMember(player)|| faction == Constants.FACTION_EMERGENCY)
             {
                 int currentElement = 0;
                 int totalWarnings = 0;
@@ -943,8 +932,7 @@ namespace WiredPlayers.factions
                     }
                     else
                     {
-                        Checkpoint factionWarningCheckpoint = NAPI.Checkpoint.CreateCheckpoint(4, factionWarning.position, new Vector3(0.0f, 0.0f, 0.0f), 2.5f, new Color(198, 40, 40, 200));
-                        player.SetData(EntityData.PLAYER_FACTION_WARNING, factionWarningCheckpoint);
+                        player.SetData(EntityData.PLAYER_FACTION_WARNING, true);
                         factionWarning.takenBy = player.Value;
 
                         player.SendChatMessage(Constants.COLOR_INFO + InfoRes.faction_warning_taken);

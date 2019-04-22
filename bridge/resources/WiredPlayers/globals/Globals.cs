@@ -1031,7 +1031,7 @@ namespace WiredPlayers.globals
                 // Check if the player's in any business
                 foreach (BusinessModel business in Business.businessList)
                 {
-                    if (player.Position.DistanceTo(business.position) <= 1.5f && player.Dimension == business.dimension)
+                    if (player.Position.DistanceTo(business.position) <= 1.5f && business.ipl.Length > 0 && player.Dimension == business.dimension)
                     {
                         if (!Business.HasPlayerBusinessKeys(player, business) && business.locked)
                         {
@@ -1047,7 +1047,7 @@ namespace WiredPlayers.globals
                         }
                         return;
                     }
-                    else if (player.GetData(EntityData.PLAYER_BUSINESS_ENTERED) == business.id)
+                    else if (player.GetData(EntityData.PLAYER_BUSINESS_ENTERED) == business.id && business.ipl.Length > 0)
                     {
                         Vector3 exitPosition = Business.GetBusinessExitPoint(business.ipl);
                         if (player.Position.DistanceTo(exitPosition) < 2.5f)

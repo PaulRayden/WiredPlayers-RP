@@ -721,7 +721,7 @@ namespace WiredPlayers.admin
                                     {
                                         business.type = type;
                                         business.ipl = arguments[2] == Commands.ARG_INNER ? Business.GetBusinessTypeIpl(type) : string.Empty;
-                                        business.position = new Vector3(player.Position.X, player.Position.Y, player.Position.Z - 0.4f);
+                                        business.position = new Vector3(player.Position.X, player.Position.Y, player.Position.Z - 0.8f);
                                         business.dimension = arguments[2] == Commands.ARG_INNER ? player.Dimension : 0;
                                         business.multiplier = 3.0f;
                                         business.owner = string.Empty;
