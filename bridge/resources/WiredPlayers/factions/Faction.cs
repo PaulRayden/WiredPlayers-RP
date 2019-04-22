@@ -723,7 +723,7 @@ namespace WiredPlayers.factions
             }
         }
 
-        [Command(Commands.COM_RANK, Commands.HLP_RANK_COMMAND)]
+        [Command(Commands.COM_RANK, Commands.HLP_RANK_COMMAND, GreedyArg = true)]
         public void RankCommand(Client player, string arguments)
         {
             int faction = player.GetData(EntityData.PLAYER_FACTION);

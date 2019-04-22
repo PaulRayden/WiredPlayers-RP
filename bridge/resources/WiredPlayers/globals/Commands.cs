@@ -414,7 +414,7 @@
         public const string HLP_TRUNK_COMMAND = "USO: /maletero [Abrir|Cerrar|Guardar|Sacar]";
         public const string HLP_ANNOUCEMENT_COMMAND = "USO: /anunciar [Mensaje de anuncio]";
         public const string HLP_PRIZE_COMMAND = "USO: /premiar [Id. jugador/Nombre jugador] [Cantidad] [Nombre concurso]";
-        public const string HLP_PHONE_CALL_COMMAND = "USO: /llamar [Número/Contacto]\nNúmeros de servicios: Policía 911 | Emergencias 112 | Noticias 114 | Transportes 555";
+        public const string HLP_PHONE_CALL_COMMAND = "USO: /llamar [Número/Contacto] Números de servicios: Policía 911 | Emergencias 112 | Noticias 114 | Transportes 555";
         public const string HLP_SMS_COMMAND = "USO: /sms [Número] [Mensaje]";
         public const string HLP_CONTACTS_COMMAND = "USO: /agenda [Numero|Ver|Añadir|Modificar|Borrar|SMS]";
         public const string HLP_DRIVING_SCHOOL_COMMAND = "USO: /autoescuela [Turismo|Motocicleta]";
