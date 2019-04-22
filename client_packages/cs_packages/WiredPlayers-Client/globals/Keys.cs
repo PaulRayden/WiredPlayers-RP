@@ -58,7 +58,7 @@ namespace WiredPlayers_Client.globals
         {
             switch (key)
             {
-                case (int)ConsoleKey.E:
+                case (int)ConsoleKey.Add:
                     if (Player.LocalPlayer.Vehicle == null && !Police.handcuffed && !Emergency.dead)
                     {
                         // Reset the player's animation
@@ -116,7 +116,7 @@ namespace WiredPlayers_Client.globals
             // Initialize the list
             consoleKeys = new List<int>()
             {
-                (int)ConsoleKey.E,
+                (int)ConsoleKey.Add,
                 (int)ConsoleKey.F,
                 (int)ConsoleKey.K,
                 (int)ConsoleKey.R,

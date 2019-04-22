@@ -57,19 +57,6 @@ namespace WiredPlayers.admin
             player.SendChatMessage(GenRes.status + house.status);
         }
 
-        [Command("soyadmin")]
-        public void SoyAdminCommand(Client player, int rank)
-        {
-            if(rank >= 0 && rank <= Constants.STAFF_ADMIN)
-            {
-                player.SetData(EntityData.PLAYER_ADMIN_RANK, rank);
-            }
-            else
-            {
-                player.SendChatMessage(Constants.COLOR_ERROR + "Valores entre 0 y 4");
-            }
-        }
-
         [Command(Commands.COM_SKIN, Commands.HLP_SKIN_COMMAND)]
         public void SkinCommand(Client player, string pedModel)
         {
