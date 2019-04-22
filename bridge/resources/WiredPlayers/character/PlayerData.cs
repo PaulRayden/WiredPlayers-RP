@@ -14,23 +14,23 @@ namespace WiredPlayers.character
     public class PlayerData : Script
     {
         [RemoteEvent("retrieveBasicData")]
-        public static void RetrieveBasicDataEvent(Client asker, Client player)
+        public static void RetrieveBasicDataEvent(Client player, Client target)
         {
             // Get the basic data
-            string age = player.GetData(EntityData.PLAYER_AGE) + GenRes.years;
-            string sex = player.GetData(EntityData.PLAYER_SEX) == Constants.SEX_MALE ? GenRes.sex_male : GenRes.sex_female;
-            string money = player.GetSharedData(EntityData.PLAYER_MONEY) + "$";
-            string bank = player.GetSharedData(EntityData.PLAYER_BANK) + "$";
+            string age = target.GetData(EntityData.PLAYER_AGE) + GenRes.years;
+            string sex = target.GetData(EntityData.PLAYER_SEX) == Constants.SEX_MALE ? GenRes.sex_male : GenRes.sex_female;
+            string money = target.GetSharedData(EntityData.PLAYER_MONEY) + "$";
+            string bank = target.GetSharedData(EntityData.PLAYER_BANK) + "$";
             string job = GenRes.unemployed;
             string rank = string.Empty;
 
             // Get the job
-            JobModel jobModel = Constants.JOB_LIST.Where(j => player.GetData(EntityData.PLAYER_JOB) == j.job).First();
+            JobModel jobModel = Constants.JOB_LIST.Where(j => target.GetData(EntityData.PLAYER_JOB) == j.job).First();
 
             if (jobModel.job == 0)
             {
                 // Get the player's faction
-                FactionModel factionModel = Constants.FACTION_RANK_LIST.Where(f => player.GetData(EntityData.PLAYER_FACTION) == f.faction && player.GetData(EntityData.PLAYER_RANK) == f.rank).First();
+                FactionModel factionModel = Constants.FACTION_RANK_LIST.Where(f => target.GetData(EntityData.PLAYER_FACTION) == f.faction && target.GetData(EntityData.PLAYER_RANK) == f.rank).First();
 
                 if (factionModel.faction > 0)
                 {
@@ -57,17 +57,17 @@ namespace WiredPlayers.character
                     }
 
                     // Set player's rank
-                    rank = player.GetData(EntityData.PLAYER_SEX) == Constants.SEX_MALE ? factionModel.descriptionMale : factionModel.descriptionFemale;
+                    rank = target.GetData(EntityData.PLAYER_SEX) == Constants.SEX_MALE ? factionModel.descriptionMale : factionModel.descriptionFemale;
                 }
             }
             else
             {
                 // Set the player's job
-                job = player.GetData(EntityData.PLAYER_SEX) == Constants.SEX_MALE ? jobModel.descriptionMale : jobModel.descriptionFemale;
+                job = target.GetData(EntityData.PLAYER_SEX) == Constants.SEX_MALE ? jobModel.descriptionMale : jobModel.descriptionFemale;
             }
 
             // Show the data for the player
-            asker.TriggerEvent("showPlayerData", player.Value, player.Name, age, sex, money, bank, job, rank, asker == player || asker.GetData(EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE);
+            player.TriggerEvent("showPlayerData", target.Value, target.Name, age, sex, money, bank, job, rank, player == target || player.GetData(EntityData.PLAYER_ADMIN_RANK) > Constants.STAFF_NONE);
         }
 
         [RemoteEvent("retrievePropertiesData")]

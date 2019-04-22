@@ -311,9 +311,9 @@ namespace WiredPlayers.factions
                             target.Health -= 15;
                             
                             string playerMessage = string.Format(InfoRes.blood_extracted, target.Name);
-                            string targetMessage = string.Format(InfoRes.blood_extracted, player.Name);
-                            player.SendChatMessage(playerMessage);
-                            target.SendChatMessage(targetMessage);
+                            string targetMessage = string.Format(InfoRes.blood_given, player.Name);
+                            player.SendChatMessage(Constants.COLOR_INFO + playerMessage);
+                            target.SendChatMessage(Constants.COLOR_INFO + targetMessage);
                         });
                     }
                     else

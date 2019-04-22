@@ -630,6 +630,13 @@ namespace WiredPlayers.factions
                     case Commands.ARG_WEAPON:
                         if (player.GetData(EntityData.PLAYER_RANK) > 1)
                         {
+                            // Check if the player typed any weapon
+                            if(type == null || type.Length == 0)
+                            {
+                                player.SendChatMessage(Constants.COLOR_HELP + Commands.HLP_EQUIPMENT_WEAP_COMMAND);
+                                return;
+                            }
+
                             WeaponHash selectedWeap = new WeaponHash();
                             switch (type.ToLower())
                             {
