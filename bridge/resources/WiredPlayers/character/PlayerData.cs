@@ -51,6 +51,9 @@ namespace WiredPlayers.character
                         case Constants.FACTION_TAXI_DRIVER:
                             job = GenRes.transport_faction;
                             break;
+                        case Constants.FACTION_SHERIFF:
+                            job = GenRes.sheriff_faction;
+                            break;
                     }
 
                     // Set player's rank

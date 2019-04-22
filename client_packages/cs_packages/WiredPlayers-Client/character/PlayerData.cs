@@ -7,8 +7,7 @@ namespace WiredPlayers_Client.character
 {
     class PlayerData : Events.Script
     {
-        private Player target = null;
-        private bool extended = false;
+        private static Player target = null;
 
         public PlayerData()
         {

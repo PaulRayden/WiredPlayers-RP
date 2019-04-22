@@ -286,11 +286,7 @@ namespace WiredPlayers.jobs
         [Command(Commands.COM_STEAL)]
         public void StealCommand(Client player)
         {
-            if (player.Position.DistanceTo(new Vector3(-286.7586f, -849.3693f, 31.74337f)) > 1150.0f)
-            {
-                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_thief_area);
-            }
-            else if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
+            if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
