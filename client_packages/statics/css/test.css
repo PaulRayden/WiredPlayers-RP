@@ -38,7 +38,7 @@
 
 .answers-content div {
     width: 40vw;
-    height: 11vh;
+    height: 8.25vh;
     text-align: justify;
     vertical-align: middle;
     padding: 20px 100px 20px 20px;
@@ -48,14 +48,14 @@
     background-color: rgba(30, 30, 30, 0.25);
     background-image: url('../img/check-grey.png');
     background-repeat: no-repeat;
-    background-position: calc(40vw - 72px) calc(5.5vh - 24px);
+    background-position: calc(40vw - 72px) calc(4.125vh - 24px);
 }
 
 .selected {
     background-color: rgba(30, 30, 30, 0.6);
     background-image: url('../img/check-green.png');
     background-repeat: no-repeat;
-    background-position: calc(40vw - 72px) calc(5.5vh - 24px);
+    background-position: calc(40vw - 72px) calc(4.125vh - 24px);
 }
 
 .failure img {
