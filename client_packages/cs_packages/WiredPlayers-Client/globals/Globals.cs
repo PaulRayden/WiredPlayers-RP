@@ -34,10 +34,21 @@ namespace WiredPlayers_Client.globals
 
             Events.OnEntityStreamIn += OnEntityStreamInEvent;
             Events.OnEntityStreamOut += OnEntityStreamOutEvent;
-            Events.OnGuiReady += OnGuiReadyEvent;
             Events.Tick += TickEvent;
 
             playerAttachments = new Dictionary<int, AttachmentModel>();
+
+            // Remove health regeneration
+            RAGE.Game.Player.SetPlayerHealthRechargeMultiplier(0.0f);
+
+            // Remove weapons from the vehicles
+            RAGE.Game.Player.DisablePlayerVehicleRewards();
+
+            // Remove the fade out after player's death
+            RAGE.Game.Misc.SetFadeOutAfterDeath(false);
+
+            // Freeze the player until he logs in
+            Player.LocalPlayer.FreezePosition(true);
         }
 
         public static string EscapeJsonCharacters(string jsonString)
@@ -175,21 +186,6 @@ namespace WiredPlayers_Client.globals
                     playerAttachments.Remove(playerId);
                 }
             }
-        }
-
-        public static void OnGuiReadyEvent()
-        {
-            // Remove health regeneration
-            RAGE.Game.Player.SetPlayerHealthRechargeMultiplier(0.0f);
-
-            // Remove weapons from the vehicles
-            RAGE.Game.Player.DisablePlayerVehicleRewards();
-
-            // Remove the fade out after player's death
-            RAGE.Game.Misc.SetFadeOutAfterDeath(false);
-
-            // Freeze the player until he logs in
-            Player.LocalPlayer.FreezePosition(true);
         }
 
         private void PlayerConnectionStateChanged(Entity entity, object arg)

@@ -2138,7 +2138,7 @@ namespace WiredPlayers.globals
                     {
                         target.GiveWeapon(weaponHash, 0);
                         target.SetWeaponAmmo(weaponHash, item.amount);
-                        target.RemoveWeapon(weaponHash);
+                        player.RemoveWeapon(weaponHash);
 
                         playerMessage = string.Format(InfoRes.item_given, item.hash.ToLower(), target.Name);
                         targetMessage = string.Format(InfoRes.item_received, player.Name, item.hash.ToLower());
@@ -2146,8 +2146,7 @@ namespace WiredPlayers.globals
                     else
                     {
                         BusinessItemModel businessItem = Business.GetBusinessItemFromHash(item.hash);
-                        item.objectHandle.Detach();
-                        item.objectHandle.AttachTo(target, "PH_R_Hand", businessItem.position, businessItem.rotation);
+                        AttachItemToPlayer(target, itemId, item.hash, "IK_R_Hand", businessItem.position, businessItem.rotation, EntityData.PLAYER_RIGHT_HAND);
 
                         playerMessage = string.Format(InfoRes.item_given, businessItem.description.ToLower(), target.Name);
                         targetMessage = string.Format(InfoRes.item_received, player.Name, businessItem.description.ToLower());
@@ -2162,10 +2161,10 @@ namespace WiredPlayers.globals
                     {
                         // Update the amount into the database
                         Database.UpdateItem(item);
-                    });
 
-                    player.SendChatMessage(Constants.COLOR_INFO + playerMessage);
-                    target.SendChatMessage(Constants.COLOR_INFO + targetMessage);
+                        player.SendChatMessage(Constants.COLOR_INFO + playerMessage);
+                        target.SendChatMessage(Constants.COLOR_INFO + targetMessage);
+                    });
                 }
             }
             else

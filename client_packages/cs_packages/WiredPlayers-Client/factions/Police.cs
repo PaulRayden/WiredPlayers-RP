@@ -158,8 +158,11 @@ namespace WiredPlayers_Client.factions
 
         private void PlayerHandcuffedStateChanged(Entity entity, object arg)
         {
-            // Toggle the handcuffed state
-            handcuffed = arg != null;
+            if(entity == Player.LocalPlayer)
+            {
+                // Toggle the handcuffed state
+                handcuffed = arg != null;
+            }
         }
     }
 }

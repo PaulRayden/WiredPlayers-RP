@@ -50,14 +50,22 @@ namespace WiredPlayers.jobs
             // Get the player's current job
             int job = player.GetData(EntityData.PLAYER_JOB);
 
-            // Get the commands from the job
-            string commands = string.Join(", ", Constants.JOB_COMMANDS[job]);
+            if (job > 0)
+            {
+                // Get the commands from the job
+                string commands = string.Join(", ", Constants.JOB_COMMANDS[job]);
 
-            // Send the message to the player
-            string jobDescription = Constants.JOB_LIST[job].descriptionMale;
-            string message = string.Format(InfoRes.commands_from, jobDescription);
-            player.SendChatMessage(Constants.COLOR_INFO + message);
-            player.SendChatMessage(Constants.COLOR_HELP + commands);
+                // Send the message to the player
+                string jobDescription = Constants.JOB_LIST[job].descriptionMale;
+                string message = string.Format(InfoRes.commands_from, jobDescription);
+                player.SendChatMessage(Constants.COLOR_INFO + message);
+                player.SendChatMessage(Constants.COLOR_HELP + commands);
+            }
+            else
+            {
+                // The player doesn't have any job
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_no_job);
+            }
         }
 
         public static bool IsPlayerOnWorkPlace(Client player)

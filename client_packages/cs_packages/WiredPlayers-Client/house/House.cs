@@ -24,7 +24,7 @@ namespace WiredPlayers_Client.house
         private void ShowPlayerWardrobeEvent(object[] args)
         {
             // Show wardrobe's menu
-            Browser.CreateBrowserEvent(new object[] { "package://WiredPlayers/statics/html/sideMenu.html", "populateWardrobeMenu", JsonConvert.SerializeObject(Constants.CLOTHES_TYPES) });
+            Browser.CreateBrowserEvent(new object[] { "package://statics/html/sideMenu.html", "populateWardrobeMenu", JsonConvert.SerializeObject(Constants.CLOTHES_TYPES) });
         }
 
         private void GetPlayerPurchasedClothesEvent(object[] args)

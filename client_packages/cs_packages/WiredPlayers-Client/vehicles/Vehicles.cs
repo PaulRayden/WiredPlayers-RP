@@ -11,6 +11,7 @@ namespace WiredPlayers_Client.vehicles
     class Vehicles : Events.Script
     {
         private Blip vehicleLocationBlip = null;
+        private Checkpoint vehicleLocationCheckpoint = null;
 
         private static bool seatbelt;
         private static float kms = 0.0f;
@@ -25,11 +26,12 @@ namespace WiredPlayers_Client.vehicles
         {
             Events.Add("initializeSpeedometer", InitializeSpeedometerEvent);
             Events.Add("locateVehicle", LocateVehicleEvent);
-            Events.Add("deleteVehicleLocation", DeleteVehicleLocationEvent);
             Events.Add("removeSpeedometer", RemoveSpeedometerEvent);
             Events.Add("toggleVehicleDoor", ToggleVehicleDoorEvent);
             Events.Add("toggleSeatbelt", ToggleSeatbeltEvent);
+
             Events.OnPlayerLeaveVehicle += PlayerLeaveVehicleEvent;
+            Events.OnPlayerEnterCheckpoint += OnPlayerEnterCheckpoint;
             Events.OnEntityStreamIn += EntityStreamInEvent;
 
             // Initialize the seatbelt state
@@ -118,13 +120,7 @@ namespace WiredPlayers_Client.vehicles
 
             // Create the blip on the map
             vehicleLocationBlip = new Blip(1, position, string.Empty, 1, 1);
-        }
-
-        private void DeleteVehicleLocationEvent(object[] args)
-        {
-            // Destroy the blip on the map
-            vehicleLocationBlip.Destroy();
-            vehicleLocationBlip = null;
+            vehicleLocationCheckpoint = new Checkpoint(4, position, 2.5f, new Vector3(), new RGBA(198, 40, 40, 200));
         }
 
         public static void RemoveSpeedometerEvent(object[] args)
@@ -138,11 +134,14 @@ namespace WiredPlayers_Client.vehicles
             // Reset the vehicle's position
             lastPosition = null;
 
-            // Save the kilometers and gas
-            Events.CallRemote("saveVehicleConsumes", lastVehicle, kms, gas);
+            if (lastVehicle != null)
+            {
+                // Save the kilometers and gas
+                Events.CallRemote("saveVehicleConsumes", lastVehicle, kms, gas);
 
-            // Reset the player's vehicle
-            lastVehicle = null;
+                // Reset the player's vehicle
+                lastVehicle = null;
+            }
         }
 
         private void ToggleVehicleDoorEvent(object[] args)
@@ -183,6 +182,20 @@ namespace WiredPlayers_Client.vehicles
             {
                 // Save and remove the speedometer
                 RemoveSpeedometerEvent(null);
+            }
+        }
+
+        private void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Events.CancelEventArgs cancel)
+        {
+            if(checkpoint == vehicleLocationCheckpoint)
+            {
+                // Destroy the checkpoint on the map
+                vehicleLocationCheckpoint.Destroy();
+                vehicleLocationCheckpoint = null;
+
+                // Destroy the blip on the map
+                vehicleLocationBlip.Destroy();
+                vehicleLocationBlip = null;
             }
         }
 

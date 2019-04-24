@@ -106,8 +106,8 @@ namespace WiredPlayers.character
 
             // Get the vehicles in the game
             List<Vehicle> vehicles = NAPI.Pools.GetAllVehicles().Where(v => Vehicles.HasPlayerVehicleKeys(target, v)).ToList();
-            List<ParkedCarModel> parkedVehicles = Parking.parkedCars.Where(v => Vehicles.HasPlayerVehicleKeys(target, v)).ToList();
-
+            List<ParkedCarModel> parkedVehicles = Parking.parkedCars.Where(v => Vehicles.HasPlayerVehicleKeys(target, v.vehicle)).ToList();
+            
             foreach (Vehicle vehicle in vehicles)
             {
                 // Get the vehicle name

@@ -61,7 +61,7 @@ namespace WiredPlayers.drivingschool
             vehicle.Position = vehicle.GetData(EntityData.VEHICLE_POSITION);
             vehicle.Rotation = vehicle.GetData(EntityData.VEHICLE_ROTATION);
 
-            if (NAPI.Vehicle.GetVehicleDriver(vehicle) == player)
+            if(player.Vehicle == vehicle && player.VehicleSeat == (int)VehicleSeat.Driver)
             {
                 // Delete the checkpoint
                 player.TriggerEvent("deleteLicenseCheckpoint");
@@ -149,9 +149,6 @@ namespace WiredPlayers.drivingschool
                 }
                 else
                 {
-                    // Stop the vehicle's speedometer
-                    player.TriggerEvent("removeSpeedometer");
-
                     player.WarpOutOfVehicle();
                     player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_in_car_practice);
                 }
@@ -273,8 +270,8 @@ namespace WiredPlayers.drivingschool
             });
         }
 
-        [RemoteEvent("playerEnteredCheckpoint")]
-        public void PlayerEnteredCheckpointEvent(Client player)
+        [RemoteEvent("licenseCheckpointReached")]
+        public void LicenseCheckpointReachedEvent(Client player)
         {
             // Check if the player is driving the correct vehicle
             if (player.Vehicle.GetData(EntityData.VEHICLE_FACTION) != Constants.FACTION_DRIVING_SCHOOL) return;

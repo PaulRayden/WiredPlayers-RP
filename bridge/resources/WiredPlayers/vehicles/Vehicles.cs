@@ -331,23 +331,6 @@ namespace WiredPlayers.vehicles
             player.SendChatMessage(Constants.COLOR_INFO + InfoRes.vehicle_refueled);
         }
 
-        [ServerEvent(Event.PlayerEnterCheckpoint)]
-        public void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Client player)
-        {
-            if (player.GetData(EntityData.PLAYER_PARKED_VEHICLE) != null)
-            {
-                Checkpoint vehicleCheckpoint = player.GetData(EntityData.PLAYER_PARKED_VEHICLE);
-
-                if (vehicleCheckpoint == checkpoint)
-                {
-                    // Delete the checkpoint
-                    vehicleCheckpoint.Delete();
-                    player.ResetData(EntityData.PLAYER_PARKED_VEHICLE);
-                    player.TriggerEvent("deleteVehicleLocation");
-                }
-            }
-        }
-
         [ServerEvent(Event.PlayerEnterVehicle)]
         public void OnPlayerEnterVehicle(Client player, Vehicle vehicle, sbyte seat)
         {
@@ -431,49 +414,46 @@ namespace WiredPlayers.vehicles
         [RemoteEvent("engineOnEventKey")]
         public void EngineOnEventKeyEvent(Client player)
         {
-            Vehicle vehicle = player.Vehicle;
+            // Check if the player is in the right vehicle
+            if (!player.IsInVehicle || player.Vehicle.GetData(EntityData.VEHICLE_TESTING) != null) return;
 
-            if (vehicle.GetData(EntityData.VEHICLE_TESTING) == null)
+            // Get player's faction and job
+            int playerFaction = player.GetData(EntityData.PLAYER_FACTION);
+            int playerJob = player.GetData(EntityData.PLAYER_JOB) + Constants.MAX_FACTION_VEHICLES;
+            int vehicleFaction = player.Vehicle.GetData(EntityData.VEHICLE_FACTION);
+
+            if (player.GetData(EntityData.PLAYER_ALREADY_FUCKING) != null)
             {
-                // Get player's faction and job
-                int playerFaction = player.GetData(EntityData.PLAYER_FACTION);
-                int playerJob = player.GetData(EntityData.PLAYER_JOB) + Constants.MAX_FACTION_VEHICLES;
-
-                int vehicleFaction = vehicle.GetData(EntityData.VEHICLE_FACTION);
-
-                if (player.GetData(EntityData.PLAYER_ALREADY_FUCKING) != null)
-                {
-                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.cant_toogle_engine_while_fucking);
-                }
-                else if (vehicle.GetData(EntityData.VEHICLE_REFUELING) != null)
-                {
-                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.vehicle_start_refueling);
-                }
-                else if (vehicle.GetData(EntityData.VEHICLE_WEAPON_UNPACKING) != null)
-                {
-                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.vehicle_start_weapon_unpacking);
-                }
-                else if (!HasPlayerVehicleKeys(player, vehicle) && vehicleFaction == Constants.FACTION_NONE)
-                {
-                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_car_keys);
-                }
-                else if (player.GetData(EntityData.PLAYER_ADMIN_RANK) == Constants.STAFF_NONE && vehicleFaction == Constants.FACTION_ADMIN)
-                {
-                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.admin_vehicle);
-                }
-                else if (vehicleFaction > 0 && vehicleFaction < Constants.MAX_FACTION_VEHICLES && playerFaction != vehicleFaction && vehicleFaction != Constants.FACTION_DRIVING_SCHOOL && vehicleFaction != Constants.FACTION_ADMIN)
-                {
-                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_in_vehicle_faction);
-                }
-                else if (vehicleFaction > Constants.MAX_FACTION_VEHICLES && playerJob != vehicleFaction)
-                {
-                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_in_vehicle_job);
-                }
-                else
-                {
-                    vehicle.EngineStatus = !vehicle.EngineStatus;
-                    player.SendNotification(vehicle.EngineStatus ? InfoRes.vehicle_turned_on : InfoRes.vehicle_turned_off);
-                }
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.cant_toogle_engine_while_fucking);
+            }
+            else if (player.Vehicle.GetData(EntityData.VEHICLE_REFUELING) != null)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.vehicle_start_refueling);
+            }
+            else if (player.Vehicle.GetData(EntityData.VEHICLE_WEAPON_UNPACKING) != null)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.vehicle_start_weapon_unpacking);
+            }
+            else if (!HasPlayerVehicleKeys(player, player.Vehicle) && vehicleFaction == Constants.FACTION_NONE)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_car_keys);
+            }
+            else if (player.GetData(EntityData.PLAYER_ADMIN_RANK) == Constants.STAFF_NONE && vehicleFaction == Constants.FACTION_ADMIN)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.admin_vehicle);
+            }
+            else if (vehicleFaction > 0 && vehicleFaction < Constants.MAX_FACTION_VEHICLES && playerFaction != vehicleFaction && vehicleFaction != Constants.FACTION_DRIVING_SCHOOL && vehicleFaction != Constants.FACTION_ADMIN)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_in_vehicle_faction);
+            }
+            else if (vehicleFaction > Constants.MAX_FACTION_VEHICLES && playerJob != vehicleFaction)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_in_vehicle_job);
+            }
+            else
+            {
+                player.Vehicle.EngineStatus = !player.Vehicle.EngineStatus;
+                player.SendNotification(player.Vehicle.EngineStatus ? InfoRes.vehicle_turned_on : InfoRes.vehicle_turned_off);
             }
         }
 
@@ -698,21 +678,40 @@ namespace WiredPlayers.vehicles
                                 else if (player.GetSharedData(EntityData.PLAYER_RIGHT_HAND) != null)
                                 {
                                     int playerId = player.GetData(EntityData.PLAYER_SQL_ID);
-                                    ItemModel rightHand = Globals.GetItemInEntity(playerId, Constants.ITEM_ENTITY_RIGHT_HAND);
-                                    rightHand.ownerIdentifier = vehicle.GetData(EntityData.VEHICLE_ID);
-                                    rightHand.ownerEntity = Constants.ITEM_ENTITY_VEHICLE;
+                                    string rightHand = player.GetSharedData(EntityData.PLAYER_RIGHT_HAND).ToString();
+                                    int itemId = NAPI.Util.FromJson<AttachmentModel>(rightHand).itemId;
+                                    ItemModel item = Globals.GetItemModelFromId(itemId);
 
-                                    // If it's a weapon, we remove it from the player
-                                    if (int.TryParse(rightHand.hash, out int itemHash) == false)
+                                    // Check if it's a weapon or not
+                                    WeaponHash weaponHash = NAPI.Util.WeaponNameToModel(item.hash);
+
+                                    // Get the dropped amount
+                                    int amount = weaponHash != 0 ? item.amount : 1;
+                                    item.amount -= amount;
+
+
+                                    if (weaponHash != 0)
                                     {
-                                        WeaponHash weapon = NAPI.Util.WeaponNameToModel(rightHand.hash);
+                                        // Remove the weapon
+                                        WeaponHash weapon = NAPI.Util.WeaponNameToModel(item.hash);
                                         player.RemoveWeapon(weapon);
                                     }
+                                    else
+                                    {
+                                        // Remove the item on the hand
+                                        NAPI.ClientEvent.TriggerClientEventInDimension(player.Dimension, "dettachItemFromPlayer", player.Value);
+                                    }
+
+                                    // Remove the item from the hand
+                                    player.ResetSharedData(EntityData.PLAYER_RIGHT_HAND);
+
+                                    item.ownerIdentifier = vehicle.GetData(EntityData.VEHICLE_ID);
+                                    item.ownerEntity = Constants.ITEM_ENTITY_VEHICLE;
 
                                     Task.Factory.StartNew(() =>
                                     {
                                         // Update item into database
-                                        Database.UpdateItem(rightHand);
+                                        Database.UpdateItem(item);
                                     });
 
                                     // Send the message to the player
@@ -917,8 +916,6 @@ namespace WiredPlayers.vehicles
                         ParkingModel parking = Parking.GetParkingById(vehModel.parking);
 
                         // Set the checkpoint into the zone
-                        Checkpoint locationCheckpoint = NAPI.Checkpoint.CreateCheckpoint(4, parking.position, new Vector3(0.0f, 0.0f, 0.0f), 2.5f, new Color(198, 40, 40, 200));
-                        player.SetData(EntityData.PLAYER_PARKED_VEHICLE, locationCheckpoint);
                         player.TriggerEvent("locateVehicle", parking.position);
 
                         player.SendChatMessage(Constants.COLOR_INFO + InfoRes.vehicle_parked);
@@ -943,10 +940,10 @@ namespace WiredPlayers.vehicles
                         {
                             // Set the checkpoint into the zone
                             Vector3 vehiclePosition = veh.Position;
-                            Checkpoint locationCheckpoint = NAPI.Checkpoint.CreateCheckpoint(4, vehiclePosition, new Vector3(0.0f, 0.0f, 0.0f), 2.5f, new Color(198, 40, 40, 200));
-                            player.SetData(EntityData.PLAYER_PARKED_VEHICLE, locationCheckpoint);
+
+                            // Set the checkpoint into the zone
                             player.TriggerEvent("locateVehicle", vehiclePosition);
-                            
+
                             player.SendChatMessage(Constants.COLOR_INFO + InfoRes.vehicle_parked);
                             break;
                         }

@@ -119,7 +119,7 @@ namespace WiredPlayers_Client.drivingschool
             if(checkpoint == licenseCheckpoint && Player.LocalPlayer.Vehicle != null)
             {
                 // Get the next checkpoint
-                Events.CallRemote("playerEnteredCheckpoint");
+                Events.CallRemote("licenseCheckpointReached");
             }
         }
     }

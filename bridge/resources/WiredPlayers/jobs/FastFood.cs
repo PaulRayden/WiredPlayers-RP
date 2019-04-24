@@ -92,7 +92,6 @@ namespace WiredPlayers.jobs
 
             // Cancel the order
             player.ResetData(EntityData.PLAYER_DELIVER_ORDER);
-            player.ResetData(EntityData.PLAYER_JOB_CHECKPOINT);
             player.ResetData(EntityData.PLAYER_JOB_VEHICLE);
             player.ResetData(EntityData.PLAYER_JOB_WON);
 
@@ -118,17 +117,11 @@ namespace WiredPlayers.jobs
             {
                 if (player.GetData(EntityData.PLAYER_DELIVER_ORDER) == null && player.GetData(EntityData.PLAYER_JOB_VEHICLE) == null)
                 {
-                    // Stop the vehicle's speedometer
-                    player.TriggerEvent("removeSpeedometer");
-
                     player.WarpOutOfVehicle();
                     player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_delivering_order);
                 }
                 else if (player.GetData(EntityData.PLAYER_JOB_VEHICLE) != null && player.GetData(EntityData.PLAYER_JOB_VEHICLE) != vehicle)
                 {
-                    // Stop the vehicle's speedometer
-                    player.TriggerEvent("removeSpeedometer");
-
                     player.WarpOutOfVehicle();
                     player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_your_job_vehicle);
                 }
@@ -139,13 +132,12 @@ namespace WiredPlayers.jobs
                         fastFoodTimer.Dispose();
                         fastFoodTimerList.Remove(player.Value);
                     }
+
                     if (player.GetData(EntityData.PLAYER_JOB_VEHICLE) == null)
                     {
                         int orderId = player.GetData(EntityData.PLAYER_DELIVER_ORDER);
                         FastfoodOrderModel order = GetFastfoodOrderFromId(orderId);
-                        Checkpoint playerFastFoodCheckpoint = NAPI.Checkpoint.CreateCheckpoint(4, order.position, new Vector3(0.0f, 0.0f, 0.0f), 2.5f, new Color(198, 40, 40, 200));
 
-                        player.SetData(EntityData.PLAYER_JOB_CHECKPOINT, playerFastFoodCheckpoint);
                         player.SetData(EntityData.PLAYER_JOB_VEHICLE, vehicle);
 
                         player.TriggerEvent("fastFoodDestinationCheckPoint", order.position);
@@ -167,78 +159,6 @@ namespace WiredPlayers.jobs
                     // Timer with the time left to get into the vehicle
                     Timer fastFoodTimer = new Timer(OnFastFoodTimer, player, 60000, Timeout.Infinite);
                     fastFoodTimerList.Add(player.Value, fastFoodTimer);
-                }
-            }
-        }
-
-        [ServerEvent(Event.PlayerEnterCheckpoint)]
-        public void OnPlayerEnterCheckpoint(Checkpoint checkpoint, Client player)
-        {
-            if (player.GetData(EntityData.PLAYER_JOB) == Constants.JOB_FASTFOOD)
-            {
-                // Get the player's deliver checkpoint
-                Checkpoint playerDeliverColShape = player.GetData(EntityData.PLAYER_JOB_CHECKPOINT);
-
-                if (playerDeliverColShape == checkpoint)
-                {
-                    if (player.GetData(EntityData.PLAYER_DELIVER_START) != null)
-                    {
-                        if (!player.IsInVehicle)
-                        {
-                            Vehicle vehicle = player.GetData(EntityData.PLAYER_JOB_VEHICLE);
-                            playerDeliverColShape.Position = vehicle.GetData(EntityData.VEHICLE_POSITION);
-
-                            int elapsed = Globals.GetTotalSeconds() - player.GetData(EntityData.PLAYER_DELIVER_START);
-                            int extra = (int)Math.Round((player.GetData(EntityData.PLAYER_DELIVER_TIME) - elapsed) / 2.0f);
-                            int amount = GetFastFoodOrderAmount(player) + extra;
-
-                            player.ResetData(EntityData.PLAYER_DELIVER_START);
-                            player.SetData(EntityData.PLAYER_JOB_WON, amount > 0 ? amount : 25);
-
-                            player.TriggerEvent("fastFoodDeliverBack", playerDeliverColShape.Position);
-
-                            player.SendChatMessage(Constants.COLOR_INFO + InfoRes.deliver_completed);
-                        }
-                        else
-                        {
-                            player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.deliver_in_vehicle);
-                        }
-                    }
-                    else
-                    {
-                        Vehicle vehicle = player.GetData(EntityData.PLAYER_JOB_VEHICLE);
-                        if (player.Vehicle == vehicle && player.VehicleSeat == (int)VehicleSeat.Driver)
-                        {
-                            int won = player.GetData(EntityData.PLAYER_JOB_WON);
-                            int money = player.GetSharedData(EntityData.PLAYER_MONEY);
-                            int orderId = player.GetData(EntityData.PLAYER_DELIVER_ORDER);
-                            string message = string.Format(InfoRes.job_won, won);
-                            Globals.fastFoodOrderList.RemoveAll(order => order.id == orderId);
-
-                            // Stop the vehicle's speedometer
-                            player.TriggerEvent("removeSpeedometer");
-
-                            playerDeliverColShape.Delete();
-                            player.WarpOutOfVehicle();
-
-                            player.SetSharedData(EntityData.PLAYER_MONEY, money + won);
-                            player.SendChatMessage(Constants.COLOR_INFO + message);
-
-                            player.ResetData(EntityData.PLAYER_DELIVER_ORDER);
-                            player.ResetData(EntityData.PLAYER_JOB_CHECKPOINT);
-                            player.ResetData(EntityData.PLAYER_JOB_VEHICLE);
-                            player.ResetData(EntityData.PLAYER_JOB_WON);
-
-                            player.TriggerEvent("fastFoodDeliverFinished");
-
-                            // We get the motorcycle to its spawn point
-                            RespawnFastfoodVehicle(vehicle);
-                        }
-                        else
-                        {
-                            player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_your_job_vehicle);
-                        }
-                    }
                 }
             }
         }
@@ -277,6 +197,65 @@ namespace WiredPlayers.jobs
 
             // Order has been deleted
             player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.order_timeout);
+        }
+
+        [RemoteEvent("fastfoodCheckpointReached")]
+        public void FastfoodCheckpointReachedEvent(Client player)
+        {
+            if (player.GetData(EntityData.PLAYER_DELIVER_START) != null)
+            {
+                if (!player.IsInVehicle)
+                {
+                    Vehicle vehicle = player.GetData(EntityData.PLAYER_JOB_VEHICLE);
+                    Vector3 vehiclePosition = vehicle.GetData(EntityData.VEHICLE_POSITION);
+
+                    int elapsed = Globals.GetTotalSeconds() - player.GetData(EntityData.PLAYER_DELIVER_START);
+                    int extra = (int)Math.Round((player.GetData(EntityData.PLAYER_DELIVER_TIME) - elapsed) / 2.0f);
+                    int amount = GetFastFoodOrderAmount(player) + extra;
+
+                    player.ResetData(EntityData.PLAYER_DELIVER_START);
+                    player.SetData(EntityData.PLAYER_JOB_WON, amount > 0 ? amount : 25);
+
+                    player.TriggerEvent("fastFoodDeliverBack", vehiclePosition);
+
+                    player.SendChatMessage(Constants.COLOR_INFO + InfoRes.deliver_completed);
+                }
+                else
+                {
+                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.deliver_in_vehicle);
+                }
+            }
+            else
+            {
+                Vehicle vehicle = player.GetData(EntityData.PLAYER_JOB_VEHICLE);
+
+                if (player.Vehicle == vehicle && player.VehicleSeat == (int)VehicleSeat.Driver)
+                {
+                    int won = player.GetData(EntityData.PLAYER_JOB_WON);
+                    int money = player.GetSharedData(EntityData.PLAYER_MONEY);
+                    int orderId = player.GetData(EntityData.PLAYER_DELIVER_ORDER);
+                    string message = string.Format(InfoRes.job_won, won);
+                    Globals.fastFoodOrderList.RemoveAll(order => order.id == orderId);
+
+                    player.WarpOutOfVehicle();
+
+                    player.SetSharedData(EntityData.PLAYER_MONEY, money + won);
+                    player.SendChatMessage(Constants.COLOR_INFO + message);
+
+                    player.ResetData(EntityData.PLAYER_DELIVER_ORDER);
+                    player.ResetData(EntityData.PLAYER_JOB_VEHICLE);
+                    player.ResetData(EntityData.PLAYER_JOB_WON);
+
+                    player.TriggerEvent("fastFoodDeliverFinished");
+
+                    // We get the motorcycle to its spawn point
+                    RespawnFastfoodVehicle(vehicle);
+                }
+                else
+                {
+                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_your_job_vehicle);
+                }
+            }
         }
     }
 }

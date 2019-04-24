@@ -78,7 +78,6 @@
         public const string PLAYER_ADMIN_RANK = "PLAYER_ADMIN_RANK";
         public const string PLAYER_ADMIN_NAME = "PLAYER_ADMIN_NAME";
         public const string PLAYER_ADMIN_ON_DUTY = "PLAYER_ADMIN_ON_DUTY";
-        public const string PLAYER_PARKED_VEHICLE = "PLAYER_PARKED_VEHICLE";
         public const string PLAYER_REFUELING = "PLAYER_REFUELING";
         public const string PLAYER_REINFORCES = "PLAYER_REINFORCES";
         public const string PLAYER_FACTION_WARNING = "PLAYER_FACTION_WARNING";
