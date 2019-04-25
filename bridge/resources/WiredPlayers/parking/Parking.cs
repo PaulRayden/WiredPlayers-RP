@@ -152,7 +152,7 @@ namespace WiredPlayers.parking
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.vehicle_faction_park);
             }
-            else if (player.Vehicle.TraileredBy != null || player.Vehicle.Trailer != null)
+            else if (player.Vehicle.TraileredBy != null && player.Vehicle.TraileredBy.Value != Constants.UNDEFINED_VALUE)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.vehicle_is_trailered);
             }

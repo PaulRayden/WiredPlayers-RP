@@ -19,7 +19,7 @@ namespace WiredPlayers.factions
 
         private void CreateEmergencyReport(DeathModel death)
         {
-            if (death.killer.Value == Constants.ENVIRONMENT_KILL)
+            if (death.killer.Value == Constants.UNDEFINED_VALUE)
             {
                 // Check if the player was dead
                 int databaseKiller = death.player.GetSharedData(EntityData.PLAYER_KILLED);
@@ -27,7 +27,7 @@ namespace WiredPlayers.factions
                 if (databaseKiller == 0)
                 {
                     // There's no killer, we set the environment as killer
-                    death.player.SetSharedData(EntityData.PLAYER_KILLED, Constants.ENVIRONMENT_KILL);
+                    death.player.SetSharedData(EntityData.PLAYER_KILLED, Constants.UNDEFINED_VALUE);
                 }
             }
             else
@@ -127,7 +127,7 @@ namespace WiredPlayers.factions
                     deathPosition = player.Position;
                 }
 
-                if(killer.Value == Constants.ENVIRONMENT_KILL || killer == player)
+                if(killer.Value == Constants.UNDEFINED_VALUE || killer == player)
                 {
                     // We add the report to the list
                     FactionWarningModel factionWarning = new FactionWarningModel(Constants.FACTION_EMERGENCY, player.Value, deathPlace, deathPosition, -1, deathHour);

@@ -10,7 +10,7 @@ namespace WiredPlayers.globals
 {
     public class Constants
     {
-        public const int ENVIRONMENT_KILL = 65535;
+        public const int UNDEFINED_VALUE = 65535;
         public const int ITEMS_PER_INVENTORY_PAGE = 16;
         public const decimal ITEMS_ROBBED_PER_TIME = 1.5m;
         public const int MAX_GARBAGE_ROUTES = 1;
@@ -688,6 +688,20 @@ namespace WiredPlayers.globals
             new UniformModel(0, FACTION_SHERIFF, SEX_FEMALE, 9, 0, 0),
             new UniformModel(0, FACTION_SHERIFF, SEX_FEMALE, 10, 0, 0),
             new UniformModel(0, FACTION_SHERIFF, SEX_FEMALE, 11, 27, 2),
+
+            // Male fastfood uniform
+            new UniformModel(1, JOB_FASTFOOD, SEX_MALE, 0, 76, 17),
+            new UniformModel(1, JOB_FASTFOOD, SEX_MALE, 1, 0, 0),
+            new UniformModel(1, JOB_FASTFOOD, SEX_MALE, 2, -1, -1),
+            new UniformModel(1, JOB_FASTFOOD, SEX_MALE, 3, 0, 0),
+            new UniformModel(1, JOB_FASTFOOD, SEX_MALE, 4, 4, 1),
+            new UniformModel(1, JOB_FASTFOOD, SEX_MALE, 5, 0, 0),
+            new UniformModel(1, JOB_FASTFOOD, SEX_MALE, 6, 7, 0),
+            new UniformModel(1, JOB_FASTFOOD, SEX_MALE, 7, 0, 0),
+            new UniformModel(1, JOB_FASTFOOD, SEX_MALE, 8, 15, 0),
+            new UniformModel(1, JOB_FASTFOOD, SEX_MALE, 9, 0, 0),
+            new UniformModel(1, JOB_FASTFOOD, SEX_MALE, 10, 0, 0),
+            new UniformModel(1, JOB_FASTFOOD, SEX_MALE, 11, 9, 14)
         };
 
         // Guns
