@@ -543,7 +543,7 @@ namespace WiredPlayers.globals
                     Database.UpdateItem(item);
                 }
 
-                if(!consumedFromHand)
+                if (!consumedFromHand)
                 {
                     // Update the inventory
                     UpdateInventory(player, item, businessItem, Constants.INVENTORY_TARGET_SELF);
@@ -577,7 +577,8 @@ namespace WiredPlayers.globals
                 }
                 else
                 {
-                    if(weaponHash != 0 || (weaponHash == 0 && uint.TryParse(item.hash, out uint hash))) {
+                    if (weaponHash != 0 || (weaponHash == 0 && uint.TryParse(item.hash, out uint hash)))
+                    {
                         NAPI.Task.Run(() =>
                         {
                             // Get the hash from the item dropped
@@ -599,7 +600,7 @@ namespace WiredPlayers.globals
 
                 if (item.amount == 0)
                 {
-                    if(droppedFromHand)
+                    if (droppedFromHand)
                     {
                         // Remove the attachment information
                         player.ResetSharedData(EntityData.PLAYER_RIGHT_HAND);
@@ -626,7 +627,7 @@ namespace WiredPlayers.globals
                     Database.UpdateItem(item);
                 }
 
-                if(!droppedFromHand)
+                if (!droppedFromHand)
                 {
                     // Update the inventory
                     UpdateInventory(player, item, businessItem, Constants.INVENTORY_TARGET_SELF);
@@ -916,7 +917,7 @@ namespace WiredPlayers.globals
 
         public static void RemoveItemOnHands(Client player)
         {
-            if(player.GetSharedData(EntityData.PLAYER_RIGHT_HAND) != null)
+            if (player.GetSharedData(EntityData.PLAYER_RIGHT_HAND) != null)
             {
                 // Get the item on the right hand
                 string rightHand = player.GetSharedData(EntityData.PLAYER_RIGHT_HAND).ToString();
@@ -937,7 +938,7 @@ namespace WiredPlayers.globals
                     NAPI.ClientEvent.TriggerClientEventInDimension(player.Dimension, "dettachItemFromPlayer", player.Value);
                 }
             }
-            else if(player.GetSharedData(EntityData.PLAYER_WEAPON_CRATE) != null)
+            else if (player.GetSharedData(EntityData.PLAYER_WEAPON_CRATE) != null)
             {
                 // Reset the data
                 player.ResetSharedData(EntityData.PLAYER_WEAPON_CRATE);
@@ -1266,7 +1267,7 @@ namespace WiredPlayers.globals
                             {
                                 if (target.GetData(EntityData.PLAYER_FACTION) == Constants.FACTION_EMERGENCY && target.GetData(EntityData.PLAYER_ON_DUTY) == 0)
                                 {
-                                   target.SendChatMessage(Constants.COLOR_INFO + warnMessage);
+                                    target.SendChatMessage(Constants.COLOR_INFO + warnMessage);
                                 }
                             }
 
@@ -1513,7 +1514,7 @@ namespace WiredPlayers.globals
                 int itemId = NAPI.Util.FromJson<AttachmentModel>(rightHand).itemId;
                 ItemModel item = GetItemModelFromId(itemId);
                 BusinessItemModel businessItem = Business.GetBusinessItemFromHash(item.hash);
-                
+
                 // Check if it's consumable
                 if (businessItem.type == Constants.ITEM_TYPE_CONSUMABLE)
                 {
@@ -1597,7 +1598,7 @@ namespace WiredPlayers.globals
                     default:
                         List<BusinessItemModel> businessItems = Business.GetBusinessSoldItems(business.type);
 
-                        if(businessItems.Count > 0)
+                        if (businessItems.Count > 0)
                         {
                             // Show the purchase menu
                             player.TriggerEvent("showBusinessPurchaseMenu", NAPI.Util.ToJson(businessItems), business.name, business.multiplier);
@@ -1739,7 +1740,7 @@ namespace WiredPlayers.globals
                                                     target.SetData(EntityData.PLAYER_SELLING_HOUSE, objectId);
 
                                                     player.SendChatMessage(Constants.COLOR_INFO + playerString);
-                                                   target.SendChatMessage(Constants.COLOR_INFO + targetString);
+                                                    target.SendChatMessage(Constants.COLOR_INFO + targetString);
                                                 }
                                                 else
                                                 {
@@ -1768,7 +1769,7 @@ namespace WiredPlayers.globals
                                                         target.SetData(EntityData.PLAYER_SELLING_VEHICLE, objectId);
 
                                                         player.SendChatMessage(Constants.COLOR_INFO + playerString);
-                                                       target.SendChatMessage(Constants.COLOR_INFO + targetString);
+                                                        target.SendChatMessage(Constants.COLOR_INFO + targetString);
                                                     }
                                                     else
                                                     {
@@ -1858,7 +1859,7 @@ namespace WiredPlayers.globals
                                                     target.SetData(EntityData.PLAYER_SELLING_HOUSE, objectId);
 
                                                     player.SendChatMessage(Constants.COLOR_INFO + playerString);
-                                                   target.SendChatMessage(Constants.COLOR_INFO + targetString);
+                                                    target.SendChatMessage(Constants.COLOR_INFO + targetString);
                                                 }
                                                 else
                                                 {
@@ -1995,14 +1996,14 @@ namespace WiredPlayers.globals
                                     switch (currentLicenseStatus)
                                     {
                                         case -1:
-                                           target.SendChatMessage(Constants.COLOR_HELP + InfoRes.car_license_not_available);
+                                            target.SendChatMessage(Constants.COLOR_HELP + InfoRes.car_license_not_available);
                                             break;
                                         case 0:
-                                           target.SendChatMessage(Constants.COLOR_HELP + InfoRes.car_license_practical_pending);
+                                            target.SendChatMessage(Constants.COLOR_HELP + InfoRes.car_license_practical_pending);
                                             break;
                                         default:
                                             licenseMessage = string.Format(InfoRes.car_license_points, currentLicenseStatus);
-                                           target.SendChatMessage(Constants.COLOR_HELP + licenseMessage);
+                                            target.SendChatMessage(Constants.COLOR_HELP + licenseMessage);
                                             break;
                                     }
                                     break;
@@ -2010,25 +2011,25 @@ namespace WiredPlayers.globals
                                     switch (currentLicenseStatus)
                                     {
                                         case -1:
-                                           target.SendChatMessage(Constants.COLOR_HELP + InfoRes.motorcycle_license_not_available);
+                                            target.SendChatMessage(Constants.COLOR_HELP + InfoRes.motorcycle_license_not_available);
                                             break;
                                         case 0:
-                                           target.SendChatMessage(Constants.COLOR_HELP + InfoRes.motorcycle_license_practical_pending);
+                                            target.SendChatMessage(Constants.COLOR_HELP + InfoRes.motorcycle_license_practical_pending);
                                             break;
                                         default:
                                             licenseMessage = string.Format(InfoRes.motorcycle_license_points, currentLicenseStatus);
-                                           target.SendChatMessage(Constants.COLOR_HELP + licenseMessage);
+                                            target.SendChatMessage(Constants.COLOR_HELP + licenseMessage);
                                             break;
                                     }
                                     break;
                                 case Constants.LICENSE_TAXI:
                                     if (currentLicenseStatus == -1)
                                     {
-                                       target.SendChatMessage(Constants.COLOR_HELP + InfoRes.taxi_license_not_available);
+                                        target.SendChatMessage(Constants.COLOR_HELP + InfoRes.taxi_license_not_available);
                                     }
                                     else
                                     {
-                                       target.SendChatMessage(Constants.COLOR_HELP + InfoRes.taxi_license_up_to_date);
+                                        target.SendChatMessage(Constants.COLOR_HELP + InfoRes.taxi_license_up_to_date);
                                     }
                                     break;
                             }
@@ -2045,10 +2046,10 @@ namespace WiredPlayers.globals
                             message = string.Format(InfoRes.insurance_show, target.Name);
                             Chat.SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_ME, 20.0f);
 
-                           target.SendChatMessage(Constants.COLOR_INFO + GenRes.name + nameChar);
-                           target.SendChatMessage(Constants.COLOR_INFO + GenRes.age + age);
-                           target.SendChatMessage(Constants.COLOR_INFO + GenRes.sex + sexDescription);
-                           target.SendChatMessage(Constants.COLOR_INFO + GenRes.expiry + dateTime.ToShortDateString());
+                            target.SendChatMessage(Constants.COLOR_INFO + GenRes.name + nameChar);
+                            target.SendChatMessage(Constants.COLOR_INFO + GenRes.age + age);
+                            target.SendChatMessage(Constants.COLOR_INFO + GenRes.sex + sexDescription);
+                            target.SendChatMessage(Constants.COLOR_INFO + GenRes.expiry + dateTime.ToShortDateString());
                         }
                         else
                         {
@@ -2063,9 +2064,9 @@ namespace WiredPlayers.globals
                             message = string.Format(InfoRes.identification_show, target.Name);
                             Chat.SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_ME, 20.0f);
 
-                           target.SendChatMessage(Constants.COLOR_INFO + GenRes.name + nameChar);
-                           target.SendChatMessage(Constants.COLOR_INFO + GenRes.age + age);
-                           target.SendChatMessage(Constants.COLOR_INFO + GenRes.sex + sexDescription);
+                            target.SendChatMessage(Constants.COLOR_INFO + GenRes.name + nameChar);
+                            target.SendChatMessage(Constants.COLOR_INFO + GenRes.age + age);
+                            target.SendChatMessage(Constants.COLOR_INFO + GenRes.sex + sexDescription);
                         }
                         else
                         {
@@ -2098,7 +2099,7 @@ namespace WiredPlayers.globals
                     string playerMessage = string.Format(InfoRes.payment_offer, price, target.Name);
                     string targetMessage = string.Format(InfoRes.payment_received, player.Name, price);
                     player.SendChatMessage(Constants.COLOR_INFO + playerMessage);
-                   target.SendChatMessage(Constants.COLOR_INFO + targetMessage);
+                    target.SendChatMessage(Constants.COLOR_INFO + targetMessage);
                 }
             }
         }
@@ -2140,6 +2141,10 @@ namespace WiredPlayers.globals
                         target.SetWeaponAmmo(weaponHash, item.amount);
                         player.RemoveWeapon(weaponHash);
 
+                        // Add the attachment to the target player
+                        AttachmentModel attachment = new AttachmentModel(item.id, item.hash, "IK_R_Hand", new Vector3(), new Vector3());
+                        target.SetSharedData(EntityData.PLAYER_RIGHT_HAND, NAPI.Util.ToJson(attachment));
+
                         playerMessage = string.Format(InfoRes.item_given, item.hash.ToLower(), target.Name);
                         targetMessage = string.Format(InfoRes.item_received, player.Name, item.hash.ToLower());
                     }
@@ -2154,7 +2159,6 @@ namespace WiredPlayers.globals
 
                     // Change item's owner
                     player.ResetSharedData(EntityData.PLAYER_RIGHT_HAND);
-                    target.SetSharedData(EntityData.PLAYER_RIGHT_HAND, item.id);
                     item.ownerIdentifier = target.GetData(EntityData.PLAYER_SQL_ID);
 
                     Task.Factory.StartNew(() =>
@@ -2537,7 +2541,7 @@ namespace WiredPlayers.globals
                                             string playerMessage = string.Format(InfoRes.service_paid, amount);
                                             string targetMessage = string.Format(InfoRes.service_received, amount);
                                             player.SendChatMessage(Constants.COLOR_INFO + playerMessage);
-                                           target.SendChatMessage(Constants.COLOR_INFO + targetMessage);
+                                            target.SendChatMessage(Constants.COLOR_INFO + targetMessage);
 
                                             player.SetData(EntityData.PLAYER_ANIMATION, target);
                                             player.SetData(EntityData.PLAYER_ALREADY_FUCKING, target);
@@ -2599,7 +2603,7 @@ namespace WiredPlayers.globals
                                 Client target = player.GetData(EntityData.PLAYER_JOB_PARTNER);
                                 player.SetData(EntityData.PLAYER_ON_AIR, true);
                                 player.SendChatMessage(Constants.COLOR_INFO + InfoRes.already_on_air);
-                               target.SendChatMessage(Constants.COLOR_SUCCESS + SuccRes.interview_accepted);
+                                target.SendChatMessage(Constants.COLOR_SUCCESS + SuccRes.interview_accepted);
                             }
                         }
                         break;
@@ -2627,7 +2631,7 @@ namespace WiredPlayers.globals
                                     string playerMessage = string.Format(InfoRes.player_paid, target.Name, amount);
                                     string targetMessage = string.Format(InfoRes.target_paid, amount, player.Name);
                                     player.SendChatMessage(Constants.COLOR_INFO + playerMessage);
-                                   target.SendChatMessage(Constants.COLOR_INFO + targetMessage);
+                                    target.SendChatMessage(Constants.COLOR_INFO + targetMessage);
 
                                     Task.Factory.StartNew(() =>
                                     {
@@ -2637,7 +2641,7 @@ namespace WiredPlayers.globals
                                 }
                                 else
                                 {
-                                   target.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_enough_money);
+                                    target.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_enough_money);
                                 }
                             }
                             else
@@ -2684,7 +2688,7 @@ namespace WiredPlayers.globals
                                     string playerString = string.Format(InfoRes.vehicle_buy, target.Name, vehicleModel, amount);
                                     string targetString = string.Format(InfoRes.vehicle_bought, player.Name, vehicleModel, amount);
                                     player.SendChatMessage(Constants.COLOR_INFO + playerString);
-                                   target.SendChatMessage(Constants.COLOR_INFO + targetString);
+                                    target.SendChatMessage(Constants.COLOR_INFO + targetString);
 
                                     Task.Factory.StartNew(() =>
                                     {
@@ -2734,7 +2738,7 @@ namespace WiredPlayers.globals
                                         string playerString = string.Format(InfoRes.house_buyto, target.Name, amount);
                                         string targetString = string.Format(InfoRes.house_bought, player.Name, amount);
                                         player.SendChatMessage(Constants.COLOR_INFO + playerString);
-                                       target.SendChatMessage(Constants.COLOR_INFO + targetString);
+                                        target.SendChatMessage(Constants.COLOR_INFO + targetString);
 
                                         Task.Factory.StartNew(() =>
                                         {
@@ -2749,13 +2753,13 @@ namespace WiredPlayers.globals
                                     else
                                     {
                                         player.SendChatMessage(ErrRes.house_sell_generic);
-                                       target.SendChatMessage(ErrRes.house_sell_generic);
+                                        target.SendChatMessage(ErrRes.house_sell_generic);
                                     }
                                 }
                                 else
                                 {
                                     string message = string.Format(ErrRes.carshop_no_money, amount);
-                                   target.SendChatMessage(Constants.COLOR_ERROR + message);
+                                    target.SendChatMessage(Constants.COLOR_ERROR + message);
                                 }
                             }
                         }
@@ -2850,7 +2854,7 @@ namespace WiredPlayers.globals
 
                     // Play the animation
                     player.PlayAnimation("random@domestic", "pickup_low", 0);
-                    
+
                     // Add the item to the player
                     BusinessItemModel businessItem = Business.GetBusinessItemFromHash(playerItem.hash);
                     WeaponHash weaponHash = NAPI.Util.WeaponNameToModel(playerItem.hash);
@@ -2970,7 +2974,7 @@ namespace WiredPlayers.globals
             {
                 if (target.GetData(EntityData.PLAYER_PLAYING) != null && target.GetData(EntityData.PLAYER_ADMIN_RANK) > 0)
                 {
-                   target.SendChatMessage(Constants.COLOR_ADMIN_INFO + AdminRes.new_admin_ticket);
+                    target.SendChatMessage(Constants.COLOR_ADMIN_INFO + AdminRes.new_admin_ticket);
                 }
                 else if (target == player)
                 {

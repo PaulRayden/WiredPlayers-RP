@@ -157,7 +157,14 @@ namespace WiredPlayers.chat
             player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_cant_command);
         }
 
-        [Command(Commands.COM_SAY, Commands.HLP_SAY_COMMAND, GreedyArg = true)]
+        [RemoteEvent("logPlayerCommand")]
+        public void LogPlayerCommandEvent(Client player, string command)
+        {
+            // Log the command used
+            NAPI.Util.ConsoleOutput(string.Format(GenRes.command_used, player.Value, player.Name, command));
+        }
+
+       [Command(Commands.COM_SAY, Commands.HLP_SAY_COMMAND, GreedyArg = true)]
         public void DecirCommand(Client player, string message)
         {
             if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)

@@ -152,6 +152,10 @@ namespace WiredPlayers.parking
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.vehicle_faction_park);
             }
+            else if (player.Vehicle.TraileredBy != null || player.Vehicle.Trailer != null)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.vehicle_is_trailered);
+            }
             else
             {
                 if (!Vehicles.HasPlayerVehicleKeys(player, player.Vehicle) && !Faction.IsPoliceMember(player))
@@ -173,9 +177,17 @@ namespace WiredPlayers.parking
                     switch (parking.type)
                     {
                         case Constants.PARKING_TYPE_PUBLIC:
-                            string message = string.Format(InfoRes.parking_cost, Constants.PRICE_PARKING_PUBLIC);
-                            player.SendChatMessage(Constants.COLOR_INFO + message);
-                            PlayerParkVehicle(player, parking);
+                            if(Vehicles.HasPlayerVehicleKeys(player, player.Vehicle))
+                            {
+                                string message = string.Format(InfoRes.parking_cost, Constants.PRICE_PARKING_PUBLIC);
+                                player.SendChatMessage(Constants.COLOR_INFO + message);
+                                PlayerParkVehicle(player, parking);
+                            }
+                            else
+                            {
+                                // The player doesn't have the keys
+                                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_car_keys);
+                            }
                             break;
                         case Constants.PARKING_TYPE_GARAGE:
                             HouseModel house = House.GetHouseById(parking.houseId);
@@ -186,6 +198,10 @@ namespace WiredPlayers.parking
                             else if (GetParkedCarAmount(parking) == parking.capacity)
                             {
                                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.parking_full);
+                            }
+                            else if(!Vehicles.HasPlayerVehicleKeys(player, player.Vehicle))
+                            {
+                                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_car_keys);
                             }
                             else
                             {

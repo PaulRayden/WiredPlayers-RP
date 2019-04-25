@@ -468,4 +468,7 @@
   <data name="sheriff_faction" xml:space="preserve">
     <value>Sheriff</value>
   </data>
+  <data name="command_used" xml:space="preserve">
+    <value>[ID: {0}] {1} ha usado el comando /{2}</value>
+  </data>
 </root>

@@ -882,4 +882,7 @@
   <data name="not_in_work_place" xml:space="preserve">
     <value>No estás en tu zona de trabajo.</value>
   </data>
+  <data name="vehicle_is_trailered" xml:space="preserve">
+    <value>El vehículo está siendo remolcado.</value>
+  </data>
 </root>

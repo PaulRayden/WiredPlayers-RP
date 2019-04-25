@@ -41,6 +41,11 @@ namespace WiredPlayers_Client.chat
                 // Cancel the command
                 cancel.Cancel = true;
             }
+            else
+            {
+                // Log the command
+                Events.CallRemote("logPlayerCommand", cmd);
+            }
         }
 
         public static void SetVisible(bool visible)

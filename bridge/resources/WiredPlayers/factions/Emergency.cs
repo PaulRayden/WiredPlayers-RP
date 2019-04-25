@@ -285,46 +285,47 @@ namespace WiredPlayers.factions
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_on_duty);
             }
+            else if(player.GetData(EntityData.PLAYER_FACTION) != Constants.FACTION_EMERGENCY)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_emergency_faction);
+            }
             else
             {
                 Client target = int.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
-                if (target != null && player.GetData(EntityData.PLAYER_FACTION) == Constants.FACTION_EMERGENCY)
+                if (target == null || player.Position.DistanceTo(target.Position) > 5.0f)
                 {
-                    if (target.Health > 15)
-                    {
-                        // We create the blood model
-                        BloodModel blood = new BloodModel();
-                        {
-                            blood.doctor = player.GetData(EntityData.PLAYER_SQL_ID);
-                            blood.patient = target.GetData(EntityData.PLAYER_SQL_ID);
-                            blood.type = string.Empty;
-                            blood.used = false;
-                        }
-
-                        Task.Factory.StartNew(() =>
-                        {
-                            // We add the blood unit to the database
-                            blood.id = Database.AddBloodTransaction(blood);
-                            bloodList.Add(blood);
-
-                            target.Health -= 15;
-                            
-                            string playerMessage = string.Format(InfoRes.blood_extracted, target.Name);
-                            string targetMessage = string.Format(InfoRes.blood_given, player.Name);
-                            player.SendChatMessage(Constants.COLOR_INFO + playerMessage);
-                            target.SendChatMessage(Constants.COLOR_INFO + targetMessage);
-                        });
-                    }
-                    else
-                    {
-                        player.SendChatMessage(ErrRes.low_blood);
-                    }
+                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_too_far);
+                    return;
                 }
-                else
+
+                if(target.Health <= 15)
                 {
-                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_found);
+                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.low_blood);
+                    return;
                 }
+
+                // Substract the blood from the player
+                target.Health -= 15;
+
+                // We create the blood model
+                BloodModel blood = new BloodModel();
+                {
+                    blood.doctor = player.GetData(EntityData.PLAYER_SQL_ID);
+                    blood.patient = target.GetData(EntityData.PLAYER_SQL_ID);
+                    blood.type = string.Empty;
+                    blood.used = false;
+                }
+
+                Task.Factory.StartNew(() =>
+                {
+                    // We add the blood unit to the database
+                    blood.id = Database.AddBloodTransaction(blood);
+                    bloodList.Add(blood);
+
+                    player.SendChatMessage(Constants.COLOR_INFO + string.Format(InfoRes.blood_extracted, target.Name));
+                    target.SendChatMessage(Constants.COLOR_INFO + string.Format(InfoRes.blood_given, player.Name));
+                });
             }
         }
 

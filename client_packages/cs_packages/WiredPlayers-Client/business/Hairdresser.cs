@@ -57,13 +57,14 @@ namespace WiredPlayers_Client.business
             facialHair[slot] = value;
 
             // Check if the beard is out of range
-            int beardModel = facialHair[5] < 0 ? 255 : facialHair[5];
+            int eyebrowsModel = facialHair[3] < 0 || facialHair[3] > 255 ? 255 : facialHair[3];
+            int beardModel = facialHair[5] < 0 || facialHair[5] > 255 ? 255 : facialHair[5];
 
             // Update the player's head
             Player.LocalPlayer.SetComponentVariation(2, facialHair[0], 0, 0);
             Player.LocalPlayer.SetHairColor(facialHair[1], facialHair[2]);
             Player.LocalPlayer.SetHeadOverlay(1, beardModel, 1.0f);
-            Player.LocalPlayer.SetHeadOverlay(2, facialHair[3], 1.0f);
+            Player.LocalPlayer.SetHeadOverlay(2, eyebrowsModel, 1.0f);
             Player.LocalPlayer.SetHeadOverlayColor(1, 1, facialHair[6], 0);
             Player.LocalPlayer.SetHeadOverlayColor(2, 1, facialHair[4], 0);
         }
@@ -74,9 +75,9 @@ namespace WiredPlayers_Client.business
             generatedFace.hairModel = facialHair[0];
             generatedFace.firstHairColor = facialHair[1];
             generatedFace.secondHairColor = facialHair[2];
-            generatedFace.eyebrowsModel = facialHair[3];
+            generatedFace.eyebrowsModel = facialHair[3] < 0 || facialHair[3] > 255 ? 255 : facialHair[3];
             generatedFace.eyebrowsColor = facialHair[4];
-            generatedFace.beardModel = facialHair[5] < 0 ? 255 : facialHair[5];
+            generatedFace.beardModel = facialHair[5] < 0 || facialHair[5] > 255 ? 255 : facialHair[5];
             generatedFace.beardColor = facialHair[6];
 
             Events.CallRemote("changeHairStyle", JsonConvert.SerializeObject(generatedFace));

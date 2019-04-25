@@ -232,6 +232,15 @@ namespace WiredPlayers.messages.general {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a [ID: {0}] {1} ha usado el comando /{2}.
+        /// </summary>
+        public static string command_used {
+            get {
+                return ResourceManager.GetString("command_used", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a Autoescuela.
         /// </summary>
         public static string driving_school {

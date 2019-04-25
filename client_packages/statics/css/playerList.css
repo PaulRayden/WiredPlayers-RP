@@ -55,7 +55,7 @@
 .player-id,
 .player-ping {
 	display: inline-block;
-	width: 4.7vw;
+	width: 4.5vw;
 }
 
 .player-name {
@@ -64,8 +64,8 @@
 }
 
 .player-container {
-	overflow-y: auto;
 	padding-left: 5px;
+	overflow-y: auto !important;
 }
 
 .player-container > div {

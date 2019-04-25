@@ -142,6 +142,9 @@ namespace WiredPlayers.vehicles
 
         public static bool HasPlayerVehicleKeys(Client player, object vehicle)
         {
+            // We don't need to check testing vehicles
+            if (vehicle is Vehicle && ((Vehicle)vehicle).GetData(EntityData.VEHICLE_TESTING) != null) return false;
+
             bool hasKeys = false;
             int vehicleId = vehicle is Vehicle ? ((Vehicle)vehicle).GetData(EntityData.VEHICLE_ID) : ((VehicleModel)vehicle).id;
             string vehicleOwner = vehicle is Vehicle ? ((Vehicle)vehicle).GetData(EntityData.VEHICLE_OWNER) : ((VehicleModel)vehicle).owner;

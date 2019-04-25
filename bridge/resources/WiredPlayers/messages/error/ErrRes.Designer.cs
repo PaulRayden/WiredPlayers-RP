@@ -2203,6 +2203,15 @@ namespace WiredPlayers.messages.error {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a El vehículo está siendo remolcado..
+        /// </summary>
+        public static string vehicle_is_trailered {
+            get {
+                return ResourceManager.GetString("vehicle_is_trailered", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a No se ha encontrado ningún vehículo para ese identificador..
         /// </summary>
         public static string vehicle_not_exists {

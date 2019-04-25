@@ -202,16 +202,22 @@ function bankAccept() {
 
 	switch (bankSelectedOption) {
 		case 1:
-		amount = $('#bank-withdraw-amount').val();
-		break;
+			amount = $('#bank-withdraw-amount').val();
+			$('#bank-withdraw-amount').val(0);
+			break;
 		case 2:
-		amount = $('#bank-deposit-amount').val();
-		break;
+			amount = $('#bank-deposit-amount').val();
+			$('#bank-deposit-amount').val(0);
+			break;
 		case 3:
-		target = $('#bank-transfer-person').val();
-		amount = $('#bank-transfer-amount').val();
-		break;
+			target = $('#bank-transfer-person').val();
+			amount = $('#bank-transfer-amount').val();
+
+			$('#bank-transfer-person').val(0);
+			$('#bank-transfer-amount').val(0);
+			break;
 	}
+	
 	mp.trigger('executeBankOperation', bankSelectedOption, amount, target);
 }
 

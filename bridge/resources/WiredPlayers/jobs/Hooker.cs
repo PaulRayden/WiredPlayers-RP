@@ -70,6 +70,10 @@ namespace WiredPlayers.jobs
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_vehicle_passenger);
             }
+            else if(price <= 0)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.price_positive);
+            }
             else
             {
                 NetHandle vehicle = player.Vehicle;

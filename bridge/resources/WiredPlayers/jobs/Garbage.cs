@@ -288,26 +288,19 @@ namespace WiredPlayers.jobs
         [RemoteEvent("garbageCheckpointEntered")]
         public void OnPlayerEnterCheckpoint(Client player)
         {
-            NAPI.Util.ConsoleOutput("A");
             int route = player.GetData(EntityData.PLAYER_JOB_ROUTE);
-            NAPI.Util.ConsoleOutput("A");
             int checkPoint = player.GetData(EntityData.PLAYER_JOB_CHECKPOINT);
-            NAPI.Util.ConsoleOutput("A");
             int totalCheckPoints = Constants.GARBAGE_LIST.Where(x => x.route == route).Count();
-            NAPI.Util.ConsoleOutput("A");
 
-            if (player.VehicleSeat == (int)VehicleSeat.Driver && checkPoint < totalCheckPoints)
+            if (player.VehicleSeat == (int)VehicleSeat.Driver && checkPoint == totalCheckPoints - 1)
             {
-                NAPI.Util.ConsoleOutput("A");
                 if (player.GetData(EntityData.PLAYER_JOB_VEHICLE) == player.Vehicle)
                 {
-                    NAPI.Util.ConsoleOutput("A");
                     // Finish the route
                     FinishGarbageRoute(player);
                 }
                 else
                 {
-                    NAPI.Util.ConsoleOutput("B");
                     player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_in_vehicle_job);
                 }
             }
@@ -316,6 +309,9 @@ namespace WiredPlayers.jobs
         [Command(Commands.COM_GARBAGE, Commands.HLP_GARBAGE_JOB_COMMAND)]
         public void GarbageCommand(Client player, string action)
         {
+            player.SendChatMessage(Constants.COLOR_ERROR + "Trabajo deshabilitado temporalmente.");
+            return;
+
             if (player.GetData(EntityData.PLAYER_JOB) != Constants.JOB_GARBAGE)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_garbage);
