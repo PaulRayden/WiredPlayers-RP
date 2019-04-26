@@ -222,7 +222,7 @@ namespace WiredPlayers.house
                 }
                 else
                 {
-                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.price_positive);
+                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.money_amount_positive);
                 }
             }
         }

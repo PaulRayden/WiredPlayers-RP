@@ -72,7 +72,7 @@ namespace WiredPlayers.jobs
             }
             else if(price <= 0)
             {
-                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.price_positive);
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.money_amount_positive);
             }
             else
             {

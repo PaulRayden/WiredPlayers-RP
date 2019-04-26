@@ -111,16 +111,21 @@ namespace WiredPlayers.factions
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
+            else if(player.GetData(EntityData.PLAYER_ON_DUTY) == 0)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_on_duty);
+            }
             else
             {
                 int faction = player.GetData(EntityData.PLAYER_FACTION);
+
                 if (faction > 0 && faction < Constants.LAST_STATE_FACTION)
                 {
                     // Get player's rank in faction
                     string rank = GetPlayerFactionRank(player);
 
                     // Get all the players in the faction
-                    List<Client> targetList = NAPI.Pools.GetAllPlayers().Where(p => p.GetData(EntityData.PLAYER_PLAYING) != null && (p.GetData(EntityData.PLAYER_FACTION) == faction || CheckInternalAffairs(faction, p))).ToList();
+                    List<Client> targetList = NAPI.Pools.GetAllPlayers().Where(p => p.GetData(EntityData.PLAYER_PLAYING) != null && (p.GetData(EntityData.PLAYER_FACTION) == faction || CheckInternalAffairs(faction, p)) && p.GetData(EntityData.PLAYER_ON_DUTY) == 1).ToList();
 
                     foreach (Client target in targetList)
                     {
@@ -145,33 +150,42 @@ namespace WiredPlayers.factions
             if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
+                return;
             }
-            else
-            {
-                if (player.GetData(EntityData.PLAYER_FACTION) == Constants.FACTION_EMERGENCY)
-                {
-                    string rank = GetPlayerFactionRank(player);
-                    
-                    foreach (Client target in NAPI.Pools.GetAllPlayers())
-                    {
-                        if (target.GetData(EntityData.PLAYER_PLAYING) != null && IsPoliceMember(target))
-                        {
-                            target.SendChatMessage(Constants.COLOR_RADIO + GenRes.radio + rank + " " + player.Name + GenRes.chat_say + message);
-                        }
-                        else if (target.GetData(EntityData.PLAYER_PLAYING) != null && target.GetData(EntityData.PLAYER_FACTION) == Constants.FACTION_EMERGENCY)
-                        {
-                            target.SendChatMessage(Constants.COLOR_RADIO_POLICE + GenRes.radio + rank + " " + player.Name + GenRes.chat_say + message);
-                        }
-                    }
 
-                    // Send the chat message to near players
-                    Chat.SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_RADIO, player.Dimension > 0 ? 7.5f : 10.0f);
-                }
-                else
+            if (player.GetData(EntityData.PLAYER_FACTION) != Constants.FACTION_EMERGENCY)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_police_faction);
+                return;
+            }
+
+            if (player.GetData(EntityData.PLAYER_ON_DUTY) == 0)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_on_duty);
+                return;
+            }
+
+            string rank = GetPlayerFactionRank(player);
+            string radioMessage = GenRes.radio + rank + " " + player.Name + GenRes.chat_say + message;
+
+            // Get the players playing and in service
+            List<Client> playerFactionMembers = NAPI.Pools.GetAllPlayers().Where(p => p.GetData(EntityData.PLAYER_PLAYING) != null && p.GetData(EntityData.PLAYER_ON_DUTY) == 1).ToList();
+
+            foreach (Client target in playerFactionMembers)
+            {
+                // Send the message to the player
+                if(IsPoliceMember(target))
                 {
-                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_emergency_faction);
+                    target.SendChatMessage(Constants.COLOR_RADIO + radioMessage);
+                }
+                else if (target.GetData(EntityData.PLAYER_FACTION) == Constants.FACTION_EMERGENCY)
+                {
+                    target.SendChatMessage(Constants.COLOR_RADIO_POLICE + radioMessage);
                 }
             }
+
+            // Send the chat message to near players
+            Chat.SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_RADIO, player.Dimension > 0 ? 7.5f : 10.0f);
         }
 
         [Command(Commands.COM_DE, Commands.HLP_DE_COMMAND, GreedyArg = true)]
@@ -180,33 +194,41 @@ namespace WiredPlayers.factions
             if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
+                return;
             }
-            else
+
+            if(!IsPoliceMember(player))
             {
-                if (IsPoliceMember(player))
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_police_faction);
+                return;
+            }
+
+            if(player.GetData(EntityData.PLAYER_ON_DUTY) == 0)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_on_duty);
+                return;
+            }
+
+            string rank = GetPlayerFactionRank(player);
+            string radioMessage = GenRes.radio + rank + " " + player.Name + GenRes.chat_say + message;
+
+            // Get the players playing and in service
+            List<Client> playerFactionMembers = NAPI.Pools.GetAllPlayers().Where(p => p.GetData(EntityData.PLAYER_PLAYING) != null && p.GetData(EntityData.PLAYER_ON_DUTY) == 1).ToList();
+
+            foreach (Client target in NAPI.Pools.GetAllPlayers())
+            {
+                if (IsPoliceMember(target))
                 {
-                    string rank = GetPlayerFactionRank(player);
-
-                    foreach (Client target in NAPI.Pools.GetAllPlayers())
-                    {
-                        if (target.GetData(EntityData.PLAYER_PLAYING) != null && IsPoliceMember(target))
-                        {
-                            target.SendChatMessage(Constants.COLOR_RADIO_POLICE + GenRes.radio + rank + " " + player.Name + GenRes.chat_say + message);
-                        }
-                        else if (target.GetData(EntityData.PLAYER_PLAYING) != null && target.GetData(EntityData.PLAYER_FACTION) == Constants.FACTION_EMERGENCY)
-                        {
-                            target.SendChatMessage(Constants.COLOR_RADIO + GenRes.radio + rank + " " + player.Name + GenRes.chat_say + message);
-                        }
-                    }
-
-                    // Send the chat message to near players
-                    Chat.SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_RADIO, player.Dimension > 0 ? 7.5f : 10.0f);
+                    target.SendChatMessage(Constants.COLOR_RADIO_POLICE + radioMessage);
                 }
-                else
+                else if (target.GetData(EntityData.PLAYER_FACTION) == Constants.FACTION_EMERGENCY)
                 {
-                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_emergency_faction);
+                    target.SendChatMessage(Constants.COLOR_RADIO + radioMessage);
                 }
             }
+
+            // Send the chat message to near players
+            Chat.SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_RADIO, player.Dimension > 0 ? 7.5f : 10.0f);
         }
 
         [Command(Commands.COM_FR, Commands.HLP_FR_COMMAND, GreedyArg = true)]
@@ -1003,11 +1025,11 @@ namespace WiredPlayers.factions
 
                         if (rank == string.Empty)
                         {
-                            player.SendChatMessage(Constants.COLOR_HELP + "[Id: " + player.Value + "] " + target.Name);
+                            player.SendChatMessage(Constants.COLOR_HELP + "[Id: " + target.Value + "] " + target.Name);
                         }
                         else
                         {
-                            player.SendChatMessage(Constants.COLOR_HELP + "[Id: " + player.Value + "] " + rank + " " + target.Name);
+                            player.SendChatMessage(Constants.COLOR_HELP + "[Id: " + target.Value + "] " + rank + " " + target.Name);
                         }
                     }
                 }

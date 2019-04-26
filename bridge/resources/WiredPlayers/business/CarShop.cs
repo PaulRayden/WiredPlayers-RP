@@ -168,6 +168,13 @@ namespace WiredPlayers.business
         [RemoteEvent("testVehicle")]
         public void TestVehicleEvent(Client player, string hash)
         {
+            // Check if the player is already testing a vehicle
+            if(player.GetData(EntityData.PLAYER_TESTING_VEHICLE) != null)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.already_testing_vehicle);
+                return;
+            }
+
             Vehicle vehicle = null;
             Vector3 testFinishCheckpoint = null;
             VehicleHash vehicleModel = (VehicleHash)uint.Parse(hash);
@@ -179,8 +186,8 @@ namespace WiredPlayers.business
                     testFinishCheckpoint = new Vector3(-239.7822f, 6231.539f, 30.70019f);
                     break;
                 case 1:
-                    vehicle = NAPI.Vehicle.CreateVehicle(vehicleModel, new Vector3(307.0036f, -1162.707f, 29.29191f), 180.0f, new Color(0, 0, 0), new Color(0, 0, 0));
-                    testFinishCheckpoint = new Vector3(267.412f, -1159.755f, 28.263f);
+                    vehicle = NAPI.Vehicle.CreateVehicle(vehicleModel, new Vector3(2150.572f, 4798.39f, 41.11817f), 180.0f, new Color(0, 0, 0), new Color(0, 0, 0));
+                    testFinishCheckpoint = new Vector3(2134.755f, 4777.85f, 40.97029f);
                     break;
                 case 2:
                     vehicle = NAPI.Vehicle.CreateVehicle(vehicleModel, new Vector3(-717.3467f, -1319.792f, -0.42f), 180.0f, new Color(0, 0, 0), new Color(0, 0, 0));

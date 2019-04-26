@@ -1716,6 +1716,12 @@ namespace WiredPlayers.globals
                                 return;
                             }
 
+                            if(target == null || target == player)
+                            {
+                                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.cant_sell_vehicle_self);
+                                return;
+                            }
+
                             if (int.TryParse(priceString, out price) == true)
                             {
                                 if (price > 0)
@@ -1787,7 +1793,7 @@ namespace WiredPlayers.globals
                                 }
                                 else
                                 {
-                                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.price_positive);
+                                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.money_amount_positive);
                                 }
                             }
                             else
@@ -1863,7 +1869,7 @@ namespace WiredPlayers.globals
                                                 }
                                                 else
                                                 {
-                                                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.price_positive);
+                                                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.money_amount_positive);
                                                 }
                                             }
                                             else
@@ -1910,7 +1916,7 @@ namespace WiredPlayers.globals
                                 else
                                 {
                                     int playerMoney = player.GetSharedData(EntityData.PLAYER_MONEY);
-                                    int amount = (int)Math.Round(fishModel.amount * Constants.PRICE_FISH / 1000.0);
+                                    int amount = (int)Math.Round(fishModel.amount * Constants.PRICE_FISH / 1000.0d);
 
                                     Task.Factory.StartNew(() =>
                                     {

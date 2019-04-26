@@ -111,7 +111,7 @@ namespace WiredPlayers.character
                 if (target.GetData(EntityData.PLAYER_PHONE) == contact.contactNumber)
                 {
                     // Check player's number
-                    int phone = target.GetData(EntityData.PLAYER_PHONE);
+                    int phone = player.GetData(EntityData.PLAYER_PHONE);
                     string contactName = GetContactInTelephone(phone, contact.contactNumber);
 
                     if (contactName.Length == 0)

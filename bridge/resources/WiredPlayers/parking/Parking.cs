@@ -127,12 +127,10 @@ namespace WiredPlayers.parking
             // Add the vehicle to the parking
             parkedCars.Add(parkedCarModel);
 
-            // Stop the vehicle's speedometer
-            player.TriggerEvent("removeSpeedometer");
-
             // Save the vehicle and delete it from the game
+            Vehicle vehicle = player.Vehicle;
             player.WarpOutOfVehicle();
-            player.Vehicle.Delete();
+            vehicle.Delete();
 
             Task.Factory.StartNew(() =>
             {
@@ -152,7 +150,7 @@ namespace WiredPlayers.parking
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.vehicle_faction_park);
             }
-            else if (player.Vehicle.TraileredBy != null && player.Vehicle.TraileredBy.Value != Constants.UNDEFINED_VALUE)
+            else if (player.Vehicle.TraileredBy != null && player.Vehicle.TraileredBy.Exists)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.vehicle_is_trailered);
             }

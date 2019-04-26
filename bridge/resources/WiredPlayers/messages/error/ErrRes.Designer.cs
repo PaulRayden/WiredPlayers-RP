@@ -142,6 +142,15 @@ namespace WiredPlayers.messages.error {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a Entrega el vehículo de prueba antes de pedir otro..
+        /// </summary>
+        public static string already_testing_vehicle {
+            get {
+                return ResourceManager.GetString("already_testing_vehicle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a Ya llevas una bolsa equipada..
         /// </summary>
         public static string bag_equiped {
@@ -201,6 +210,15 @@ namespace WiredPlayers.messages.error {
         public static string business_locked {
             get {
                 return ResourceManager.GetString("business_locked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a No puedes venderte el vehículo a ti mismo..
+        /// </summary>
+        public static string cant_sell_vehicle_self {
+            get {
+                return ResourceManager.GetString("cant_sell_vehicle_self", resourceCulture);
             }
         }
         
@@ -615,6 +633,15 @@ namespace WiredPlayers.messages.error {
         public static string mask_equiped {
             get {
                 return ResourceManager.GetString("mask_equiped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a La cantidad debe ser mayor a 0$..
+        /// </summary>
+        public static string money_amount_positive {
+            get {
+                return ResourceManager.GetString("money_amount_positive", resourceCulture);
             }
         }
         
@@ -2064,15 +2091,6 @@ namespace WiredPlayers.messages.error {
         public static string player_undocumented {
             get {
                 return ResourceManager.GetString("player_undocumented", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Busca una cadena traducida similar a El precio debe ser mayor a 0$..
-        /// </summary>
-        public static string price_positive {
-            get {
-                return ResourceManager.GetString("price_positive", resourceCulture);
             }
         }
         

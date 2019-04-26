@@ -17,9 +17,6 @@ namespace WiredPlayers.jobs
                 // Check if the player has a taxi driver license
                 if(DrivingSchool.GetPlayerLicenseStatus(player, Constants.LICENSE_TAXI) == -1)
                 {
-                    // Stop the vehicle's speedometer
-                    player.TriggerEvent("removeSpeedometer");
-
                     player.WarpOutOfVehicle();
                     player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_taxi_license);
                 }

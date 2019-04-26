@@ -146,7 +146,7 @@ namespace WiredPlayers.chat
             else
             {
                 SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_TALK, player.Dimension > 0 ? 7.5f : 10.0f);
-                NAPI.Util.ConsoleOutput("[ID:" + player.Value + "]" + player.Name + GenRes.chat_say + message);
+                NAPI.Util.ConsoleOutput("[ID: " + player.Value + "] " + player.Name + GenRes.chat_say + message);
             }
         }
 

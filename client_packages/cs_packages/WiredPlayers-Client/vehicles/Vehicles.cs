@@ -137,7 +137,7 @@ namespace WiredPlayers_Client.vehicles
             if (lastVehicle != null)
             {
                 // Save the kilometers and gas
-                Events.CallRemote("saveVehicleConsumes", lastVehicle, kms, gas);
+                Events.CallRemote("saveVehicleConsumes", lastVehicle.RemoteId, kms, gas);
 
                 // Reset the player's vehicle
                 lastVehicle = null;

@@ -85,7 +85,7 @@ namespace WiredPlayers.globals
         public const int BUSINESS_TYPE_FISHING = 24;
 
         // Phone numbers
-        public const int NUMBER_POLICE = 091;
+        public const int NUMBER_POLICE = 911;
         public const int NUMBER_EMERGENCY = 112;
         public const int NUMBER_NEWS = 114;
         public const int NUMBER_FASTFOOD = 115;
@@ -651,15 +651,15 @@ namespace WiredPlayers.globals
             new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 0, -1, -1),
             new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 1, 0, 0),
             new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 2, -1, -1),
-            new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 3, 85, 0),
-            new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 4, 96, 0),
+            new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 3, 14, 0),
+            new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 4, 6, 2),
             new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 5, -1, -1),
-            new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 6, 51, 0),
-            new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 7, 127, 0),
-            new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 8, 129, 0),
+            new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 6, 1, 3),
+            new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 7, 0, 0),
+            new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 8, 2, 0),
             new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 9, 0, 0),
             new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 10, 58, 0),
-            new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 11, 250, 0),
+            new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 11, 9, 1),
 
             // Male Sheriff uniform
             new UniformModel(0, FACTION_SHERIFF, SEX_MALE, 0, 0, 0),
@@ -3068,11 +3068,10 @@ namespace WiredPlayers.globals
 
         public static List<Vector3> BIKESHOP_SPAWNS = new List<Vector3>()
 {
-            new Vector3(265.2711f, -1149.21f, 29.29169f),
-            new Vector3(262.4801f, -1149.25f, 29.29169f),
-            new Vector3(259.3696f, -1149.42f, 29.29169f),
-            new Vector3(256.2483f, -1149.431f, 29.29169f),
-            new Vector3(250.0457f, -1149.472f, 29.28539f)
+            new Vector3(2141.214f, 4824.846f, 41.26408f),
+            new Vector3(2135.951f, 4822.354f, 41.23187f),
+            new Vector3(2129.432f, 4819.786f, 41.24192f),
+            new Vector3(2123.531f, 4817.106f, 41.25154f)
         };
 
         public static List<Vector3> SHIP_SPAWNS = new List<Vector3>()

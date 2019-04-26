@@ -145,42 +145,48 @@ namespace WiredPlayers.factions
             {
                 Client target = int.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
-                if (target != null && target.GetData(EntityData.PLAYER_PLAYING) != null)
+                if (target != null && player.Position.DistanceTo(target.Position) <= 2.5f)
                 {
                     int prizeAmount = GetRemainingFounds();
-                    if (prizeAmount >= prize)
+
+                    if(prize <= 0)
                     {
-                        AnnoucementModel prizeModel = new AnnoucementModel();
-                        int targetMoney = target.GetSharedData(EntityData.PLAYER_MONEY);
-
-                        string playerMessage = string.Format(InfoRes.prize_given, prize, target.Name);
-                        string targetMessage = string.Format(InfoRes.prize_received, player.Name, prize, contest);
-
-                        targetMoney += prize;
-                        target.SetSharedData(EntityData.PLAYER_MONEY, targetMoney);
-
-                        prizeModel.amount = prize;
-                        prizeModel.winner = target.GetData(EntityData.PLAYER_SQL_ID);
-                        prizeModel.annoucement = contest;
-                        prizeModel.journalist = player.GetData(EntityData.PLAYER_SQL_ID);
-                        prizeModel.given = true;
-
-                        player.SendChatMessage(Constants.COLOR_INFO + playerMessage);
-                       target.SendChatMessage(Constants.COLOR_INFO + targetMessage);
-
-                        Task.Factory.StartNew(() =>
-                        {
-                            prizeModel.id = Database.GivePrize(prizeModel);
-                            annoucementList.Add(prizeModel);
-
-                            // Log the money won
-                            Database.LogPayment(player.Name, target.Name, GenRes.news_prize, prize);
-                        });
+                        player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.money_amount_positive);
+                        return;
                     }
-                    else
+
+                    if (prizeAmount < prize)
                     {
                         player.SendChatMessage(Constants.COLOR_INFO + ErrRes.faction_not_enough_money);
+                        return;
                     }
+
+                    AnnoucementModel prizeModel = new AnnoucementModel();
+                    int targetMoney = target.GetSharedData(EntityData.PLAYER_MONEY);
+
+                    string playerMessage = string.Format(InfoRes.prize_given, prize, target.Name);
+                    string targetMessage = string.Format(InfoRes.prize_received, player.Name, prize, contest);
+
+                    targetMoney += prize;
+                    target.SetSharedData(EntityData.PLAYER_MONEY, targetMoney);
+
+                    prizeModel.amount = prize;
+                    prizeModel.winner = target.GetData(EntityData.PLAYER_SQL_ID);
+                    prizeModel.annoucement = contest;
+                    prizeModel.journalist = player.GetData(EntityData.PLAYER_SQL_ID);
+                    prizeModel.given = true;
+
+                    player.SendChatMessage(Constants.COLOR_INFO + playerMessage);
+                    target.SendChatMessage(Constants.COLOR_INFO + targetMessage);
+
+                    Task.Factory.StartNew(() =>
+                    {
+                        prizeModel.id = Database.GivePrize(prizeModel);
+                        annoucementList.Add(prizeModel);
+
+                        // Log the money won
+                        Database.LogPayment(player.Name, target.Name, GenRes.news_prize, prize);
+                    });
                 }
                 else
                 {

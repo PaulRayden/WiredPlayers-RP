@@ -174,6 +174,13 @@ namespace WiredPlayers.factions
                 return;
             }
 
+            if(player.Position.DistanceTo(target.Position) > 2.5f)
+            {
+                // Need to be closer to the patient
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_too_far);
+                return;
+            }
+
             if(player.GetData(EntityData.PLAYER_FACTION) != Constants.FACTION_EMERGENCY)
             {
                 // The player is not a medic
@@ -200,11 +207,9 @@ namespace WiredPlayers.factions
                 }
             }
 
-
-            string playerMessage = string.Format(InfoRes.medic_healed_player, target.Name);
-            string targetMessage = string.Format(InfoRes.player_healed_medic, player.Name);
-            player.SendChatMessage(Constants.COLOR_INFO + playerMessage);
-            target.SendChatMessage(Constants.COLOR_INFO + targetMessage);
+            // Send the confirmation message to both players
+            player.SendChatMessage(Constants.COLOR_INFO + string.Format(InfoRes.medic_healed_player, target.Name));
+            target.SendChatMessage(Constants.COLOR_INFO + string.Format(InfoRes.player_healed_medic, player.Name));
         }
 
         [Command(Commands.COM_REANIMATE, Commands.HLP_REANIMATE_COMMAND)]
@@ -226,51 +231,50 @@ namespace WiredPlayers.factions
             {
                 Client target = int.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
-                if (target != null)
+                if (target == null || player.Position.DistanceTo(target.Position) > 2.5f)
                 {
-                    if (target.GetSharedData(EntityData.PLAYER_KILLED) != 0)
-                    {
-                        if (GetRemainingBlood() > 0)
-                        {
-                            CancelPlayerDeath(target);
-
-                            // We create blood model
-                            BloodModel bloodModel = new BloodModel();
-                            {
-                                bloodModel.doctor = player.GetData(EntityData.PLAYER_SQL_ID);
-                                bloodModel.patient = target.GetData(EntityData.PLAYER_SQL_ID);
-                                bloodModel.type = string.Empty;
-                                bloodModel.used = true;
-                            }
-
-                            Task.Factory.StartNew(() =>
-                            {
-                                // Add the blood consumption to the database
-                                bloodModel.id = Database.AddBloodTransaction(bloodModel);
-                                bloodList.Add(bloodModel);
-
-                                // Send the confirmation message to both players
-                                string playerMessage = string.Format(InfoRes.player_reanimated, target.Name);
-                                string targetMessage = string.Format(SuccRes.target_reanimated, player.Name);
-                                player.SendChatMessage(Constants.COLOR_ADMIN_INFO + playerMessage);
-                                target.SendChatMessage(Constants.COLOR_SUCCESS + targetMessage);
-                            });
-                        }
-                        else
-                        {
-                            // There's no blood left
-                            player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.no_blood_left);
-                        }
-                    }
-                    else
-                    {
-                        player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_dead);
-                    }
+                    // Need to be closer to the patient
+                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_too_far);
+                    return;
                 }
-                else
+
+                if (target.GetSharedData(EntityData.PLAYER_KILLED) == 0)
                 {
-                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_found);
+                    // The player is not dead
+                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_dead);
+                    return;
                 }
+
+                if(GetRemainingBlood() == 0)
+                {
+                    // There's no blood left
+                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.no_blood_left);
+                    return;
+
+                }
+
+                // We create blood model
+                BloodModel bloodModel = new BloodModel();
+                {
+                    bloodModel.doctor = player.GetData(EntityData.PLAYER_SQL_ID);
+                    bloodModel.patient = target.GetData(EntityData.PLAYER_SQL_ID);
+                    bloodModel.type = string.Empty;
+                    bloodModel.used = true;
+                }
+
+                // Cancel the player's death
+                CancelPlayerDeath(target);
+
+                Task.Factory.StartNew(() =>
+                {
+                    // Add the blood consumption to the database
+                    bloodModel.id = Database.AddBloodTransaction(bloodModel);
+                    bloodList.Add(bloodModel);
+
+                    // Send the confirmation message to both players
+                    player.SendChatMessage(Constants.COLOR_ADMIN_INFO + string.Format(InfoRes.player_reanimated, target.Name));
+                    target.SendChatMessage(Constants.COLOR_SUCCESS + string.Format(SuccRes.target_reanimated, player.Name));
+                });
             }
         }
 

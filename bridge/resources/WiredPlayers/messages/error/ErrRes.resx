@@ -270,8 +270,8 @@
   <data name="house_sell_generic" xml:space="preserve">
     <value>Se ha producido un error en la venta de la casa. Comprueba que sigue a nombre de su dueño.</value>
   </data>
-  <data name="price_positive" xml:space="preserve">
-    <value>El precio debe ser mayor a 0$.</value>
+  <data name="money_amount_positive" xml:space="preserve">
+    <value>La cantidad debe ser mayor a 0$.</value>
   </data>
   <data name="player_job_restriction" xml:space="preserve">
     <value>No has pasado el tiempo requerido en tu trabajo actual.</value>
@@ -884,5 +884,11 @@
   </data>
   <data name="vehicle_is_trailered" xml:space="preserve">
     <value>El vehículo está siendo remolcado.</value>
+  </data>
+  <data name="cant_sell_vehicle_self" xml:space="preserve">
+    <value>No puedes venderte el vehículo a ti mismo.</value>
+  </data>
+  <data name="already_testing_vehicle" xml:space="preserve">
+    <value>Entrega el vehículo de prueba antes de pedir otro.</value>
   </data>
 </root>

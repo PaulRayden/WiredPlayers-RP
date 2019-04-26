@@ -224,7 +224,7 @@ namespace WiredPlayers_Client.cardealer
             RAGE.Game.Cam.DestroyCam(previewCamera, true);
             RAGE.Game.Cam.RenderScriptCams(false, false, 0, true, false, 0);
 
-            // Purchase the vehicle
+            // Create the vehicle for testing
             Events.CallRemote("testVehicle", model);
         }
 

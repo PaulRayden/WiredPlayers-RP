@@ -272,6 +272,9 @@ namespace WiredPlayers.vehicles
 
             NAPI.Task.Run(() =>
             {
+                // Kick all the players from the vehicle if any
+                vehicle.Occupants.ForEach(p => p.WarpOutOfVehicle());
+
                 // Delete the vehicle
                 vehicle.Delete();
             });
@@ -461,11 +464,17 @@ namespace WiredPlayers.vehicles
         }
 
         [RemoteEvent("saveVehicleConsumes")]
-        public void SaveVehicleConsumesEvent(Client player, Vehicle vehicle, float kms, float gas)
+        public void SaveVehicleConsumesEvent(Client player, ushort vehicleId, float kms, float gas)
         {
-            // Update kms and gas
-            vehicle.SetData(EntityData.VEHICLE_KMS, kms);
-            vehicle.SetData(EntityData.VEHICLE_GAS, gas);
+            // Get the vehicle from the id
+            Vehicle vehicle = NAPI.Pools.GetAllVehicles().Where(v => v.Value == vehicleId).FirstOrDefault();
+
+            if(vehicle != null && vehicle.Exists)
+            {
+                // Update kms and gas
+                vehicle.SetData(EntityData.VEHICLE_KMS, kms);
+                vehicle.SetData(EntityData.VEHICLE_GAS, gas);
+            }
         }
 
         [RemoteEvent("toggleSeatbelt")]
@@ -1139,8 +1148,7 @@ namespace WiredPlayers.vehicles
                             Database.RemoveVehicle(vehicleId);
                         });
                         
-                        string message = string.Format(SuccRes.vehicle_scrapyard, amountGiven);
-                        player.SendChatMessage(Constants.COLOR_SUCCESS + message);
+                        player.SendChatMessage(Constants.COLOR_SUCCESS + string.Format(SuccRes.vehicle_scrapyard, amountGiven));
                     }
                     else
                     {

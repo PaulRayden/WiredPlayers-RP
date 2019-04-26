@@ -145,26 +145,29 @@ namespace WiredPlayers.townhall
                 }
                 else if (amount > money)
                 {
-                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_fine_money);
+                    player.SendChatMessage(Constants.COLOR_ERROR + string.Format(ErrRes.player_not_fine_money, amount));
                 }
                 else
                 {
-                    // Remove money from player
-                    player.SetSharedData(EntityData.PLAYER_MONEY, money - amount);
-
-                    // Delete paid fines
-                    Database.RemoveFines(removedFines);
-                    Database.LogPayment(player.Name, GenRes.faction_townhall, GenRes.fines_payment, amount);
-
-                    // Check if all fines were paid
-                    if (finesProcessed == fineList.Count)
+                    Task.Factory.StartNew(() =>
                     {
-                        // Volvemos a la página anterior
-                        player.TriggerEvent("backTownHallIndex");
-                    }
+                        // Remove money from player
+                        player.SetSharedData(EntityData.PLAYER_MONEY, money - amount);
 
-                    string message = string.Format(InfoRes.player_fines_paid, amount);
-                    player.SendChatMessage(Constants.COLOR_INFO + message);
+                        // Check if all fines were paid
+                        if (finesProcessed == fineList.Count)
+                        {
+                            // Volvemos a la página anterior
+                            player.TriggerEvent("backTownHallIndex");
+                        }
+
+                        // Send the message to the player
+                        player.SendChatMessage(Constants.COLOR_INFO + string.Format(InfoRes.player_fines_paid, amount));
+
+                        // Delete paid fines
+                        Database.RemoveFines(removedFines);
+                        Database.LogPayment(player.Name, GenRes.faction_townhall, GenRes.fines_payment, amount);
+                    });
                 }
             });
         }

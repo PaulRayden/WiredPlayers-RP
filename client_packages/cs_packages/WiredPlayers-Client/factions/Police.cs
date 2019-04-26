@@ -30,6 +30,8 @@ namespace WiredPlayers_Client.factions
 
             Events.AddDataHandler("PLAYER_HANDCUFFED", PlayerHandcuffedStateChanged);
 
+            Events.OnPlayerStartEnterVehicle += OnPlayerStartEnterVehicle;
+
             // Initialize the reinforces
             reinforces = new Dictionary<int, Blip>();
         }
@@ -162,6 +164,15 @@ namespace WiredPlayers_Client.factions
             {
                 // Toggle the handcuffed state
                 handcuffed = arg != null;
+            }
+        }
+
+        private void OnPlayerStartEnterVehicle(Vehicle vehicle, int seatId, Events.CancelEventArgs cancel)
+        {
+            if(handcuffed && seatId == -1)
+            {
+                // Prevent the player from driving the vehicle
+                cancel.Cancel = true;
             }
         }
     }
