@@ -19,6 +19,8 @@ namespace WiredPlayers_Client.globals
 
         public static readonly float CONSUME_PER_METER = 0.00065f;
 
+        public static readonly int VEHICLE_SEAT_DRIVER = -1;
+
         // Vehicle types
         public const int VEHICLE_CLASS_COMPACTS = 0;
         public const int VEHICLE_CLASS_SEDANS = 1;

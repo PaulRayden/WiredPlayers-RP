@@ -398,7 +398,7 @@
         public const string HLP_EQUIPMENT_AMMO_COMMAND = "USO: /equipo municion";
         public const string HLP_EQUIPMENT_WEAP_COMMAND = "USO: /equipo arma [Pistola|Metralleta|Asalto|Francotirador|Escopeta]";
         public const string HLP_HANDCUFF_COMMAND = "USO: /esposar [Id. jugador/Nombre jugador]";
-        public const string HLP_FINE_COMMAND = "USO: /multar [Nombre jugador] [Apellido jugador] [Precio multa] [Motivo]";
+        public const string HLP_FINE_COMMAND = "USO: /multa [Id. jugador/Nombre jugador] [Precio multa] [Motivo]";
         public const string HLP_GLOBALS_ACCEPT_COMMAND = "USO: /aceptar [Pedido|Servicio|Directo|Dinero|Vehiculo]";
         public const string HLP_GLOBALS_CANCEL_COMMAND = "USO: /cancelar [Directo|Servicio|Dinero|Pedidos|Pintura]";
         public const string HLP_KEYS_COMMAND = "USO: /llaves [Ver|Ceder|Tirar] [Id. Vehículo] [Id. jugador/Nombre jugador]";

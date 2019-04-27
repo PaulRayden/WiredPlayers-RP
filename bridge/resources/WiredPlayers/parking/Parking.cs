@@ -264,9 +264,6 @@ namespace WiredPlayers.parking
 
                 switch (parking.type)
                 {
-                    case Constants.PARKING_TYPE_PUBLIC:
-                    case Constants.PARKING_TYPE_SCRAPYARD:
-                        break;
                     case Constants.PARKING_TYPE_DEPOSIT:
                         // Remove player's money
                         if (playerMoney >= Constants.PRICE_PARKING_DEPOSIT)
@@ -283,16 +280,17 @@ namespace WiredPlayers.parking
                             return;
                         }
                         break;
+                    default:
+                        player.SendChatMessage(Constants.COLOR_INFO + InfoRes.vehicle_unparked);
+                        break;
                 }
-
-                // Get parked vehicle model
-                ParkedCarModel parkedCar = GetParkedVehicle(vehicleId);
 
                 // Set the values to unpark the vehicle
                 vehicle.dimension = player.Dimension;
+                vehicle.position = parking.position;
                 vehicle.parking = 0;
                 vehicle.parked = 0;
-
+                
                 // Recreate the vehicle
                 Vehicle newVehicle = Vehicles.CreateIngameVehicle(vehicle);
 
@@ -302,7 +300,7 @@ namespace WiredPlayers.parking
                 newVehicle.SetData(EntityData.VEHICLE_PARKED, 0);
 
                 // Unlink from the parking
-                parkedCars.Remove(parkedCar);
+                parkedCars.Remove(GetParkedVehicle(vehicleId));
             }
         }
     }

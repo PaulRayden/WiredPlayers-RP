@@ -115,7 +115,7 @@ namespace WiredPlayers.vehicles
             vehicle.SetData(EntityData.VEHICLE_SECOND_COLOR, vehModel.secondColor);
             vehicle.SetData(EntityData.VEHICLE_PEARLESCENT_COLOR, vehModel.pearlescent);
             vehicle.SetData(EntityData.VEHICLE_FACTION, vehModel.faction);
-            vehicle.SetData(EntityData.VEHICLE_PLATE, vehModel.plate);
+            vehicle.SetData(EntityData.VEHICLE_PLATE, vehicle.NumberPlate);
             vehicle.SetData(EntityData.VEHICLE_OWNER, vehModel.owner);
             vehicle.SetData(EntityData.VEHICLE_PRICE, vehModel.price);
             vehicle.SetData(EntityData.VEHICLE_PARKING, vehModel.parking);
@@ -171,17 +171,22 @@ namespace WiredPlayers.vehicles
         public static Vehicle GetClosestVehicle(Client player, float distance = 2.5f)
         {
             Vehicle vehicle = null;
-            foreach (Vehicle veh in NAPI.Pools.GetAllVehicles())
-            {
-                Vector3 vehPos = veh.Position;
-                float distanceVehicleToPlayer = player.Position.DistanceTo(vehPos);
 
-                if (distanceVehicleToPlayer < distance && player.Dimension == veh.Dimension)
+            // Get all the vehicles on the given distance
+            List<Vehicle> closeVehicles = NAPI.Pools.GetAllVehicles().Where(v => player.Position.DistanceTo(v.Position) <= distance && player.Dimension == v.Dimension).ToList();
+
+            foreach (Vehicle veh in closeVehicles)
+            {
+                // Get the distance to the player
+                float distanceVehicleToPlayer = player.Position.DistanceTo(veh.Position);
+
+                if (distanceVehicleToPlayer < distance)
                 {
                     distance = distanceVehicleToPlayer;
                     vehicle = veh;
                 }
             }
+
             return vehicle;
         }
 

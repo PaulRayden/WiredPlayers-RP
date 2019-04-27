@@ -86,7 +86,7 @@ namespace WiredPlayers.factions
         private void TeleportPlayerToHospital(Client player)
         {
             player.Dimension = 0;
-            player.Position = new Vector3(1841.702f, 3669.135f, 33.67997f);
+            NAPI.Player.SpawnPlayer(player, new Vector3(-242.862f, 6325.652f, 32.42619f));
 
             player.ResetData(EntityData.TIME_HOSPITAL_RESPAWN);
             player.SetData(EntityData.PLAYER_BUSINESS_ENTERED, 0);

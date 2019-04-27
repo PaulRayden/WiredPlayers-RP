@@ -111,7 +111,7 @@ namespace WiredPlayers.factions
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
             }
-            else if(player.GetData(EntityData.PLAYER_ON_DUTY) == 0)
+            else if(player.GetData(EntityData.PLAYER_ON_DUTY) == 0 && player.GetData(EntityData.PLAYER_FACTION) != Constants.FACTION_NEWS)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_on_duty);
             }

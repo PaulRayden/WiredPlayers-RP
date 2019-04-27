@@ -2041,6 +2041,15 @@ namespace WiredPlayers.messages.information {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a Has sacado tu vehículo del aparcamiento..
+        /// </summary>
+        public static string vehicle_unparked {
+            get {
+                return ResourceManager.GetString("vehicle_unparked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a Espera a que saquen las armas de sus cajas..
         /// </summary>
         public static string wait_for_weapons {

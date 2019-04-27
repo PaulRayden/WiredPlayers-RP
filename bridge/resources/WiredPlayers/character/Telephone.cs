@@ -377,46 +377,45 @@ namespace WiredPlayers.character
             }
             else
             {
-                foreach (Client target in NAPI.Pools.GetAllPlayers())
+                // Get the players calling
+                List<Client> callingPlayers = NAPI.Pools.GetAllPlayers().Where(p => p.GetData(EntityData.PLAYER_CALLING) != null).ToList();
+
+                foreach (Client target in callingPlayers)
                 {
-                    // Check if the target player is calling somebody
-                    if (target.GetData(EntityData.PLAYER_CALLING) != null)
+                    if (target.GetData(EntityData.PLAYER_CALLING) is int)
                     {
-                        if (target.GetData(EntityData.PLAYER_CALLING) is int)
-                        {
-                            int factionJob = target.GetData(EntityData.PLAYER_CALLING);
-                            int faction = player.GetData(EntityData.PLAYER_FACTION);
-                            int job = player.GetData(EntityData.PLAYER_JOB);
+                        int factionJob = target.GetData(EntityData.PLAYER_CALLING);
+                        int faction = player.GetData(EntityData.PLAYER_FACTION);
+                        int job = player.GetData(EntityData.PLAYER_JOB);
 
-                            if (factionJob == faction || factionJob == job + 100)
-                            {
-                                // Link both players in the same call
-                                target.ResetData(EntityData.PLAYER_CALLING);
-                                player.SetData(EntityData.PLAYER_PHONE_TALKING, target);
-                                target.SetData(EntityData.PLAYER_PHONE_TALKING, player);
-                                
-                                player.SendChatMessage(Constants.COLOR_INFO + InfoRes.call_received);
-                                target.SendChatMessage(Constants.COLOR_INFO + InfoRes.call_taken);
-
-                                // Store call starting time
-                                target.SetData(EntityData.PLAYER_PHONE_CALL_STARTED, Globals.GetTotalSeconds());
-                                return;
-                            }
-                        }
-                        else if (target.GetData(EntityData.PLAYER_CALLING) == player)
+                        if (factionJob == faction || (Faction.IsPoliceMember(player) && factionJob == Constants.FACTION_POLICE) || factionJob == job + 100)
                         {
                             // Link both players in the same call
                             target.ResetData(EntityData.PLAYER_CALLING);
                             player.SetData(EntityData.PLAYER_PHONE_TALKING, target);
                             target.SetData(EntityData.PLAYER_PHONE_TALKING, player);
-                            
+                                
                             player.SendChatMessage(Constants.COLOR_INFO + InfoRes.call_received);
-                           target.SendChatMessage(Constants.COLOR_INFO + InfoRes.call_taken);
+                            target.SendChatMessage(Constants.COLOR_INFO + InfoRes.call_taken);
 
                             // Store call starting time
                             target.SetData(EntityData.PLAYER_PHONE_CALL_STARTED, Globals.GetTotalSeconds());
                             return;
                         }
+                    }
+                    else if (target.GetData(EntityData.PLAYER_CALLING) == player)
+                    {
+                        // Link both players in the same call
+                        target.ResetData(EntityData.PLAYER_CALLING);
+                        player.SetData(EntityData.PLAYER_PHONE_TALKING, target);
+                        target.SetData(EntityData.PLAYER_PHONE_TALKING, player);
+                            
+                        player.SendChatMessage(Constants.COLOR_INFO + InfoRes.call_received);
+                        target.SendChatMessage(Constants.COLOR_INFO + InfoRes.call_taken);
+
+                        // Store call starting time
+                        target.SetData(EntityData.PLAYER_PHONE_CALL_STARTED, Globals.GetTotalSeconds());
+                        return;
                     }
                 }
 

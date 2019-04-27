@@ -141,8 +141,7 @@
         public const string COM_EQUIPMENT = "equipment";
         public const string COM_CONTROL = "control";
         public const string COM_PUT = "put";
-        public const string 
-            EMOVE = "remove";
+        public const string COM_REMOVE = "remove";
         public const string COM_REINFORCES = "reinforces";
         public const string COM_LICENSE = "license";
         public const string COM_BREATHALYZER = "breathalyzer";

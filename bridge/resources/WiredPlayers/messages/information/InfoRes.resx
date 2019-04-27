@@ -813,4 +813,7 @@
   <data name="commands_from" xml:space="preserve">
     <value>Commandos de {0}:</value>
   </data>
+  <data name="vehicle_unparked" xml:space="preserve">
+    <value>Has sacado tu vehículo del aparcamiento.</value>
+  </data>
 </root>

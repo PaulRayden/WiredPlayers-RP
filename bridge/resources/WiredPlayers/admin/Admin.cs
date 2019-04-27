@@ -648,7 +648,7 @@ namespace WiredPlayers.admin
                         break;
                     case Commands.ARG_HOSPITAL:
                         player.Dimension = 0;
-                        player.Position = new Vector3(-1385.481f, -976.4036f, 9.273162f);
+                        player.Position = new Vector3(-242.862f, 6325.652f, 32.42619f);
                         player.SetData(EntityData.PLAYER_BUSINESS_ENTERED, 0);
                         player.SetData(EntityData.PLAYER_HOUSE_ENTERED, 0);
                         break;

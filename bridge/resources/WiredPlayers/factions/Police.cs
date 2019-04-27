@@ -275,17 +275,17 @@ namespace WiredPlayers.factions
             else
             {
                 Vehicle vehicle = Vehicles.GetClosestVehicle(player, 3.5f);
-                if (vehicle == null)
+                if (vehicle != null)
                 {
                     int vehicleId = vehicle.GetData(EntityData.VEHICLE_ID);
                     string checkTitle = string.Format(GenRes.vehicle_check_title, vehicleId);
                     string model = vehicle.GetData(EntityData.VEHICLE_MODEL);
                     string plate = vehicle.GetData(EntityData.VEHICLE_PLATE);
                     string owner = vehicle.GetData(EntityData.VEHICLE_OWNER);
-                    player.SendChatMessage(checkTitle);
-                    player.SendChatMessage(GenRes.vehicle_model + model);
-                    player.SendChatMessage(GenRes.vehicle_plate + plate);
-                    player.SendChatMessage(GenRes.owner + owner);
+                    player.SendChatMessage(Constants.COLOR_INFO + checkTitle);
+                    player.SendChatMessage(Constants.COLOR_INFO + GenRes.vehicle_model + Constants.COLOR_HELP + model);
+                    player.SendChatMessage(Constants.COLOR_INFO + GenRes.vehicle_plate + Constants.COLOR_HELP + plate);
+                    player.SendChatMessage(Constants.COLOR_INFO + GenRes.owner + Constants.COLOR_HELP + owner);
 
                     string message = string.Format(InfoRes.check_vehicle_plate, player.Name, model);
 
@@ -396,75 +396,92 @@ namespace WiredPlayers.factions
             }
         }
 
-        [Command(Commands.COM_FINE, Commands.HLP_FINE_COMMAND)]
-        public void FineCommand(Client player, string name = "", string surname = "", string amount = "", string reason = "")
+        [Command(Commands.COM_FINE, Commands.HLP_FINE_COMMAND, GreedyArg = true)]
+        public void FineCommand(Client player, string arguments)
         {
-            if (name == string.Empty)
-            {
-                player.SendChatMessage(Constants.COLOR_HELP + Commands.HLP_FINE_COMMAND);
-            }
-            else if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
-            {
-                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
-            }
-            else if (player.GetData(EntityData.PLAYER_ON_DUTY) == 0)
-            {
-                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_on_duty);
-            }
-            else if (!Faction.IsPoliceMember(player))
+            if(!Faction.IsPoliceMember(player))
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_police_faction);
+                return;
+            }
+
+            if(player.GetData(EntityData.PLAYER_ON_DUTY) == 0)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_on_duty);
+                return;
+            }
+
+            // Initialize the target player
+            Client target = null;
+
+            // Get the message splitted
+            string[] args = arguments.Split(' ');
+
+            if (int.TryParse(args[0], out int playerId))
+            {
+                // The player sent the player's identifier
+                target = Globals.GetPlayerById(playerId);
+
+                // Remove the id from the parameters
+                args = args.Skip(1).ToArray();
+            }
+            else if (args.Length >= 2)
+            {
+                // The player sent the name and surname
+                target = NAPI.Player.GetPlayerFromName(args[0] + " " + args[1]);
+
+                // Remove the name and surname from the parameters
+                args = args.Skip(2).ToArray();
             }
             else
             {
-                Client target = null;
+                player.SendChatMessage(Constants.COLOR_HELP + Commands.HLP_FINE_COMMAND);
+                return;
+            }
 
-                if (int.TryParse(name, out int targetId) == true)
-                {
-                    target = Globals.GetPlayerById(targetId);
-                    reason = amount;
-                    amount = surname;
-                }
-                else
-                {
-                    target = NAPI.Player.GetPlayerFromName(name + " " + surname);
-                }
-                if (target != null && target.GetData(EntityData.PLAYER_PLAYING) != null)
-                {
-                    if (player.Position.DistanceTo(target.Position) > 2.5f)
-                    {
-                        player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_too_far);
-                    }
-                    else if (target == player)
-                    {
-                        player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_fined_himself);
-                    }
-                    else
-                    {
-                        FineModel fine = new FineModel();
-                        {
-                            fine.officer = player.Name;
-                            fine.target = target.Name;
-                            fine.amount = int.Parse(amount);
-                            fine.reason = reason;
-                        }
+            if (target == null || player.Position.DistanceTo(target.Position) > 2.5f)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_too_far);
+                return;
+            }
+            
+            if(target == player)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_fined_himself);
+                return;
+            }
 
-                        string playerMessage = string.Format(InfoRes.fine_given, target.Name);
-                        string targetMessage = string.Format(InfoRes.fine_received, player.Name);
-                        player.SendChatMessage(Constants.COLOR_INFO + playerMessage);
-                        target.SendChatMessage(Constants.COLOR_INFO + targetMessage);
+            if (args.Length < 2)
+            {
+                player.SendChatMessage(Constants.COLOR_HELP + Commands.HLP_FINE_COMMAND);
+                return;
+            }
 
-                        Task.Factory.StartNew(() =>
-                        {
-                            // Insert the fine into the database
-                            Database.InsertFine(fine);
-                        });
-                    }
-                }
-                else
+            // Get the money amount
+            if (int.TryParse(args[0], out int money))
+            {
+                FineModel fine = new FineModel();
                 {
-                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_found);
+                    fine.officer = player.Name;
+                    fine.target = target.Name;
+                    fine.amount = money;
+                    fine.reason = string.Join(' ', args.Skip(1).ToArray());
                 }
+
+                Task.Factory.StartNew(() =>
+                {
+                    // Insert the fine into the database
+                    Database.InsertFine(fine);
+                });
+
+                // Send the message to both players
+                player.SendChatMessage(Constants.COLOR_INFO + string.Format(InfoRes.fine_given, target.Name));
+                target.SendChatMessage(Constants.COLOR_INFO + string.Format(InfoRes.fine_received, player.Name));
+            }
+            else
+            {
+                // Send the error message to the player
+                player.SendChatMessage(Constants.COLOR_HELP + Commands.HLP_FINE_COMMAND);
             }
         }
 

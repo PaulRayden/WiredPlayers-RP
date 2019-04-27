@@ -169,7 +169,7 @@ namespace WiredPlayers_Client.factions
 
         private void OnPlayerStartEnterVehicle(Vehicle vehicle, int seatId, Events.CancelEventArgs cancel)
         {
-            if(handcuffed && seatId == -1)
+            if(handcuffed && seatId == Constants.VEHICLE_SEAT_DRIVER)
             {
                 // Prevent the player from driving the vehicle
                 cancel.Cancel = true;

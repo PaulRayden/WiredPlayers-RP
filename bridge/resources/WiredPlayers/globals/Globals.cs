@@ -150,7 +150,7 @@ namespace WiredPlayers.globals
                     GeneratePlayerPayday(player);
                 }
                 player.SetData(EntityData.PLAYER_PLAYED, played + 1);
-
+                
                 // Check if the player is injured waiting for the hospital respawn
                 if (player.GetData(EntityData.TIME_HOSPITAL_RESPAWN) != null && player.GetData(EntityData.TIME_HOSPITAL_RESPAWN) <= totalSeconds)
                 {
@@ -1982,6 +1982,12 @@ namespace WiredPlayers.globals
                 string sexDescription = player.GetData(EntityData.PLAYER_SEX) == Constants.SEX_MALE ? GenRes.sex_male : GenRes.sex_female;
 
                 Client target = int.TryParse(targetString, out int targetId) ? GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
+
+                if(target == null || player.Position.DistanceTo(target.Position) > 2.5f)
+                {
+                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_too_far);
+                    return;
+                }
 
                 switch (documentation.ToLower())
                 {

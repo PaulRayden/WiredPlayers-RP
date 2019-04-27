@@ -68,7 +68,7 @@ namespace WiredPlayers.chat
                                 target.SendChatMessage(Constants.COLOR_CHAT_DO + player.Name + "[ID: " + player.Value + "] " + message);
                                 break;
                             case Constants.MESSAGE_OOC:
-                                target.SendChatMessage(oocMessageColor + "(([ID: " + player.Value + "] " + player.Name + ": " + message);
+                                target.SendChatMessage(oocMessageColor + "(([ID: " + player.Value + "] " + player.Name + ": " + message + "))");
                                 break;
                             case Constants.MESSAGE_DISCONNECT:
                                 target.SendChatMessage(Constants.COLOR_HELP + "[ID: " + player.Value + "] " + player.Name + ": " + message);
