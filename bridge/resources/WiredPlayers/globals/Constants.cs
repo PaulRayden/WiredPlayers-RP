@@ -659,7 +659,7 @@ namespace WiredPlayers.globals
             new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 8, 2, 0),
             new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 9, 0, 0),
             new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 10, 58, 0),
-            new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 11, 9, 1),
+            new UniformModel(0, FACTION_EMERGENCY, SEX_FEMALE, 11, 9, 2),
 
             // Male Sheriff uniform
             new UniformModel(0, FACTION_SHERIFF, SEX_MALE, 0, 0, 0),
@@ -3076,10 +3076,8 @@ namespace WiredPlayers.globals
 
         public static List<Vector3> SHIP_SPAWNS = new List<Vector3>()
         {
-            new Vector3(-727.1069f, -1327.44f, -0.4730833f),
-            new Vector3(-731.7827f, -1334.567f, -0.4733995f),
-            new Vector3(-737.4061f, -1340.965f, -0.4733122f),
-            new Vector3(-743.5413f, -1347.753f, -0.473477f)
+            new Vector3(1477.21f, 3790.257f, 29.74804f),
+            new Vector3(1456.734f, 3786.735f, 29.78764f)
         };
 
         public static List<GarbageModel> GARBAGE_LIST = new List<GarbageModel>()

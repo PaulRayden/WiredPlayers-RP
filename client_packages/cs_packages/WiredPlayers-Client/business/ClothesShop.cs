@@ -10,6 +10,7 @@ namespace WiredPlayers_Client.business
 {
     class ClothesShop : Events.Script
     {
+        private int customCamera;
         private int selectedIndex = -1;
         private List<ClothesModel> clothesTypes;
 
@@ -20,7 +21,8 @@ namespace WiredPlayers_Client.business
             Events.Add("showTypeClothes", ShowTypeClothesEvent);
             Events.Add("replacePlayerClothes", ReplacePlayerClothesEvent);
             Events.Add("purchaseClothes", PurchaseClothesEvent);
-            Events.Add("clearClothes", ClearClothesEvent); 
+            Events.Add("clearClothes", ClearClothesEvent);
+            Events.Add("closeClothesMenu", CloseClothesMenuEvent);
         }
 
         private void ShowClothesBusinessPurchaseMenuEvent(object[] args)
@@ -31,6 +33,17 @@ namespace WiredPlayers_Client.business
             // Get the variables from the arguments
             string business = args[0].ToString();
             float price = (float)Convert.ToDouble(args[1]);
+
+            // Create a custom camera
+            float forwardX = Player.LocalPlayer.Position.X + (Player.LocalPlayer.GetForwardX() * 1.5f);
+            float forwardY = Player.LocalPlayer.Position.Y + (Player.LocalPlayer.GetForwardY() * 1.5f);
+            customCamera = RAGE.Game.Cam.CreateCamera(RAGE.Game.Misc.GetHashKey("DEFAULT_SCRIPTED_CAMERA"), true);
+            RAGE.Game.Cam.SetCamCoord(customCamera, forwardX, forwardY, Player.LocalPlayer.Position.Z + 0.5f);
+            RAGE.Game.Cam.PointCamAtCoord(customCamera, Player.LocalPlayer.Position.X, Player.LocalPlayer.Position.Y, Player.LocalPlayer.Position.Z);
+
+            // Enable the camera
+            RAGE.Game.Cam.SetCamActive(customCamera, true);
+            RAGE.Game.Cam.RenderScriptCams(true, false, 0, true, false, 0);
 
             // Show clothes menu
             Browser.CreateBrowserEvent(new object[] { "package://statics/html/sideMenu.html", "populateClothesShopMenu", JsonConvert.SerializeObject(Constants.CLOTHES_TYPES), business, price });
@@ -112,6 +125,16 @@ namespace WiredPlayers_Client.business
 
             // Clear the not purchased clothes
             Events.CallRemote("dressEquipedClothes", type, slot);
+        }
+
+        private void CloseClothesMenuEvent(object[] args)
+        {
+            // Make the default camera active
+            RAGE.Game.Cam.DestroyCam(customCamera, true);
+            RAGE.Game.Cam.RenderScriptCams(false, false, 0, true, false, 0);
+
+            // Destroy the browser
+            Browser.DestroyBrowserEvent(null);
         }
     }
 }

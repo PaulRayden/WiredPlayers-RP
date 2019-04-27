@@ -759,7 +759,7 @@ function populateClothesShopHome() {
 		
 		exitButton.onclick = (function() {
 			// Exit the menu
-			mp.trigger('destroyBrowser');
+			mp.trigger('closeClothesMenu');
 		});
 		
 		options.appendChild(exitButton);

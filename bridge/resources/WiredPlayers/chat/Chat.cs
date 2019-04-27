@@ -145,8 +145,11 @@ namespace WiredPlayers.chat
             }
             else
             {
+                // Get the server time            
+                string timeString = "[" + DateTime.Now.ToString("HH:mm:ss") + "." + DateTime.Now.Millisecond + "] ";
+
                 SendMessageToNearbyPlayers(player, message, Constants.MESSAGE_TALK, player.Dimension > 0 ? 7.5f : 10.0f);
-                NAPI.Util.ConsoleOutput("[ID: " + player.Value + "] " + player.Name + GenRes.chat_say + message);
+                NAPI.Util.ConsoleOutput(timeString + "[ID:" + player.Value + "] " + player.Name + GenRes.chat_say + message);
             }
         }
 
@@ -160,8 +163,11 @@ namespace WiredPlayers.chat
         [RemoteEvent("logPlayerCommand")]
         public void LogPlayerCommandEvent(Client player, string command)
         {
+            // Get the server time            
+            string timeString = "[" + DateTime.Now.ToString("HH:mm:ss") + "." + DateTime.Now.Millisecond + "] ";
+
             // Log the command used
-            NAPI.Util.ConsoleOutput(string.Format(GenRes.command_used, player.Value, player.Name, command));
+            NAPI.Util.ConsoleOutput(timeString + string.Format(GenRes.command_used, player.Value, player.Name, command));
         }
 
        [Command(Commands.COM_SAY, Commands.HLP_SAY_COMMAND, GreedyArg = true)]

@@ -232,7 +232,7 @@ namespace WiredPlayers.messages.general {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a [ID: {0}] {1} ha usado el comando /{2}.
+        ///   Busca una cadena traducida similar a [ID:{0}] {1} ha usado el comando /{2}.
         /// </summary>
         public static string command_used {
             get {

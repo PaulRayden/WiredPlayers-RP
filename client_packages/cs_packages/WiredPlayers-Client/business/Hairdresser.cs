@@ -10,8 +10,9 @@ namespace WiredPlayers_Client.business
 {
     class Hairdresser : Events.Script
     {
-        List<int> facialHair = null;
-        FacialHair initialHair = null;
+        private int customCamera;
+        private List<int> facialHair = null;
+        private FacialHair initialHair = null;
 
         public Hairdresser()
         {
@@ -42,6 +43,17 @@ namespace WiredPlayers_Client.business
             facialHair.Add(initialHair.eyebrowsColor);
             facialHair.Add(initialHair.beardModel);
             facialHair.Add(initialHair.beardColor);
+
+            // Create a custom camera
+            float forwardX = Player.LocalPlayer.Position.X + (Player.LocalPlayer.GetForwardX() * 1.5f);
+            float forwardY = Player.LocalPlayer.Position.Y + (Player.LocalPlayer.GetForwardY() * 1.5f);
+            customCamera = RAGE.Game.Cam.CreateCamera(RAGE.Game.Misc.GetHashKey("DEFAULT_SCRIPTED_CAMERA"), true);
+            RAGE.Game.Cam.SetCamCoord(customCamera, forwardX, forwardY, Player.LocalPlayer.Position.Z + 0.5f);
+            RAGE.Game.Cam.PointCamAtCoord(customCamera, Player.LocalPlayer.Position.X, Player.LocalPlayer.Position.Y, Player.LocalPlayer.Position.Z);
+
+            // Enable the camera
+            RAGE.Game.Cam.SetCamActive(customCamera, true);
+            RAGE.Game.Cam.RenderScriptCams(true, false, 0, true, false, 0);
 
             // Create hairdressers' menu
             Browser.CreateBrowserEvent(new object[] { "package://statics/html/sideMenu.html", "populateHairdresserMenu", faceOption, JsonConvert.SerializeObject(facialHair), businessName });
@@ -80,6 +92,10 @@ namespace WiredPlayers_Client.business
             generatedFace.beardModel = facialHair[5] < 0 || facialHair[5] > 255 ? 255 : facialHair[5];
             generatedFace.beardColor = facialHair[6];
 
+            // Make the default camera active
+            RAGE.Game.Cam.DestroyCam(customCamera, true);
+            RAGE.Game.Cam.RenderScriptCams(false, false, 0, true, false, 0);
+
             Events.CallRemote("changeHairStyle", JsonConvert.SerializeObject(generatedFace));
         }
 
@@ -92,6 +108,10 @@ namespace WiredPlayers_Client.business
             Player.LocalPlayer.SetHeadOverlay(2, initialHair.eyebrowsModel, 1.0f);
             Player.LocalPlayer.SetHeadOverlayColor(1, 1, initialHair.beardColor, 0);
             Player.LocalPlayer.SetHeadOverlayColor(2, 1, initialHair.eyebrowsColor, 0);
+
+            // Make the default camera active
+            RAGE.Game.Cam.DestroyCam(customCamera, true);
+            RAGE.Game.Cam.RenderScriptCams(false, false, 0, true, false, 0);
         }
     }
 }

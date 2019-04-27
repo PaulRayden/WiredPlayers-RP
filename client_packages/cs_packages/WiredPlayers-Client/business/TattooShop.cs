@@ -11,6 +11,7 @@ namespace WiredPlayers_Client.business
 {
     class TattooShop : Events.Script
     {
+        private int customCamera;
         private List<Tattoo> playerTattoos = null;
         private List<Tattoo> tattooList = null;
         private List<Tattoo> zoneTattoos = null;
@@ -40,6 +41,17 @@ namespace WiredPlayers_Client.business
             playerTattoos = JsonConvert.DeserializeObject<List<Tattoo>>(playerTattoosJson);
             tattooList = JsonConvert.DeserializeObject<List<Tattoo>>(tattoosJson);
             string tattooZoneJson = JsonConvert.SerializeObject(Constants.TATTOO_ZONES);
+
+            // Create a custom camera
+            float forwardX = Player.LocalPlayer.Position.X + (Player.LocalPlayer.GetForwardX() * 1.5f);
+            float forwardY = Player.LocalPlayer.Position.Y + (Player.LocalPlayer.GetForwardY() * 1.5f);
+            customCamera = RAGE.Game.Cam.CreateCamera(RAGE.Game.Misc.GetHashKey("DEFAULT_SCRIPTED_CAMERA"), true);
+            RAGE.Game.Cam.SetCamCoord(customCamera, forwardX, forwardY, Player.LocalPlayer.Position.Z + 0.5f);
+            RAGE.Game.Cam.PointCamAtCoord(customCamera, Player.LocalPlayer.Position.X, Player.LocalPlayer.Position.Y, Player.LocalPlayer.Position.Z);
+
+            // Enable the camera
+            RAGE.Game.Cam.SetCamActive(customCamera, true);
+            RAGE.Game.Cam.RenderScriptCams(true, false, 0, true, false, 0);
 
             // Show tattoos menu
             Browser.CreateBrowserEvent(new object[] { "package://statics/html/sideMenu.html", "populateTattooMenu", tattooZoneJson, business, price });
@@ -103,6 +115,10 @@ namespace WiredPlayers_Client.business
 
         private void ExitTattooShopEvent(object[] args)
         {
+            // Make the default camera active
+            RAGE.Game.Cam.DestroyCam(customCamera, true);
+            RAGE.Game.Cam.RenderScriptCams(false, false, 0, true, false, 0);
+
             // Close the purchase menu
             Browser.DestroyBrowserEvent(null);
 

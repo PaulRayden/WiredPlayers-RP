@@ -117,9 +117,9 @@ namespace WiredPlayers.business
             motorbikeShopBlip.Sprite = 226;
 
             // Boat dealer creation
-            shipShopTextLabel = NAPI.TextLabel.CreateTextLabel("/" + Commands.COM_CATALOG, new Vector3(1225.489f, 2712.924f, 37.76197f), 10.0f, 0.5f, 4, new Color(190, 235, 100));
-            NAPI.TextLabel.CreateTextLabel(GenRes.catalog_help, new Vector3(1225.489f, 2712.924f, 37.66197f), 10.0f, 0.5f, 4, new Color(255, 255, 255));
-            Blip shipShopBlip = NAPI.Blip.CreateBlip(new Vector3(1225.489f, 2712.924f, 37.76197f));
+            shipShopTextLabel = NAPI.TextLabel.CreateTextLabel("/" + Commands.COM_CATALOG, new Vector3(1529.877f, 3778.535f, 34.51152f), 10.0f, 0.5f, 4, new Color(190, 235, 100));
+            NAPI.TextLabel.CreateTextLabel(GenRes.catalog_help, new Vector3(1529.877f, 3778.535f, 34.41152f), 10.0f, 0.5f, 4, new Color(255, 255, 255));
+            Blip shipShopBlip = NAPI.Blip.CreateBlip(new Vector3(1529.877f, 3778.535f, 34.51152f));
             shipShopBlip.Name = GenRes.boat_dealer;
             shipShopBlip.ShortRange = true;
             shipShopBlip.Sprite = 455;
@@ -190,8 +190,8 @@ namespace WiredPlayers.business
                     testFinishCheckpoint = new Vector3(2134.755f, 4777.85f, 40.97029f);
                     break;
                 case 2:
-                    vehicle = NAPI.Vehicle.CreateVehicle(vehicleModel, new Vector3(-717.3467f, -1319.792f, -0.42f), 180.0f, new Color(0, 0, 0), new Color(0, 0, 0));
-                    testFinishCheckpoint = new Vector3(-711.267f, -1351.501f, -1.359f);
+                    vehicle = NAPI.Vehicle.CreateVehicle(vehicleModel, new Vector3(1352.241f, 3750.85f, 30.10234f), 180.0f, new Color(0, 0, 0), new Color(0, 0, 0));
+                    testFinishCheckpoint = new Vector3(1427.16f, 3761.225f, 30.42179f);
                     break;
             }
 
