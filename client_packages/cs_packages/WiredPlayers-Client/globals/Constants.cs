@@ -6,6 +6,8 @@ namespace WiredPlayers_Client.globals
 {
     class Constants
     {
+        public static readonly ushort INVALID_VALUE = 65535;
+
         public static readonly int SEX_MALE = 0;
         public static readonly int SEX_FEMALE = 1;
 

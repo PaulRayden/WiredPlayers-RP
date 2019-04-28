@@ -3302,7 +3302,7 @@ namespace WiredPlayers.globals
         public void PlayerCommand(Client player)
         {
             // Get players basic data
-            PlayerData.RetrieveBasicDataEvent(player, player);
+            PlayerData.RetrieveBasicDataEvent(player, player.Value);
         }
     }
 }

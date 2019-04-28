@@ -1,5 +1,4 @@
 ﻿using RAGE;
-using RAGE.Elements;
 using WiredPlayers_Client.globals;
 using System;
 
@@ -7,7 +6,7 @@ namespace WiredPlayers_Client.character
 {
     class PlayerData : Events.Script
     {
-        private static Player target = null;
+        private static ushort playerId;
 
         public PlayerData()
         {
@@ -16,6 +15,10 @@ namespace WiredPlayers_Client.character
             Events.Add("showVehiclesData", ShowVehiclesDataEvent);
             Events.Add("showExtendedData", ShowExtendedDataEvent);
             Events.Add("retrievePanelData", RetrievePanelDataEvent);
+            Events.Add("closePlayerData", ClosePlayerDataEvent);
+
+            // Initialize the player
+            playerId = Constants.INVALID_VALUE;
         }
 
         private void ShowPlayerDataEvent(object[] args)
@@ -29,11 +32,10 @@ namespace WiredPlayers_Client.character
             string job = args[6].ToString();
             string rank = args[7].ToString();
 
-            if (args[0] != null)
+            if (playerId == Constants.INVALID_VALUE)
             {
-                // Get the player
-                int playerId = Convert.ToInt32(args[0]);
-                target = Entities.Players.GetAtRemote((ushort)playerId);
+                // Get the player identifier
+                playerId = Convert.ToUInt16(args[0]);
             }
 
             if (Browser.customBrowser == null)
@@ -69,7 +71,16 @@ namespace WiredPlayers_Client.character
         private void RetrievePanelDataEvent(object[] args)
         {
             // Call the event from the parameters
-            Events.CallRemote(args[0].ToString(), target);
+            Events.CallRemote(args[0].ToString(), playerId);
+        }
+
+        private void ClosePlayerDataEvent(object[] args)
+        {
+            // Clear the player
+            playerId = Constants.INVALID_VALUE;
+
+            // Destroy the browser
+            Browser.DestroyBrowserEvent(null);
         }
     }
 }

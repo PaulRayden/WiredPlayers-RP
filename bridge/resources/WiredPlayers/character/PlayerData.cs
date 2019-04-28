@@ -14,8 +14,11 @@ namespace WiredPlayers.character
     public class PlayerData : Script
     {
         [RemoteEvent("retrieveBasicData")]
-        public static void RetrieveBasicDataEvent(Client player, Client target)
+        public static void RetrieveBasicDataEvent(Client player, int targetId)
         {
+            // Get the target player
+            Client target = NAPI.Pools.GetAllPlayers().Find(p => p.Value == targetId);
+
             // Get the basic data
             string age = target.GetData(EntityData.PLAYER_AGE) + GenRes.years;
             string sex = target.GetData(EntityData.PLAYER_SEX) == Constants.SEX_MALE ? GenRes.sex_male : GenRes.sex_female;
@@ -71,11 +74,14 @@ namespace WiredPlayers.character
         }
 
         [RemoteEvent("retrievePropertiesData")]
-        public static void RetrievePropertiesDataEvent(Client player, Client target)
+        public static void RetrievePropertiesDataEvent(Client player, int targetId)
         {
             // Initialize the variables
             List<string> houseAddresses = new List<string>();
             string rentedHouse = string.Empty;
+
+            // Get the target player
+            Client target = NAPI.Pools.GetAllPlayers().Find(p => p.Value == targetId);
 
             // Get the houses where the player is the owner
             List<HouseModel> houseList = House.houseList.Where(h => h.owner == target.Name).ToList();
@@ -98,11 +104,14 @@ namespace WiredPlayers.character
         }
 
         [RemoteEvent("retrieveVehiclesData")]
-        public static void RetrieveVehiclesDataEvent(Client player, Client target)
+        public static void RetrieveVehiclesDataEvent(Client player, int targetId)
         {
             // Initialize the variables
             List<string> ownedVehicles = new List<string>();
             List<string> lentVehicles = new List<string>();
+
+            // Get the target player
+            Client target = NAPI.Pools.GetAllPlayers().Find(p => p.Value == targetId);
 
             // Get the vehicles in the game
             List<Vehicle> vehicles = NAPI.Pools.GetAllVehicles().Where(v => Vehicles.HasPlayerVehicleKeys(target, v)).ToList();
@@ -147,8 +156,11 @@ namespace WiredPlayers.character
         }
 
         [RemoteEvent("retrieveExtendedData")]
-        public static void RetrieveExtendedDataEvent(Client player, Client target)
+        public static void RetrieveExtendedDataEvent(Client player, int targetId)
         {
+            // Get the target player
+            Client target = NAPI.Pools.GetAllPlayers().Find(p => p.Value == targetId);
+
             // Get the played time
             TimeSpan played = TimeSpan.FromMinutes(player.GetData(EntityData.PLAYER_PLAYED));
             string playedTime = Convert.ToInt32(played.TotalHours) + "h " + Convert.ToInt32(played.Minutes) + "m";

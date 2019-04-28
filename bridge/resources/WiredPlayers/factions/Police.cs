@@ -1087,7 +1087,7 @@ namespace WiredPlayers.factions
             Client target = int.TryParse(targetString, out int targetId) ? Globals.GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
 
             // Show the data from the player
-            PlayerData.RetrieveBasicDataEvent(player, target);
+            PlayerData.RetrieveBasicDataEvent(player, target.Value);
         }
     }
 }

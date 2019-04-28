@@ -1866,7 +1866,7 @@ namespace WiredPlayers.admin
                 if (target != null)
                 {
                     // Get player's basic data
-                    PlayerData.RetrieveBasicDataEvent(player, target);
+                    PlayerData.RetrieveBasicDataEvent(player, target.Value);
                 }
                 else
                 {
