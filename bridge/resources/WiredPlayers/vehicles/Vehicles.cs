@@ -840,9 +840,7 @@ namespace WiredPlayers.vehicles
                     if (vehicle == null)
                     {
                         // Check if the vehicle is parked
-                        VehicleModel vehicleModel = Parking.GetParkedVehicleById(vehicleId);
-
-                        if (vehicle == null)
+                        if (Parking.GetParkedVehicleById(vehicleId) == null)
                         {
                             player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.vehicle_not_exists);
                             return;

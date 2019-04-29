@@ -708,7 +708,7 @@ namespace WiredPlayers.admin
                                     {
                                         business.type = type;
                                         business.ipl = arguments[2] == Commands.ARG_INNER ? Business.GetBusinessTypeIpl(type) : string.Empty;
-                                        business.position = new Vector3(player.Position.X, player.Position.Y, player.Position.Z - 0.8f);
+                                        business.position = new Vector3(player.Position.X, player.Position.Y, player.Position.Z - 1.0f);
                                         business.dimension = arguments[2] == Commands.ARG_INNER ? player.Dimension : 0;
                                         business.multiplier = 3.0f;
                                         business.owner = string.Empty;
@@ -729,7 +729,8 @@ namespace WiredPlayers.admin
                                                 }
                                                 else
                                                 {
-                                                    business.businessCheckpoint = NAPI.Checkpoint.CreateCheckpoint(CheckpointType.Cyclinder, business.position, new Vector3(), 2.5f, new Color(198, 40, 40, 200));
+                                                    business.businessColshape = NAPI.ColShape.CreateCylinderColShape(business.position, 2.5f, 5.0f);
+                                                    business.businessMarker = NAPI.Marker.CreateMarker(MarkerType.VerticalCylinder, business.position, new Vector3(), new Vector3(), 2.5f, new Color(198, 40, 40, 200));
                                                 }
 
                                                 // Add the business to the list
@@ -850,7 +851,8 @@ namespace WiredPlayers.admin
                                             if(business.ipl.Length == 0)
                                             {
                                                 // Delete the business checkpoint
-                                                business.businessCheckpoint.Delete();
+                                                business.businessMarker.Delete();
+                                                business.businessColshape.Delete();
                                             }
                                             else
                                             {

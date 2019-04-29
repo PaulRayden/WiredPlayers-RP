@@ -24,7 +24,8 @@ namespace WiredPlayers.business
                 if(businessModel.ipl.Length == 0)
                 {
                     // We create the mark for each business
-                    businessModel.businessCheckpoint = NAPI.Checkpoint.CreateCheckpoint(CheckpointType.Cyclinder, businessModel.position, new Vector3(), 2.5f, new Color(198, 40, 40, 200));
+                    businessModel.businessColshape = NAPI.ColShape.CreateCylinderColShape(businessModel.position, 2.5f, 5.0f);
+                    businessModel.businessMarker = NAPI.Marker.CreateMarker(MarkerType.VerticalCylinder, businessModel.position, new Vector3(), new Vector3(), 2.5f, new Color(198, 40, 40, 200));
                 }
                 else
                 {
@@ -32,17 +33,21 @@ namespace WiredPlayers.business
                     businessModel.businessLabel = NAPI.TextLabel.CreateTextLabel(businessModel.name, businessModel.position, 30.0f, 0.75f, 4, new Color(255, 255, 255), false, businessModel.dimension);
                 }
 
-                // We mark the blip in the map
-                foreach (BusinessBlipModel blipModel in Constants.BUSINESS_BLIP_LIST)
+                // Get the blip model corresponding to the business
+                BusinessBlipModel businessBlipModel = Constants.BUSINESS_BLIP_LIST.Where(b => b.type == businessModel.type).FirstOrDefault();
+
+                if (businessBlipModel == null) continue;
+
+                // Check if there's already a blip
+                Blip businessBlip = NAPI.Pools.GetAllBlips().Where(b => b.Sprite == businessBlipModel.blip).FirstOrDefault();
+
+                if(businessBlip == null || !businessBlip.Exists)
                 {
-                    if (blipModel.id == businessModel.id)
-                    {
-                        Blip businessBlip = NAPI.Blip.CreateBlip(businessModel.position);
-                        businessBlip.Name = businessModel.name;
-                        businessBlip.Sprite = (uint)blipModel.blip;
-                        businessBlip.ShortRange = true;
-                        break;
-                    }
+                    // Create the business blip
+                    businessBlip = NAPI.Blip.CreateBlip(businessModel.position);
+                    businessBlip.Name = businessModel.name;
+                    businessBlip.Sprite = businessBlipModel.blip;
+                    businessBlip.ShortRange = true;
                 }
             }
         }
@@ -136,8 +141,8 @@ namespace WiredPlayers.business
             return Constants.TATTOO_LIST.Where(tattoo => tattoo.slot == zone && ((tattoo.maleHash.Length > 0 && sex == Constants.SEX_MALE) || (tattoo.femaleHash.Length > 0 && sex == Constants.SEX_FEMALE))).ToList();
         }
 
-        [ServerEvent(Event.PlayerEnterCheckpoint)]
-        public void PlayerEnterCheckpointEvent(Checkpoint checkpoint, Client player)
+        [ServerEvent(Event.PlayerEnterColshape)]
+        public void PlayerEnterColshapeEvent(ColShape colShape, Client player)
         {
             // Check if the checkpoint corresponds to a business
             BusinessModel business = businessList.Where(b => player.Position.DistanceTo(b.position) <= 3.5f).FirstOrDefault();
@@ -146,8 +151,8 @@ namespace WiredPlayers.business
             player.SetData(EntityData.PLAYER_BUSINESS_ENTERED, business == null ? 0 : business.id);
         }
 
-        [ServerEvent(Event.PlayerExitCheckpoint)]
-        public void PlayerExitCheckpointEvent(Checkpoint checkpoint, Client player)
+        [ServerEvent(Event.PlayerExitColshape)]
+        public void PlayerExitColshapeEvent(ColShape colShape, Client player)
         {
             // Set the business entered
             player.SetData(EntityData.PLAYER_BUSINESS_ENTERED, 0);

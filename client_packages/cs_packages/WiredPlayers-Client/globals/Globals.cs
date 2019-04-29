@@ -38,15 +38,6 @@ namespace WiredPlayers_Client.globals
 
             playerAttachments = new Dictionary<int, AttachmentModel>();
 
-            // Remove health regeneration
-            RAGE.Game.Player.SetPlayerHealthRechargeMultiplier(0.0f);
-
-            // Remove weapons from the vehicles
-            RAGE.Game.Player.DisablePlayerVehicleRewards();
-
-            // Remove the fade out after player's death
-            RAGE.Game.Misc.SetFadeOutAfterDeath(false);
-
             // Freeze the player until he logs in
             Player.LocalPlayer.FreezePosition(true);
         }
@@ -131,6 +122,15 @@ namespace WiredPlayers_Client.globals
 
         private void PlayerLoggedInEvent(object[] args)
         {
+            // Remove health regeneration
+            RAGE.Game.Player.SetPlayerHealthRechargeMultiplier(0.0f);
+
+            // Remove weapons from the vehicles
+            RAGE.Game.Player.DisablePlayerVehicleRewards();
+
+            // Remove the fade out after player's death
+            RAGE.Game.Misc.SetFadeOutAfterDeath(false);
+
             // Show the player as logged
             playerLogged = true;
         }

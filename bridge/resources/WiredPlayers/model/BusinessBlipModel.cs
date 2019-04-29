@@ -2,12 +2,12 @@
 {
     public class BusinessBlipModel
     {
-        public int id { get; set; }
-        public int blip { get; set; }
+        public int type { get; set; }
+        public uint blip { get; set; }
 
-        public BusinessBlipModel(int id, int blip)
+        public BusinessBlipModel(int type, uint blip)
         {
-            this.id = id;
+            this.type = type;
             this.blip = blip;
         }
     }

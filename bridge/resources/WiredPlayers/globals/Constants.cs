@@ -3296,16 +3296,14 @@ namespace WiredPlayers.globals
         // Highlighted businesses
         public static List<BusinessBlipModel> BUSINESS_BLIP_LIST = new List<BusinessBlipModel>()
         {
-            new BusinessBlipModel(3, 93),
-            new BusinessBlipModel(117, 93),
-            new BusinessBlipModel(259, 71),
-            new BusinessBlipModel(276, 68),
-            new BusinessBlipModel(280, 136),
-            new BusinessBlipModel(282, 121),
-            new BusinessBlipModel(283, 446),
-            new BusinessBlipModel(287, 75),
-            new BusinessBlipModel(288, 73),
-            new BusinessBlipModel(297, 52)
+            new BusinessBlipModel(Constants.BUSINESS_TYPE_BAR, 93),
+            new BusinessBlipModel(Constants.BUSINESS_TYPE_BARBER_SHOP, 71),
+            new BusinessBlipModel(Constants.BUSINESS_TYPE_FISHING, 68),
+            new BusinessBlipModel(Constants.BUSINESS_TYPE_DISCO, 136),
+            new BusinessBlipModel(Constants.BUSINESS_TYPE_MECHANIC, 446),
+            new BusinessBlipModel(Constants.BUSINESS_TYPE_TATTOO_SHOP, 75),
+            new BusinessBlipModel(Constants.BUSINESS_TYPE_CLOTHES, 73),
+            new BusinessBlipModel(Constants.BUSINESS_TYPE_24_7, 52)
         };
 
         // Job points

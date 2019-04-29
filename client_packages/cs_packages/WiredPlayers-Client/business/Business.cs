@@ -1,8 +1,8 @@
 ﻿using RAGE;
-using Newtonsoft.Json;
-using System.Collections.Generic;
 using WiredPlayers_Client.globals;
 using WiredPlayers_Client.model;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 using System;
 
 namespace WiredPlayers_Client.business

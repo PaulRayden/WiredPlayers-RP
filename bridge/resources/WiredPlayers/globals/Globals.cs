@@ -483,13 +483,20 @@ namespace WiredPlayers.globals
 
         private void UpdateInventory(Client player, ItemModel item, BusinessItemModel businessItem, int target)
         {
+            // Check if the item is a weapon
+            WeaponHash weaponHash = NAPI.Util.WeaponNameToModel(item.hash);
+
+            // Get the description and type
+            int type = weaponHash != 0 ? Constants.ITEM_TYPE_WEAPON : businessItem.type;
+            string description = weaponHash != 0 ? weaponHash.ToString() : businessItem.description;
+
             // Create the inventory item to update
             InventoryModel inventoryItem = new InventoryModel();
             {
                 inventoryItem.id = item.id;
                 inventoryItem.hash = item.hash;
-                inventoryItem.description = businessItem.description;
-                inventoryItem.type = businessItem.type;
+                inventoryItem.description = description;
+                inventoryItem.type = type;
                 inventoryItem.amount = item.amount;
             }
 
@@ -798,111 +805,6 @@ namespace WiredPlayers.globals
                     break;
                 }
             }
-        }
-
-        public static void ShowPlayerData(Client asker, Client player)
-        {
-
-
-            int rolePoints = player.GetData(EntityData.PLAYER_ROLE_POINTS);
-            string sex = player.GetData(EntityData.PLAYER_SEX) == Constants.SEX_MALE ? GenRes.sex_male : GenRes.sex_female;
-            string age = player.GetData(EntityData.PLAYER_AGE) + GenRes.years;
-            string money = player.GetSharedData(EntityData.PLAYER_MONEY) + "$";
-            string bank = player.GetSharedData(EntityData.PLAYER_BANK) + "$";
-            string job = GenRes.unemployed;
-            string faction = GenRes.no_faction;
-            string rank = GenRes.no_rank;
-            string houses = string.Empty;
-            string ownedVehicles = string.Empty;
-            string lentVehicles = player.GetData(EntityData.PLAYER_VEHICLE_KEYS);
-            TimeSpan played = TimeSpan.FromMinutes(player.GetData(EntityData.PLAYER_PLAYED));
-
-            // Check if the player has a job
-            foreach (JobModel jobModel in Constants.JOB_LIST)
-            {
-                if (player.GetData(EntityData.PLAYER_JOB) == jobModel.job)
-                {
-                    job = player.GetData(EntityData.PLAYER_SEX) == Constants.SEX_MALE ? jobModel.descriptionMale : jobModel.descriptionFemale;
-                    break;
-                }
-            }
-
-            // Check if the player is in any faction
-            foreach (FactionModel factionModel in Constants.FACTION_RANK_LIST)
-            {
-                if (player.GetData(EntityData.PLAYER_FACTION) == factionModel.faction && player.GetData(EntityData.PLAYER_RANK) == factionModel.rank)
-                {
-                    switch (factionModel.faction)
-                    {
-                        case Constants.FACTION_POLICE:
-                            faction = GenRes.police_faction;
-                            break;
-                        case Constants.FACTION_EMERGENCY:
-                            faction = GenRes.emergency_faction;
-                            break;
-                        case Constants.FACTION_NEWS:
-                            faction = GenRes.news_faction;
-                            break;
-                        case Constants.FACTION_TOWNHALL:
-                            faction = GenRes.townhall_faction;
-                            break;
-                        case Constants.FACTION_TAXI_DRIVER:
-                            faction = GenRes.transport_faction;
-                            break;
-                    }
-
-                    // Set player's rank
-                    rank = player.GetData(EntityData.PLAYER_SEX) == Constants.SEX_MALE ? factionModel.descriptionMale : factionModel.descriptionFemale;
-                    break;
-                }
-            }
-
-            // Check if the player has any rented house
-            if (player.GetSharedData(EntityData.PLAYER_RENT_HOUSE) > 0)
-            {
-                houses += " " + player.GetSharedData(EntityData.PLAYER_RENT_HOUSE);
-            }
-
-            // Get player's owned houses
-            foreach (HouseModel house in House.houseList)
-            {
-                if (house.owner == player.Name)
-                {
-                    houses += " " + house.id;
-                }
-            }
-
-            // Check for the player's owned vehicles
-            foreach (Vehicle vehicle in NAPI.Pools.GetAllVehicles())
-            {
-                if (vehicle.GetData(EntityData.VEHICLE_OWNER) == player.Name)
-                {
-                    ownedVehicles += " " + vehicle.GetData(EntityData.VEHICLE_ID);
-                }
-            }
-
-            foreach (ParkedCarModel parkedVehicle in Parking.parkedCars)
-            {
-                if (parkedVehicle.vehicle.owner == player.Name)
-                {
-                    ownedVehicles += " " + parkedVehicle.vehicle.id;
-                }
-            }
-
-            // Show all the information
-            asker.SendChatMessage(Constants.COLOR_INFO + InfoRes.basic_data);
-            asker.SendChatMessage(Constants.COLOR_HELP + GenRes.name + player.Name + "; " + GenRes.sex + sex + "; " + GenRes.age + age + "; " + GenRes.money + money + "; " + GenRes.bank + bank);
-            asker.SendChatMessage(Constants.COLOR_INFO + " ");
-            asker.SendChatMessage(Constants.COLOR_INFO + InfoRes.job_data);
-            asker.SendChatMessage(Constants.COLOR_HELP + GenRes.job + job + "; " + GenRes.faction + faction + "; " + GenRes.rank + rank);
-            asker.SendChatMessage(Constants.COLOR_INFO + " ");
-            asker.SendChatMessage(Constants.COLOR_INFO + InfoRes.properties);
-            asker.SendChatMessage(Constants.COLOR_HELP + GenRes.houses + houses);
-            asker.SendChatMessage(Constants.COLOR_HELP + GenRes.owned_vehicles + ownedVehicles);
-            asker.SendChatMessage(Constants.COLOR_HELP + GenRes.lent_vehicles + lentVehicles);
-            asker.SendChatMessage(Constants.COLOR_INFO + " ");
-            asker.SendChatMessage(Constants.COLOR_INFO + InfoRes.additional_data);
-            asker.SendChatMessage(Constants.COLOR_HELP + GenRes.played_time + (int)played.TotalHours + "h " + played.Minutes + "m; " + GenRes.role_points + rolePoints);
         }
 
         public static void AttachItemToPlayer(Client player, int itemId, string hash, string bodyPart, Vector3 position, Vector3 rotation, string entityKey)
