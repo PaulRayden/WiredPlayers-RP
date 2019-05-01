@@ -100,8 +100,11 @@ namespace WiredPlayers.character
 
             Task.Factory.StartNew(() =>
             {
-                // Save the player into database
-                Database.SaveCharacterInformation(character);
+                NAPI.Task.Run(() =>
+                {
+                    // Save the player into database
+                    Database.SaveCharacterInformation(character);
+                });
             });
         }
 

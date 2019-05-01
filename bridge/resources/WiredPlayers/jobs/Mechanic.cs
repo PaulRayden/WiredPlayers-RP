@@ -215,17 +215,20 @@ namespace WiredPlayers.jobs
 
                 Task.Factory.StartNew(() =>
                 {
-                    tunningModel.id = Database.AddTunning(tunningModel);
-                    tunningList.Add(tunningModel);
+                    NAPI.Task.Run(() =>
+                    {
+                        tunningModel.id = Database.AddTunning(tunningModel);
+                        tunningList.Add(tunningModel);
 
-                    // Remove consumed products
-                    item.amount -= totalProducts;
+                        // Remove consumed products
+                        item.amount -= totalProducts;
 
-                    // Update the amount into the database
-                    Database.UpdateItem(item);
+                        // Update the amount into the database
+                        Database.UpdateItem(item);
 
-                    // Confirmation message
-                    player.SendChatMessage(Constants.COLOR_INFO + InfoRes.vehicle_tunning);
+                        // Confirmation message
+                        player.SendChatMessage(Constants.COLOR_INFO + InfoRes.vehicle_tunning);
+                    });
                 });                
             }
             else

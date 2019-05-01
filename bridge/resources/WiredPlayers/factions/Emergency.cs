@@ -267,13 +267,16 @@ namespace WiredPlayers.factions
 
                 Task.Factory.StartNew(() =>
                 {
-                    // Add the blood consumption to the database
-                    bloodModel.id = Database.AddBloodTransaction(bloodModel);
-                    bloodList.Add(bloodModel);
+                    NAPI.Task.Run(() =>
+                    {
+                        // Add the blood consumption to the database
+                        bloodModel.id = Database.AddBloodTransaction(bloodModel);
+                        bloodList.Add(bloodModel);
 
-                    // Send the confirmation message to both players
-                    player.SendChatMessage(Constants.COLOR_ADMIN_INFO + string.Format(InfoRes.player_reanimated, target.Name));
-                    target.SendChatMessage(Constants.COLOR_SUCCESS + string.Format(SuccRes.target_reanimated, player.Name));
+                        // Send the confirmation message to both players
+                        player.SendChatMessage(Constants.COLOR_ADMIN_INFO + string.Format(InfoRes.player_reanimated, target.Name));
+                        target.SendChatMessage(Constants.COLOR_SUCCESS + string.Format(SuccRes.target_reanimated, player.Name));
+                    });
                 });
             }
         }
@@ -323,12 +326,15 @@ namespace WiredPlayers.factions
 
                 Task.Factory.StartNew(() =>
                 {
-                    // We add the blood unit to the database
-                    blood.id = Database.AddBloodTransaction(blood);
-                    bloodList.Add(blood);
+                    NAPI.Task.Run(() =>
+                    {
+                        // We add the blood unit to the database
+                        blood.id = Database.AddBloodTransaction(blood);
+                        bloodList.Add(blood);
 
-                    player.SendChatMessage(Constants.COLOR_INFO + string.Format(InfoRes.blood_extracted, target.Name));
-                    target.SendChatMessage(Constants.COLOR_INFO + string.Format(InfoRes.blood_given, player.Name));
+                        player.SendChatMessage(Constants.COLOR_INFO + string.Format(InfoRes.blood_extracted, target.Name));
+                        target.SendChatMessage(Constants.COLOR_INFO + string.Format(InfoRes.blood_given, player.Name));
+                    });
                 });
             }
         }

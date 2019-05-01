@@ -162,8 +162,11 @@ namespace WiredPlayers.factions
 
                             Task.Factory.StartNew(() =>
                             {
-                                policeControlCopy.id = Database.AddPoliceControlItem(policeControlCopy);
-                                copiedPoliceControlModels.Add(policeControlCopy);
+                                NAPI.Task.Run(() =>
+                                {
+                                    policeControlCopy.id = Database.AddPoliceControlItem(policeControlCopy);
+                                    copiedPoliceControlModels.Add(policeControlCopy);
+                                });
                             });
                         }
                         else
@@ -172,8 +175,11 @@ namespace WiredPlayers.factions
 
                             Task.Factory.StartNew(() =>
                             {
-                                // Add the new element
-                                policeControlModel.id = Database.AddPoliceControlItem(policeControlModel);
+                                NAPI.Task.Run(() =>
+                                {
+                                    // Add the new element
+                                    policeControlModel.id = Database.AddPoliceControlItem(policeControlModel);
+                                });
                             });
                         }
                     }
@@ -181,8 +187,11 @@ namespace WiredPlayers.factions
                     {
                         Task.Factory.StartNew(() =>
                         {
-                            Database.DeletePoliceControlItem(policeControlModel.id);
-                            deletedPoliceControlModels.Add(policeControlModel);
+                            NAPI.Task.Run(() =>
+                            {
+                                Database.DeletePoliceControlItem(policeControlModel.id);
+                                deletedPoliceControlModels.Add(policeControlModel);
+                            });
                         });
                     }
                 }
@@ -202,8 +211,11 @@ namespace WiredPlayers.factions
 
                 Task.Factory.StartNew(() =>
                 {
-                    // Delete the police control
-                    Database.DeletePoliceControl(policeControl);
+                    NAPI.Task.Run(() =>
+                    {
+                        // Delete the police control
+                        Database.DeletePoliceControl(policeControl);
+                    });
                 });
             }
         }
@@ -227,8 +239,11 @@ namespace WiredPlayers.factions
 
                             Task.Factory.StartNew(() =>
                             {
-                                policeControlCopy.id = Database.AddPoliceControlItem(policeControlCopy);
-                                copiedPoliceControlModels.Add(policeControlCopy);
+                                NAPI.Task.Run(() =>
+                                {
+                                    policeControlCopy.id = Database.AddPoliceControlItem(policeControlCopy);
+                                    copiedPoliceControlModels.Add(policeControlCopy);
+                                });
                             });
                         }
                         else
@@ -237,8 +252,11 @@ namespace WiredPlayers.factions
 
                             Task.Factory.StartNew(() =>
                             {
-                                // Add new element to the control
-                                policeControlModel.id = Database.AddPoliceControlItem(policeControlModel);
+                                NAPI.Task.Run(() =>
+                                {
+                                    // Add new element to the control
+                                    policeControlModel.id = Database.AddPoliceControlItem(policeControlModel);
+                                });
                             });
                         }
                     }
@@ -251,8 +269,11 @@ namespace WiredPlayers.factions
 
                 Task.Factory.StartNew(() =>
                 {
-                    // Rename the control
-                    Database.RenamePoliceControl(policeControlSource, policeControlTarget);
+                    NAPI.Task.Run(() =>
+                    {
+                        // Rename the control
+                        Database.RenamePoliceControl(policeControlSource, policeControlTarget);
+                    });
                 });
             }
         }
@@ -470,8 +491,11 @@ namespace WiredPlayers.factions
 
                 Task.Factory.StartNew(() =>
                 {
-                    // Insert the fine into the database
-                    Database.InsertFine(fine);
+                    NAPI.Task.Run(() =>
+                    {
+                        // Insert the fine into the database
+                        Database.InsertFine(fine);
+                    });
                 });
 
                 // Send the message to both players
@@ -614,8 +638,11 @@ namespace WiredPlayers.factions
 
                                     Task.Factory.StartNew(() =>
                                     {
-                                        // Update the bullet's amount
-                                        Database.UpdateItem(bulletItem);
+                                        NAPI.Task.Run(() =>
+                                        {
+                                            // Update the bullet's amount
+                                            Database.UpdateItem(bulletItem);
+                                        });
                                     });
                                 }
                                 else
@@ -632,8 +659,11 @@ namespace WiredPlayers.factions
 
                                     Task.Factory.StartNew(() =>
                                     {
-                                        bulletItem.id = Database.AddNewItem(bulletItem);
-                                        Globals.itemList.Add(bulletItem);
+                                        NAPI.Task.Run(() =>
+                                        {
+                                            bulletItem.id = Database.AddNewItem(bulletItem);
+                                            Globals.itemList.Add(bulletItem);
+                                        });
                                     });
                                 }
                             }

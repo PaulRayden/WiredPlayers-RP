@@ -117,8 +117,11 @@ namespace WiredPlayers.jobs
 
                 Task.Factory.StartNew(() =>
                 {
-                    stolenItemModel.id = Database.AddNewItem(stolenItemModel);
-                    Globals.itemList.Add(stolenItemModel);
+                    NAPI.Task.Run(() =>
+                    {
+                        stolenItemModel.id = Database.AddNewItem(stolenItemModel);
+                        Globals.itemList.Add(stolenItemModel);
+                    });
                 });
             }
             else
@@ -127,8 +130,11 @@ namespace WiredPlayers.jobs
 
                 Task.Factory.StartNew(() =>
                 {
-                    // Update the amount into the database
-                    Database.UpdateItem(stolenItemModel);
+                    NAPI.Task.Run(() =>
+                    {
+                        // Update the amount into the database
+                        Database.UpdateItem(stolenItemModel);
+                    });
                 });
             }
 
@@ -416,8 +422,11 @@ namespace WiredPlayers.jobs
 
                     Task.Factory.StartNew(() =>
                     {
-                        // Add hotwire log to the database
-                        Database.LogHotwire(player.Name, vehicleId, position);
+                        NAPI.Task.Run(() =>
+                        {
+                            // Add hotwire log to the database
+                            Database.LogHotwire(player.Name, vehicleId, position);
+                        });
                     });
                 }
             }
@@ -447,9 +456,12 @@ namespace WiredPlayers.jobs
 
                             Task.Factory.StartNew(() =>
                             {
-                                // Delete stolen items
-                                Database.RemoveItem(stolenItems.id);
-                                Globals.itemList.Remove(stolenItems);
+                                NAPI.Task.Run(() =>
+                                {
+                                    // Delete stolen items
+                                    Database.RemoveItem(stolenItems.id);
+                                    Globals.itemList.Remove(stolenItems);
+                                });
                             });
 
                             player.SetSharedData(EntityData.PLAYER_MONEY, money);

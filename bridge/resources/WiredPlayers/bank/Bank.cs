@@ -94,7 +94,10 @@ namespace WiredPlayers.bank
             // Log the transaction to the database.
             Task.Factory.StartNew(() =>
             {
-                Database.LogPayment("ATM", name, GenRes.bank_op_withdraw, amount);
+                NAPI.Task.Run(() =>
+                {
+                    Database.LogPayment("ATM", name, GenRes.bank_op_withdraw, amount);
+                });
             });
         }
 
@@ -119,7 +122,10 @@ namespace WiredPlayers.bank
                 // We log the transaction into the database
                 Task.Factory.StartNew(() =>
                 {
-                    Database.LogPayment(name, "ATM", GenRes.bank_op_deposit, money);
+                    NAPI.Task.Run(() =>
+                    {
+                        Database.LogPayment(name, "ATM", GenRes.bank_op_deposit, money);
+                    });
                 });
                 return;
             }
@@ -132,7 +138,10 @@ namespace WiredPlayers.bank
             // We log the transaction into the database
             Task.Factory.StartNew(() =>
             {
-                Database.LogPayment("ATM", name, GenRes.bank_op_deposit, amount);
+                NAPI.Task.Run(() =>
+                {
+                    Database.LogPayment("ATM", name, GenRes.bank_op_deposit, amount);
+                });
             });
         }
 
@@ -171,10 +180,13 @@ namespace WiredPlayers.bank
             {
                 Task.Factory.StartNew(() =>
                 {
-                    bank -= amount;
-                    UpdatePlayerMoney(player, bank, money);
-                    Database.TransferMoneyToPlayer(targetPlayer, amount);
-                    Database.LogPayment(name, targetPlayer, GenRes.bank_op_transfer, amount);
+                    NAPI.Task.Run(() =>
+                    {
+                        bank -= amount;
+                        UpdatePlayerMoney(player, bank, money);
+                        Database.TransferMoneyToPlayer(targetPlayer, amount);
+                        Database.LogPayment(name, targetPlayer, GenRes.bank_op_transfer, amount);
+                    });
                 });
                 return;
             }
@@ -183,11 +195,14 @@ namespace WiredPlayers.bank
             {
                 Task.Factory.StartNew(() =>
                 {
-                    int targetBank = target.GetSharedData(EntityData.PLAYER_BANK);
-                    targetBank += amount;
-                    bank -= amount;
-                    UpdatePlayerMoney(player, bank, money);
-                    UpdatePlayerMoney(target, targetBank);
+                    NAPI.Task.Run(() =>
+                    {
+                        int targetBank = target.GetSharedData(EntityData.PLAYER_BANK);
+                        targetBank += amount;
+                        bank -= amount;
+                        UpdatePlayerMoney(player, bank, money);
+                        UpdatePlayerMoney(target, targetBank);
+                    });
                 });
             }
         }
@@ -196,9 +211,12 @@ namespace WiredPlayers.bank
         public void LoadPlayerBankBalanceEvent(Client player)
         {
             Task.Factory.StartNew(() => {
-                // Show the bank operations for the player
-                List<BankOperationModel> operations = Database.GetBankOperations(player.Name, 1, Constants.MAX_BANK_OPERATIONS);
-                player.TriggerEvent("showPlayerBankBalance", NAPI.Util.ToJson(operations), player.Name);
+                NAPI.Task.Run(() =>
+                {
+                    // Show the bank operations for the player
+                    List<BankOperationModel> operations = Database.GetBankOperations(player.Name, 1, Constants.MAX_BANK_OPERATIONS);
+                    player.TriggerEvent("showPlayerBankBalance", NAPI.Util.ToJson(operations), player.Name);
+                });
             });
         }
     }

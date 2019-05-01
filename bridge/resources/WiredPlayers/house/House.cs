@@ -103,8 +103,11 @@ namespace WiredPlayers.house
 
             Task.Factory.StartNew(() =>
             {
-                // Update the house
-                Database.UpdateHouse(house);
+                NAPI.Task.Run(() =>
+                {
+                    // Update the house
+                    Database.UpdateHouse(house);
+                });
             });
         }
 
@@ -153,22 +156,28 @@ namespace WiredPlayers.house
 
                     Task.Factory.StartNew(() =>
                     {
-                        // Dress the clothes
-                        clothes.dressed = true;
+                        NAPI.Task.Run(() =>
+                        {
+                            // Dress the clothes
+                            clothes.dressed = true;
 
-                        // Update dressed clothes into database
-                        Database.UpdateClothes(clothes);
+                            // Update dressed clothes into database
+                            Database.UpdateClothes(clothes);
+                        });
                     });
                 }
                 else if (clothes.dressed && playerSlotClothes[index] != clothes)
                 {
                     Task.Factory.StartNew(() =>
                     {
-                        // Undress the clothes
-                        clothes.dressed = false;
+                        NAPI.Task.Run(() =>
+                        {
+                            // Undress the clothes
+                            clothes.dressed = false;
 
-                        // Update dressed clothes into database
-                        Database.UpdateClothes(clothes);
+                            // Update dressed clothes into database
+                            Database.UpdateClothes(clothes);
+                        });
                     });
                 }
             }
@@ -200,8 +209,11 @@ namespace WiredPlayers.house
 
                     Task.Factory.StartNew(() =>
                     {
-                        // Update the house
-                        Database.UpdateHouse(house);
+                        NAPI.Task.Run(() =>
+                        {
+                            // Update the house
+                            Database.UpdateHouse(house);
+                        });
                     });
 
                     // Message sent to the player
@@ -218,9 +230,12 @@ namespace WiredPlayers.house
 
                     Task.Factory.StartNew(() =>
                     {
-                        // Update the house
-                        Database.KickTenantsOut(house.id);
-                        Database.UpdateHouse(house);
+                        NAPI.Task.Run(() =>
+                        {
+                            // Update the house
+                            Database.KickTenantsOut(house.id);
+                            Database.UpdateHouse(house);
+                        });
                     });
 
                     // Message sent to the player
@@ -280,8 +295,11 @@ namespace WiredPlayers.house
 
             Task.Factory.StartNew(() =>
             {
-                // Update house's tenants
-                Database.UpdateHouse(house);
+                NAPI.Task.Run(() =>
+                {
+                    // Update house's tenants
+                    Database.UpdateHouse(house);
+                });
             });
 
             // Send the message to the player
@@ -316,8 +334,11 @@ namespace WiredPlayers.house
 
             Task.Factory.StartNew(() =>
             {
-                // Update house's tenants
-                Database.UpdateHouse(house);
+                NAPI.Task.Run(() =>
+                {
+                    // Update house's tenants
+                    Database.UpdateHouse(house);
+                });
             });
 
             // Send the message to the player

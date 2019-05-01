@@ -134,8 +134,11 @@ namespace WiredPlayers.parking
 
             Task.Factory.StartNew(() =>
             {
-                // Save the vehicle
-                Database.SaveVehicle(vehicleModel);
+                NAPI.Task.Run(() =>
+                {
+                    // Save the vehicle
+                    Database.SaveVehicle(vehicleModel);
+                });
             });
         }
 

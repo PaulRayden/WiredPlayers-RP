@@ -185,108 +185,112 @@ namespace WiredPlayers.business
                     int playerId = player.GetData(EntityData.PLAYER_SQL_ID);
 
                     Task.Factory.StartNew(() => {
-                        // We look for the item in the inventory
-                        ItemModel itemModel = Globals.GetPlayerItemModelFromHash(playerId, businessItem.hash);
-                        if (itemModel == null)
-                        {
-                            // We create the purchased item
-                            itemModel = new ItemModel();
-                            {
-                                itemModel.hash = businessItem.hash;
-                                itemModel.ownerIdentifier = player.GetData(EntityData.PLAYER_SQL_ID);
-                                itemModel.amount = businessItem.uses * amount;
-                                itemModel.position = new Vector3(0.0f, 0.0f, 0.0f);
-                                itemModel.dimension = 0;
-                            }
 
-                            if (businessItem.type == Constants.ITEM_TYPE_WEAPON)
+                        NAPI.Task.Run(() =>
+                        {
+                            // We look for the item in the inventory
+                            ItemModel itemModel = Globals.GetPlayerItemModelFromHash(playerId, businessItem.hash);
+                            if (itemModel == null)
                             {
-                                itemModel.ownerEntity = Constants.ITEM_ENTITY_WHEEL;
+                                // We create the purchased item
+                                itemModel = new ItemModel();
+                                {
+                                    itemModel.hash = businessItem.hash;
+                                    itemModel.ownerIdentifier = player.GetData(EntityData.PLAYER_SQL_ID);
+                                    itemModel.amount = businessItem.uses * amount;
+                                    itemModel.position = new Vector3(0.0f, 0.0f, 0.0f);
+                                    itemModel.dimension = 0;
+                                }
+
+                                if (businessItem.type == Constants.ITEM_TYPE_WEAPON)
+                                {
+                                    itemModel.ownerEntity = Constants.ITEM_ENTITY_WHEEL;
+                                }
+                                else
+                                {
+                                    itemModel.ownerEntity = int.TryParse(itemModel.hash, out hash) ? Constants.ITEM_ENTITY_RIGHT_HAND : Constants.ITEM_ENTITY_PLAYER;
+                                }
+
+                                // Adding the item to the list and database
+                                itemModel.id = Database.AddNewItem(itemModel);
+                                Globals.itemList.Add(itemModel);
                             }
                             else
                             {
-                                itemModel.ownerEntity = int.TryParse(itemModel.hash, out hash) ? Constants.ITEM_ENTITY_RIGHT_HAND : Constants.ITEM_ENTITY_PLAYER;
+                                itemModel.amount += businessItem.uses * amount;
+
+                                if (int.TryParse(itemModel.hash, out hash) == true)
+                                {
+                                    itemModel.ownerEntity = Constants.ITEM_ENTITY_RIGHT_HAND;
+                                }
+
+                                // Update the item's amount
+                                Database.UpdateItem(itemModel);
                             }
 
-                            // Adding the item to the list and database
-                            itemModel.id = Database.AddNewItem(itemModel);
-                            Globals.itemList.Add(itemModel);
-                        }
-                        else
-                        {
-                            itemModel.amount += businessItem.uses * amount;
-
-                            if (int.TryParse(itemModel.hash, out hash) == true)
+                            // If the item has a valid hash, we give it in hand
+                            if (itemModel.ownerEntity == Constants.ITEM_ENTITY_RIGHT_HAND)
                             {
-                                itemModel.ownerEntity = Constants.ITEM_ENTITY_RIGHT_HAND;
+                                // Remove the previous item if there was any
+                                if (player.GetSharedData(EntityData.PLAYER_RIGHT_HAND) != null)
+                                {
+                                    Globals.RemoveItemOnHands(player);
+                                }
+
+                                // Give the new item to the player
+                                Globals.AttachItemToPlayer(player, itemModel.id, itemModel.hash, "IK_R_Hand", businessItem.position, businessItem.rotation, EntityData.PLAYER_RIGHT_HAND);
                             }
-
-                            // Update the item's amount
-                            Database.UpdateItem(itemModel);
-                        }
-
-                        // If the item has a valid hash, we give it in hand
-                        if (itemModel.ownerEntity == Constants.ITEM_ENTITY_RIGHT_HAND)
-                        {
-                            // Remove the previous item if there was any
-                            if (player.GetSharedData(EntityData.PLAYER_RIGHT_HAND) != null)
+                            else if (businessItem.type == Constants.ITEM_TYPE_WEAPON)
                             {
-                                Globals.RemoveItemOnHands(player);
+                                // Remove the previous item if there was any
+                                if (player.GetSharedData(EntityData.PLAYER_RIGHT_HAND) != null)
+                                {
+                                    Globals.RemoveItemOnHands(player);
+                                }
+
+                                // We give the weapon to the player
+                                player.GiveWeapon(NAPI.Util.WeaponNameToModel(itemModel.hash), itemModel.amount);
+
+                                // Add the attachment to the player
+                                AttachmentModel attachment = new AttachmentModel(itemModel.id, "IK_R_Hand", itemModel.hash, businessItem.position, businessItem.rotation);
+                                player.SetSharedData(EntityData.PLAYER_RIGHT_HAND, NAPI.Util.ToJson(attachment));
+
+                                // Checking if it's been bought in the Ammu-Nation
+                                if (business.type == Constants.BUSINESS_TYPE_AMMUNATION)
+                                {
+                                    // Add a registered weapon
+                                    Database.AddLicensedWeapon(itemModel.id, player.Name);
+                                }
                             }
 
-                            // Give the new item to the player
-                            Globals.AttachItemToPlayer(player, itemModel.id, itemModel.hash, "IK_R_Hand", businessItem.position, businessItem.rotation, EntityData.PLAYER_RIGHT_HAND);
-                        }
-                        else if (businessItem.type == Constants.ITEM_TYPE_WEAPON)
-                        {
-                            // Remove the previous item if there was any
-                            if (player.GetSharedData(EntityData.PLAYER_RIGHT_HAND) != null)
+                            // If it's a phone, we create a new number
+                            if (itemModel.hash == Constants.ITEM_HASH_TELEPHONE)
                             {
-                                Globals.RemoveItemOnHands(player);
+                                if (player.GetData(EntityData.PLAYER_PHONE) == 0)
+                                {
+                                    Random random = new Random();
+                                    int phone = random.Next(100000, 999999);
+                                    player.SetData(EntityData.PLAYER_PHONE, phone);
+
+                                    // Sending the message with the new number to the player
+                                    string message = string.Format(InfoRes.player_phone, phone);
+                                    player.SendChatMessage(Constants.COLOR_INFO + message);
+                                }
                             }
 
-                            // We give the weapon to the player
-                            player.GiveWeapon(NAPI.Util.WeaponNameToModel(itemModel.hash), itemModel.amount);
-
-                            // Add the attachment to the player
-                            AttachmentModel attachment = new AttachmentModel(itemModel.id, "IK_R_Hand", itemModel.hash, businessItem.position, businessItem.rotation);
-                            player.SetSharedData(EntityData.PLAYER_RIGHT_HAND, NAPI.Util.ToJson(attachment));
-
-                            // Checking if it's been bought in the Ammu-Nation
-                            if (business.type == Constants.BUSINESS_TYPE_AMMUNATION)
+                            // We substract the product and add funds to the business
+                            if (business.owner != string.Empty)
                             {
-                                // Add a registered weapon
-                                Database.AddLicensedWeapon(itemModel.id, player.Name);
+                                business.funds += price;
+                                business.products -= businessItem.products;
+
+                                // Update the business
+                                Database.UpdateBusiness(business);
                             }
-                        }
 
-                        // If it's a phone, we create a new number
-                        if (itemModel.hash == Constants.ITEM_HASH_TELEPHONE)
-                        {
-                            if (player.GetData(EntityData.PLAYER_PHONE) == 0)
-                            {
-                                Random random = new Random();
-                                int phone = random.Next(100000, 999999);
-                                player.SetData(EntityData.PLAYER_PHONE, phone);
-
-                                // Sending the message with the new number to the player
-                                string message = string.Format(InfoRes.player_phone, phone);
-                                player.SendChatMessage(Constants.COLOR_INFO + message);
-                            }
-                        }
-
-                        // We substract the product and add funds to the business
-                        if (business.owner != string.Empty)
-                        {
-                            business.funds += price;
-                            business.products -= businessItem.products;
-
-                            // Update the business
-                            Database.UpdateBusiness(business);
-                        }
-
-                        player.SetSharedData(EntityData.PLAYER_MONEY, money - price);
-                        player.SendChatMessage(Constants.COLOR_INFO + purchaseMessage);
+                            player.SetSharedData(EntityData.PLAYER_MONEY, money - price);
+                            player.SendChatMessage(Constants.COLOR_INFO + purchaseMessage);
+                        });
                     });
                 }
             }
@@ -372,8 +376,11 @@ namespace WiredPlayers.business
                     business.products -= products;
 
                     Task.Factory.StartNew(() => {
-                        // Update the business
-                        Database.UpdateBusiness(business);
+                        NAPI.Task.Run(() =>
+                        {
+                            // Update the business
+                            Database.UpdateBusiness(business);
+                        });
                     });
                 }
 
@@ -381,13 +388,16 @@ namespace WiredPlayers.business
                 Globals.UndressClothes(playerId, clothesModel.type, clothesModel.bodyPart);
 
                 Task.Factory.StartNew(() => {
-                    // Storing the clothes into database
-                    clothes.id = Database.AddClothes(clothes);
-                    Globals.clothesList.Add(clothes);
+                    NAPI.Task.Run(() =>
+                    {
+                        // Storing the clothes into database
+                        clothes.id = Database.AddClothes(clothes);
+                        Globals.clothesList.Add(clothes);
 
-                    // Confirmation message sent to the player
-                    string purchaseMessage = string.Format(InfoRes.business_item_purchased, price);
-                    player.SendChatMessage(Constants.COLOR_INFO + purchaseMessage);
+                        // Confirmation message sent to the player
+                        string purchaseMessage = string.Format(InfoRes.business_item_purchased, price);
+                        player.SendChatMessage(Constants.COLOR_INFO + purchaseMessage);
+                    });
                 });
             }
             else
@@ -418,23 +428,26 @@ namespace WiredPlayers.business
                 player.SetSharedData(EntityData.PLAYER_MONEY, playerMoney - price);
 
                 Task.Factory.StartNew(() => {
-                    // We update values in the database
-                    Database.UpdateCharacterHair(playerId, skinModel);
-
-                    // We substract the product and add funds to the business
-                    if (business.owner != string.Empty)
+                    NAPI.Task.Run(() =>
                     {
-                        business.funds += price;
-                        business.products -= Constants.PRICE_BARBER_SHOP;
-                        Database.UpdateBusiness(business);
-                    }
+                        // We update values in the database
+                        Database.UpdateCharacterHair(playerId, skinModel);
 
-                    // Delete the browser
-                    player.TriggerEvent("destroyBrowser");
+                        // We substract the product and add funds to the business
+                        if (business.owner != string.Empty)
+                        {
+                            business.funds += price;
+                            business.products -= Constants.PRICE_BARBER_SHOP;
+                            Database.UpdateBusiness(business);
+                        }
 
-                    // Confirmation message sent to the player
-                    string playerMessage = string.Format(InfoRes.haircut_purchased, price);
-                    player.SendChatMessage(Constants.COLOR_INFO + playerMessage);
+                        // Delete the browser
+                        player.TriggerEvent("destroyBrowser");
+
+                        // Confirmation message sent to the player
+                        string playerMessage = string.Format(InfoRes.haircut_purchased, price);
+                        player.SendChatMessage(Constants.COLOR_INFO + playerMessage);
+                    });
                 });
             }
             else
@@ -478,34 +491,37 @@ namespace WiredPlayers.business
                 }
 
                 Task.Factory.StartNew(() => {
-                    if (Database.AddTattoo(tattoo) == true)
+                    NAPI.Task.Run(() =>
                     {
-                        // We add the tattoo to the list
-                        Globals.tattooList.Add(tattoo);
-
-                        // Substract player money
-                        player.SetSharedData(EntityData.PLAYER_MONEY, playerMoney - price);
-
-                        // We substract the product and add funds to the business
-                        if (business.owner != string.Empty)
+                        if (Database.AddTattoo(tattoo) == true)
                         {
-                            business.funds += price;
-                            business.products -= businessTattoo.price;
-                            Database.UpdateBusiness(business);
+                            // We add the tattoo to the list
+                            Globals.tattooList.Add(tattoo);
+
+                            // Substract player money
+                            player.SetSharedData(EntityData.PLAYER_MONEY, playerMoney - price);
+
+                            // We substract the product and add funds to the business
+                            if (business.owner != string.Empty)
+                            {
+                                business.funds += price;
+                                business.products -= businessTattoo.price;
+                                Database.UpdateBusiness(business);
+                            }
+
+                            // Confirmation message sent to the player
+                            string playerMessage = string.Format(InfoRes.tattoo_purchased, price);
+                            player.SendChatMessage(Constants.COLOR_INFO + playerMessage);
+
+                            // Reload client tattoo list
+                            player.TriggerEvent("addPurchasedTattoo", NAPI.Util.ToJson(tattoo));
                         }
-
-                        // Confirmation message sent to the player
-                        string playerMessage = string.Format(InfoRes.tattoo_purchased, price);
-                        player.SendChatMessage(Constants.COLOR_INFO + playerMessage);
-
-                        // Reload client tattoo list
-                        player.TriggerEvent("addPurchasedTattoo", NAPI.Util.ToJson(tattoo));
-                    }
-                    else
-                    {
-                        // Player already had that tattoo
-                        player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.tattoo_duplicated);
-                    }
+                        else
+                        {
+                            // Player already had that tattoo
+                            player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.tattoo_duplicated);
+                        }
+                    });
                 });
             }
             else

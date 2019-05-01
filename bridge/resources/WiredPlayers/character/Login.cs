@@ -25,47 +25,50 @@ namespace WiredPlayers.character
 
             Task.Factory.StartNew(() =>
             {
-                AccountModel account = Database.GetAccount(player.SocialClubName);
-
-                switch (account.status)
+                NAPI.Task.Run(() =>
                 {
-                    case -1:
-                        player.SendChatMessage(Constants.COLOR_INFO + InfoRes.account_disabled);
-                        player.Kick(InfoRes.account_disabled);
-                        break;
-                    case 0:
-                        // Check if the account is registered or not
-                        player.TriggerEvent(account.registered ? "accountLoginForm" : "showRegisterWindow");
-                        break;
-                    default:
-                        // Welcome message
-                        string welcomeMessage = string.Format(GenRes.welcome_message, player.SocialClubName);
-                        player.SendChatMessage(welcomeMessage);
-                        player.SendChatMessage(GenRes.welcome_hint);
-                        player.SendChatMessage(GenRes.help_hint);
-                        player.SendChatMessage(GenRes.ticket_hint);
+                    AccountModel account = Database.GetAccount(player.SocialClubName);
 
-                        if (account.lastCharacter > 0)
-                        {
-                            // Load selected character
-                            PlayerModel character = Database.LoadCharacterInformationById(account.lastCharacter);
-                            SkinModel skinModel = Database.GetCharacterSkin(account.lastCharacter);
-                            
-                            player.Name = character.realName;
-                            player.SetData(EntityData.PLAYER_SKIN_MODEL, skinModel);
-                            NAPI.Player.SetPlayerSkin(player, character.sex == 0 ? PedHash.FreemodeMale01 : PedHash.FreemodeFemale01);
+                    switch (account.status)
+                    {
+                        case -1:
+                            player.SendChatMessage(Constants.COLOR_INFO + InfoRes.account_disabled);
+                            player.Kick(InfoRes.account_disabled);
+                            break;
+                        case 0:
+                            // Check if the account is registered or not
+                            player.TriggerEvent(account.registered ? "accountLoginForm" : "showRegisterWindow");
+                            break;
+                        default:
+                            // Welcome message
+                            string welcomeMessage = string.Format(GenRes.welcome_message, player.SocialClubName);
+                            player.SendChatMessage(welcomeMessage);
+                            player.SendChatMessage(GenRes.welcome_hint);
+                            player.SendChatMessage(GenRes.help_hint);
+                            player.SendChatMessage(GenRes.ticket_hint);
 
-                            Character.LoadCharacterData(player, character);
-                            Customization.ApplyPlayerCustomization(player, skinModel, character.sex);
-                            Customization.ApplyPlayerClothes(player);
-                            Customization.ApplyPlayerTattoos(player);
-                        }
+                            if (account.lastCharacter > 0)
+                            {
+                                // Load selected character
+                                PlayerModel character = Database.LoadCharacterInformationById(account.lastCharacter);
+                                SkinModel skinModel = Database.GetCharacterSkin(account.lastCharacter);
 
-                        // Activate the login window
-                        player.SetSharedData(EntityData.SERVER_TIME, DateTime.Now.ToString("HH:mm:ss"));
+                                player.Name = character.realName;
+                                player.SetData(EntityData.PLAYER_SKIN_MODEL, skinModel);
+                                NAPI.Player.SetPlayerSkin(player, character.sex == 0 ? PedHash.FreemodeMale01 : PedHash.FreemodeFemale01);
 
-                        break;
-                }
+                                Character.LoadCharacterData(player, character);
+                                Customization.ApplyPlayerCustomization(player, skinModel, character.sex);
+                                Customization.ApplyPlayerClothes(player);
+                                Customization.ApplyPlayerTattoos(player);
+                            }
+
+                            // Activate the login window
+                            player.SetSharedData(EntityData.SERVER_TIME, DateTime.Now.ToString("HH:mm:ss"));
+
+                            break;
+                    }
+                });
             });
         }
 
@@ -74,21 +77,24 @@ namespace WiredPlayers.character
         {
             Task.Factory.StartNew(() =>
             {
-                // Get the status of the account
-                int status = Database.LoginAccount(player.SocialClubName, password);
-
-                switch (status)
+                NAPI.Task.Run(() =>
                 {
-                    case 0:
-                        LoadApplicationEvent(player);
-                        break;
-                    case 1:
-                        player.TriggerEvent("clearLoginWindow");
-                        break;
-                    default:
-                        player.TriggerEvent("showLoginError");
-                        break;
-                }
+                    // Get the status of the account
+                    int status = Database.LoginAccount(player.SocialClubName, password);
+
+                    switch (status)
+                    {
+                        case 0:
+                            LoadApplicationEvent(player);
+                            break;
+                        case 1:
+                            player.TriggerEvent("clearLoginWindow");
+                            break;
+                        default:
+                            player.TriggerEvent("showLoginError");
+                            break;
+                    }
+                });
             });
         }
 
@@ -97,11 +103,14 @@ namespace WiredPlayers.character
         {
             Task.Factory.StartNew(() =>
             {
-                // Register the account
-                Database.RegisterAccount(player.SocialClubName, password);
+                NAPI.Task.Run(() =>
+                {
+                    // Register the account
+                    Database.RegisterAccount(player.SocialClubName, password);
 
-                // Show the application for the player
-                LoadApplicationEvent(player);
+                    // Show the application for the player
+                    LoadApplicationEvent(player);
+                });
             });
         }
 
@@ -110,31 +119,34 @@ namespace WiredPlayers.character
         {
             Task.Factory.StartNew(() =>
             {
-                // Get all the question and answers
-                Dictionary<int, int> application = NAPI.Util.FromJson<Dictionary<int, int>>(answers);
-
-                // Check if all the answers are correct
-                int mistakes = Database.CheckCorrectAnswers(application);
-
-                if (mistakes > 0)
+                NAPI.Task.Run(() =>
                 {
-                    // Tell the player his mistakes
-                    player.TriggerEvent("failedApplication", mistakes);
-                }
-                else
-                {
-                    // Tell the player he passed the test
-                    player.SendChatMessage(Constants.COLOR_INFO + InfoRes.application_passed);
+                    // Get all the question and answers
+                    Dictionary<int, int> application = NAPI.Util.FromJson<Dictionary<int, int>>(answers);
 
-                    // Destroy the test window
-                    player.TriggerEvent("clearApplication");
+                    // Check if all the answers are correct
+                    int mistakes = Database.CheckCorrectAnswers(application);
 
-                    // Accept the account on the server
-                    Database.ApproveAccount(player.SocialClubName);
-                }
+                    if (mistakes > 0)
+                    {
+                        // Tell the player his mistakes
+                        player.TriggerEvent("failedApplication", mistakes);
+                    }
+                    else
+                    {
+                        // Tell the player he passed the test
+                        player.SendChatMessage(Constants.COLOR_INFO + InfoRes.application_passed);
 
-                // Register the attempt on the database
-                Database.RegisterApplication(player.SocialClubName, mistakes);
+                        // Destroy the test window
+                        player.TriggerEvent("clearApplication");
+
+                        // Accept the account on the server
+                        Database.ApproveAccount(player.SocialClubName);
+                    }
+
+                    // Register the attempt on the database
+                    Database.RegisterApplication(player.SocialClubName, mistakes);
+                });
             });
         }
 
@@ -172,23 +184,26 @@ namespace WiredPlayers.character
 
             Task.Factory.StartNew(() =>
             {
-                int playerId = Database.CreateCharacter(player, playerModel, skinModel);
-
-                if (playerId > 0)
+                NAPI.Task.Run(() =>
                 {
-                    Character.InitializePlayerData(player);
-                    player.Transparency = 255;
-                    player.SetData(EntityData.PLAYER_SQL_ID, playerId);
-                    player.SetData(EntityData.PLAYER_NAME, playerName);
-                    player.SetData(EntityData.PLAYER_AGE, playerAge);
-                    player.SetData(EntityData.PLAYER_SEX, playerSex);
-                    player.SetData(EntityData.PLAYER_SPAWN_POS, new Vector3(-136.0034f, 6198.949f, 32.38448f));
-                    player.SetData(EntityData.PLAYER_SPAWN_ROT, new Vector3(0.0f, 0.0f, 180.0f));
+                    int playerId = Database.CreateCharacter(player, playerModel, skinModel);
 
-                    Database.UpdateLastCharacter(player.SocialClubName, playerId);
+                    if (playerId > 0)
+                    {
+                        Character.InitializePlayerData(player);
+                        player.Transparency = 255;
+                        player.SetData(EntityData.PLAYER_SQL_ID, playerId);
+                        player.SetData(EntityData.PLAYER_NAME, playerName);
+                        player.SetData(EntityData.PLAYER_AGE, playerAge);
+                        player.SetData(EntityData.PLAYER_SEX, playerSex);
+                        player.SetData(EntityData.PLAYER_SPAWN_POS, new Vector3(-136.0034f, 6198.949f, 32.38448f));
+                        player.SetData(EntityData.PLAYER_SPAWN_ROT, new Vector3(0.0f, 0.0f, 180.0f));
 
-                    player.TriggerEvent("characterCreatedSuccessfully");
-                }
+                        Database.UpdateLastCharacter(player.SocialClubName, playerId);
+
+                        player.TriggerEvent("characterCreatedSuccessfully");
+                    }
+                });
             });
         }
 
@@ -220,21 +235,24 @@ namespace WiredPlayers.character
         {
             Task.Factory.StartNew(() =>
             {
-                PlayerModel playerModel = Database.LoadCharacterInformationByName(name);
-                SkinModel skinModel = Database.GetCharacterSkin(playerModel.id);
+                NAPI.Task.Run(() =>
+                {
+                    PlayerModel playerModel = Database.LoadCharacterInformationByName(name);
+                    SkinModel skinModel = Database.GetCharacterSkin(playerModel.id);
 
-                // Load player's model
-                player.Name = playerModel.realName;
-                player.SetData(EntityData.PLAYER_SKIN_MODEL, skinModel);
-                NAPI.Player.SetPlayerSkin(player, playerModel.sex == 0 ? PedHash.FreemodeMale01 : PedHash.FreemodeFemale01);
+                    // Load player's model
+                    player.Name = playerModel.realName;
+                    player.SetData(EntityData.PLAYER_SKIN_MODEL, skinModel);
+                    NAPI.Player.SetPlayerSkin(player, playerModel.sex == 0 ? PedHash.FreemodeMale01 : PedHash.FreemodeFemale01);
 
-                Character.LoadCharacterData(player, playerModel);
-                Customization.ApplyPlayerCustomization(player, skinModel, playerModel.sex);
-                Customization.ApplyPlayerClothes(player);
-                Customization.ApplyPlayerTattoos(player);
+                    Character.LoadCharacterData(player, playerModel);
+                    Customization.ApplyPlayerCustomization(player, skinModel, playerModel.sex);
+                    Customization.ApplyPlayerClothes(player);
+                    Customization.ApplyPlayerTattoos(player);
 
-                // Update last selected character
-                Database.UpdateLastCharacter(player.SocialClubName, playerModel.id);
+                    // Update last selected character
+                    Database.UpdateLastCharacter(player.SocialClubName, playerModel.id);
+                });
             });
         }
 
@@ -243,16 +261,19 @@ namespace WiredPlayers.character
         {
             Task.Factory.StartNew(() =>
             {
-                // Get random questions
-                List<TestModel> applicationQuestions = Database.GetRandomQuestions(Constants.APPLICATION_TEST, 10);
+                NAPI.Task.Run(() =>
+                {
+                    // Get random questions
+                    List<TestModel> applicationQuestions = Database.GetRandomQuestions(Constants.APPLICATION_TEST, 10);
 
-                // Get the ids from each question
-                List<int> questionIds = applicationQuestions.Select(q => q.id).Distinct().ToList();
+                    // Get the ids from each question
+                    List<int> questionIds = applicationQuestions.Select(q => q.id).Distinct().ToList();
 
-                // Get the answers from the questions
-                List<TestModel> applicationAnswers = Database.GetQuestionAnswers(questionIds);
+                    // Get the answers from the questions
+                    List<TestModel> applicationAnswers = Database.GetQuestionAnswers(questionIds);
 
-                player.TriggerEvent("showApplicationTest", NAPI.Util.ToJson(applicationQuestions), NAPI.Util.ToJson(applicationAnswers));
+                    player.TriggerEvent("showApplicationTest", NAPI.Util.ToJson(applicationQuestions), NAPI.Util.ToJson(applicationAnswers));
+                });
             });
         }
     }

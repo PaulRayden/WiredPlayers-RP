@@ -296,13 +296,16 @@ namespace WiredPlayers.factions
                                     
                                     Task.Factory.StartNew(() =>
                                     {
-                                        // Create the new channel
-                                        channel.id = Database.AddChannel(channel);
-                                        channelList.Add(channel);
+                                        NAPI.Task.Run(() =>
+                                        {
+                                            // Create the new channel
+                                            channel.id = Database.AddChannel(channel);
+                                            channelList.Add(channel);
 
-                                        // Sending the message with created channel
-                                        string message = string.Format(InfoRes.channel_created, channel.id);
-                                        player.SendChatMessage(Constants.COLOR_INFO + message);
+                                            // Sending the message with created channel
+                                            string message = string.Format(InfoRes.channel_created, channel.id);
+                                            player.SendChatMessage(Constants.COLOR_INFO + message);
+                                        });
                                     });
                                 }
                                 else
@@ -334,15 +337,17 @@ namespace WiredPlayers.factions
                                         }
                                     }
 
-
                                     Task.Factory.StartNew(() =>
                                     {
-                                        // Update the channel and disconnect the leader
-                                        Database.UpdateChannel(ownedChannel);
-                                        Database.DisconnectFromChannel(ownedChannel.id);
+                                        NAPI.Task.Run(() =>
+                                        {
+                                            // Update the channel and disconnect the leader
+                                            Database.UpdateChannel(ownedChannel);
+                                            Database.DisconnectFromChannel(ownedChannel.id);
 
-                                        // Message sent with the confirmation
-                                        player.SendChatMessage(Constants.COLOR_INFO + InfoRes.channel_updated);
+                                            // Message sent with the confirmation
+                                            player.SendChatMessage(Constants.COLOR_INFO + InfoRes.channel_updated);
+                                        });
                                     });
                                 }
                                 else
@@ -374,15 +379,18 @@ namespace WiredPlayers.factions
 
                                 Task.Factory.StartNew(() =>
                                 {
-                                    // Disconnect the leader from the channel
-                                    Database.DisconnectFromChannel(ownedChannel.id);
+                                    NAPI.Task.Run(() =>
+                                    {
+                                        // Disconnect the leader from the channel
+                                        Database.DisconnectFromChannel(ownedChannel.id);
 
-                                    // We destroy the channel
-                                    Database.RemoveChannel(ownedChannel.id);
-                                    channelList.Remove(ownedChannel);
+                                        // We destroy the channel
+                                        Database.RemoveChannel(ownedChannel.id);
+                                        channelList.Remove(ownedChannel);
 
-                                    // Message sent with the confirmation
-                                    player.SendChatMessage(Constants.COLOR_INFO + InfoRes.channel_deleted);
+                                        // Message sent with the confirmation
+                                        player.SendChatMessage(Constants.COLOR_INFO + InfoRes.channel_deleted);
+                                    });
                                 });
                             }
                             else

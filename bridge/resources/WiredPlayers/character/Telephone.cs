@@ -57,9 +57,12 @@ namespace WiredPlayers.character
 
             Task.Factory.StartNew(() =>
             {
-                // Add contact to database
-                contact.id = Database.AddNewContact(contact);
-                contactList.Add(contact);
+                NAPI.Task.Run(() =>
+                {
+                    // Add contact to database
+                    contact.id = Database.AddNewContact(contact);
+                    contactList.Add(contact);
+                });
             });
             
             string actionMessage = string.Format(InfoRes.contact_created, contactName, contactNumber);
@@ -76,8 +79,11 @@ namespace WiredPlayers.character
 
             Task.Factory.StartNew(() =>
             {
-                // Modify the contact's data
-                Database.ModifyContact(contact);
+                NAPI.Task.Run(() =>
+                {
+                    // Modify the contact's data
+                    Database.ModifyContact(contact);
+                });
             });
             
             player.SendChatMessage(Constants.COLOR_INFO + InfoRes.contact_modified);
@@ -92,9 +98,12 @@ namespace WiredPlayers.character
 
             Task.Factory.StartNew(() =>
             {
-                // Delete the contact
-                Database.DeleteContact(contactIndex);
-                contactList.Remove(contact);
+                NAPI.Task.Run(() =>
+                {
+                    // Delete the contact
+                    Database.DeleteContact(contactIndex);
+                    contactList.Remove(contact);
+                });
             });
             
             string actionMessage = string.Format(InfoRes.contact_deleted, contactName, contactNumber);
@@ -125,8 +134,11 @@ namespace WiredPlayers.character
 
                     Task.Factory.StartNew(() =>
                     {
-                        // Add the SMS to the database
-                        Database.AddSMSLog(phone, contact.contactNumber, textMessage);
+                        NAPI.Task.Run(() =>
+                        {
+                            // Add the SMS to the database
+                            Database.AddSMSLog(phone, contact.contactNumber, textMessage);
+                        });
                     });
 
                     return;
@@ -447,8 +459,11 @@ namespace WiredPlayers.character
 
                     Task.Factory.StartNew(() =>
                     {
-                        // Update the elapsed time into the database
-                        Database.AddCallLog(playerPhone, targetPhone, elapsed);
+                        NAPI.Task.Run(() =>
+                        {
+                            // Update the elapsed time into the database
+                            Database.AddCallLog(playerPhone, targetPhone, elapsed);
+                        });
                     });
                 }
                 else
@@ -457,8 +472,11 @@ namespace WiredPlayers.character
 
                     Task.Factory.StartNew(() =>
                     {
-                        // Update the elapsed time into the database
-                        Database.AddCallLog(targetPhone, playerPhone, elapsed);
+                        NAPI.Task.Run(() =>
+                        {
+                            // Update the elapsed time into the database
+                            Database.AddCallLog(targetPhone, playerPhone, elapsed);
+                        });
                     });
                 }
 
@@ -511,8 +529,11 @@ namespace WiredPlayers.character
 
                         Task.Factory.StartNew(() =>
                         {
-                            // Add the SMS into the database
-                            Database.AddSMSLog(playerPhone, number, message);
+                            NAPI.Task.Run(() =>
+                            {
+                                // Add the SMS into the database
+                                Database.AddSMSLog(playerPhone, number, message);
+                            });
                         });
 
                         return;

@@ -48,8 +48,11 @@ namespace WiredPlayers.townhall
 
                         Task.Factory.StartNew(() =>
                         {
-                            // Log the payment made
-                            Database.LogPayment(player.Name, GenRes.faction_townhall, GenRes.identification, Constants.PRICE_IDENTIFICATION);
+                            NAPI.Task.Run(() =>
+                            {
+                                // Log the payment made
+                                Database.LogPayment(player.Name, GenRes.faction_townhall, GenRes.identification, Constants.PRICE_IDENTIFICATION);
+                            });
                         });
                     }
                     break;
@@ -73,8 +76,11 @@ namespace WiredPlayers.townhall
 
                         Task.Factory.StartNew(() =>
                         {
-                            // Log the payment made
-                            Database.LogPayment(player.Name, GenRes.faction_townhall, GenRes.medical_insurance, Constants.PRICE_MEDICAL_INSURANCE);
+                            NAPI.Task.Run(() =>
+                            {
+                                // Log the payment made
+                                Database.LogPayment(player.Name, GenRes.faction_townhall, GenRes.medical_insurance, Constants.PRICE_MEDICAL_INSURANCE);
+                            });
                         });
                     }
                     break;
@@ -98,23 +104,29 @@ namespace WiredPlayers.townhall
 
                         Task.Factory.StartNew(() =>
                         {
-                            // Log the payment made
-                            Database.LogPayment(player.Name, GenRes.faction_townhall, GenRes.taxi_license, Constants.PRICE_TAXI_LICENSE);
+                            NAPI.Task.Run(() =>
+                            {
+                                // Log the payment made
+                                Database.LogPayment(player.Name, GenRes.faction_townhall, GenRes.taxi_license, Constants.PRICE_TAXI_LICENSE);
+                            });
                         });
                     }
                     break;
                 case Constants.TRAMITATE_FINE_LIST:
                     Task.Factory.StartNew(() =>
                     {
-                        List<FineModel> fineList = Database.LoadPlayerFines(player.Name);
-                        if (fineList.Count > 0)
+                        NAPI.Task.Run(() =>
                         {
-                            player.TriggerEvent("showPlayerFineList", NAPI.Util.ToJson(fineList));
-                        }
-                        else
-                        {
-                            player.SendChatMessage(Constants.COLOR_INFO + InfoRes.player_no_fines);
-                        }
+                            List<FineModel> fineList = Database.LoadPlayerFines(player.Name);
+                            if (fineList.Count > 0)
+                            {
+                                player.TriggerEvent("showPlayerFineList", NAPI.Util.ToJson(fineList));
+                            }
+                            else
+                            {
+                                player.SendChatMessage(Constants.COLOR_INFO + InfoRes.player_no_fines);
+                            }
+                        });
                     });
                     break;
             }
@@ -123,33 +135,32 @@ namespace WiredPlayers.townhall
         [RemoteEvent("payPlayerFines")]
         public void PayPlayerFinesEvent(Client player, string finesJson)
         {
+            List<FineModel> fineList = Database.LoadPlayerFines(player.Name);
+            List<FineModel> removedFines = NAPI.Util.FromJson<List<FineModel>>(finesJson);
+            int money = player.GetSharedData(EntityData.PLAYER_MONEY);
+            int finesProcessed = 0;
+            int amount = 0;
 
-            Task.Factory.StartNew(() =>
+            // Get the money amount for all the fines
+            foreach (FineModel fine in removedFines)
             {
-                List<FineModel> fineList = Database.LoadPlayerFines(player.Name);
-                List<FineModel> removedFines = NAPI.Util.FromJson<List<FineModel>>(finesJson);
-                int money = player.GetSharedData(EntityData.PLAYER_MONEY);
-                int finesProcessed = 0;
-                int amount = 0;
+                amount += fine.amount;
+                finesProcessed++;
+            }
 
-                // Get the money amount for all the fines
-                foreach (FineModel fine in removedFines)
+            if (amount == 0)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_no_fines);
+            }
+            else if (amount > money)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + string.Format(ErrRes.player_not_fine_money, amount));
+            }
+            else
+            {
+                Task.Factory.StartNew(() =>
                 {
-                    amount += fine.amount;
-                    finesProcessed++;
-                }
-
-                if (amount == 0)
-                {
-                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_no_fines);
-                }
-                else if (amount > money)
-                {
-                    player.SendChatMessage(Constants.COLOR_ERROR + string.Format(ErrRes.player_not_fine_money, amount));
-                }
-                else
-                {
-                    Task.Factory.StartNew(() =>
+                    NAPI.Task.Run(() =>
                     {
                         // Remove money from player
                         player.SetSharedData(EntityData.PLAYER_MONEY, money - amount);
@@ -168,8 +179,8 @@ namespace WiredPlayers.townhall
                         Database.RemoveFines(removedFines);
                         Database.LogPayment(player.Name, GenRes.faction_townhall, GenRes.fines_payment, amount);
                     });
-                }
-            });
+                });
+            }
         }
 
         [Command(Commands.COM_TOWNHALL)]

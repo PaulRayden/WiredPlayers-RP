@@ -48,21 +48,24 @@ namespace WiredPlayers.weapons
                 weaponModel.dimension = 0;
             }
 
-            Task.Factory.StartNew(() =>
+            weaponModel.id = Database.AddNewItem(weaponModel);
+            Globals.itemList.Add(weaponModel);
+
+            // Give the weapon to the player
+            player.GiveWeapon(weapon, 0);
+            player.SetWeaponAmmo(weapon, bullets);
+
+            if (licensed)
             {
-                weaponModel.id = Database.AddNewItem(weaponModel);
-                Globals.itemList.Add(weaponModel);
-
-                // Give the weapon to the player
-                player.GiveWeapon(weapon, 0);
-                player.SetWeaponAmmo(weapon, bullets);
-
-                if(licensed)
+                Task.Factory.StartNew(() =>
                 {
-                    // We add the weapon as a registered into database
-                    Database.AddLicensedWeapon(weaponModel.id, player.Name);
-                }
-            });
+                    NAPI.Task.Run(() =>
+                    {
+                        // We add the weapon as a registered into database
+                        Database.AddLicensedWeapon(weaponModel.id, player.Name);
+                    });
+                });
+            }
         }
 
         public static string GetGunAmmunitionType(WeaponHash weapon)
@@ -268,8 +271,11 @@ namespace WiredPlayers.weapons
 
                     Task.Factory.StartNew(() =>
                     {
-                        item.id = Database.AddNewItem(item);
-                        Globals.itemList.Add(item);
+                        NAPI.Task.Run(() =>
+                        {
+                            item.id = Database.AddNewItem(item);
+                            Globals.itemList.Add(item);
+                        });
                     });
                 }
             }
@@ -414,8 +420,11 @@ namespace WiredPlayers.weapons
 
                     Task.Factory.StartNew(() =>
                     {
-                        // Update the weapon into the database
-                        Database.UpdateItem(oldWeaponModel);
+                        NAPI.Task.Run(() =>
+                        {
+                            // Update the weapon into the database
+                            Database.UpdateItem(oldWeaponModel);
+                        });
                     });
                 }
 
@@ -426,8 +435,11 @@ namespace WiredPlayers.weapons
 
                     Task.Factory.StartNew(() =>
                     {
-                        // Update the weapon into the database
-                        Database.UpdateItem(currentWeaponModel);
+                        NAPI.Task.Run(() =>
+                        {
+                            // Update the weapon into the database
+                            Database.UpdateItem(currentWeaponModel);
+                        });
                     });
                 }
 
@@ -465,8 +477,11 @@ namespace WiredPlayers.weapons
 
                         Task.Factory.StartNew(() =>
                         {
-                            Database.RemoveItem(bulletItem.id);
-                            Globals.itemList.Remove(bulletItem);
+                            NAPI.Task.Run(() =>
+                            {
+                                Database.RemoveItem(bulletItem.id);
+                                Globals.itemList.Remove(bulletItem);
+                            });
                         });
                     }
                     else
@@ -476,8 +491,11 @@ namespace WiredPlayers.weapons
 
                         Task.Factory.StartNew(() =>
                         {
-                            // Update the remaining bullets
-                            Database.UpdateItem(bulletItem);
+                            NAPI.Task.Run(() =>
+                            {
+                                // Update the remaining bullets
+                                Database.UpdateItem(bulletItem);
+                            });
                         });
                     }
 
@@ -487,8 +505,11 @@ namespace WiredPlayers.weapons
 
                     Task.Factory.StartNew(() =>
                     {
-                        // Update the bullets in the weapon
-                        Database.UpdateItem(weaponItem);
+                        NAPI.Task.Run(() =>
+                        {
+                            // Update the bullets in the weapon
+                            Database.UpdateItem(weaponItem);
+                        });
                     });
 
                     // Reload the weapon
@@ -510,11 +531,14 @@ namespace WiredPlayers.weapons
 
                 Task.Factory.StartNew(() =>
                 {
-                    // Set the bullets on the weapon
-                    item.amount = bullets;
+                    NAPI.Task.Run(() =>
+                    {
+                        // Set the bullets on the weapon
+                        item.amount = bullets;
 
-                    // Update the remaining bullets
-                    Database.UpdateItem(item);
+                        // Update the remaining bullets
+                        Database.UpdateItem(item);
+                    });
                 });
             }
         }

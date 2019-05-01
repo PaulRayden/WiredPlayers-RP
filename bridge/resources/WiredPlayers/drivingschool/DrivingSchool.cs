@@ -227,46 +227,49 @@ namespace WiredPlayers.drivingschool
         {
             Task.Factory.StartNew(() =>
             {
-                if (Database.CheckAnswerCorrect(answer) == true)
+                NAPI.Task.Run(() =>
                 {
-                    // We add the correct answer
-                    int nextQuestion = player.GetSharedData(EntityData.PLAYER_LICENSE_QUESTION) + 1;
-
-                    if (nextQuestion < Constants.MAX_LICENSE_QUESTIONS)
+                    if (Database.CheckAnswerCorrect(answer) == true)
                     {
-                        // Go for the next question
-                        player.SetSharedData(EntityData.PLAYER_LICENSE_QUESTION, nextQuestion);
-                        player.TriggerEvent("getNextTestQuestion");
+                        // We add the correct answer
+                        int nextQuestion = player.GetSharedData(EntityData.PLAYER_LICENSE_QUESTION) + 1;
+
+                        if (nextQuestion < Constants.MAX_LICENSE_QUESTIONS)
+                        {
+                            // Go for the next question
+                            player.SetSharedData(EntityData.PLAYER_LICENSE_QUESTION, nextQuestion);
+                            player.TriggerEvent("getNextTestQuestion");
+                        }
+                        else
+                        {
+                            // Player passed the exam
+                            int license = player.GetData(EntityData.PLAYER_LICENSE_TYPE);
+                            SetPlayerLicense(player, license, 0);
+
+                            // Reset the entity data
+                            player.ResetData(EntityData.PLAYER_LICENSE_TYPE);
+                            player.ResetSharedData(EntityData.PLAYER_LICENSE_QUESTION);
+
+                            // Send the message to the player
+                            player.SendChatMessage(Constants.COLOR_SUCCESS + SuccRes.license_exam_passed);
+
+                            // Exam window close
+                            player.TriggerEvent("finishLicenseExam");
+                        }
                     }
                     else
                     {
-                        // Player passed the exam
-                        int license = player.GetData(EntityData.PLAYER_LICENSE_TYPE);
-                        SetPlayerLicense(player, license, 0);
+                        // Player failed the exam
+                        player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.license_exam_failed);
 
                         // Reset the entity data
                         player.ResetData(EntityData.PLAYER_LICENSE_TYPE);
                         player.ResetSharedData(EntityData.PLAYER_LICENSE_QUESTION);
 
-                        // Send the message to the player
-                        player.SendChatMessage(Constants.COLOR_SUCCESS + SuccRes.license_exam_passed);
-
                         // Exam window close
                         player.TriggerEvent("finishLicenseExam");
                     }
-                }
-                else
-                {
-                    // Player failed the exam
-                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.license_exam_failed);
-
-                    // Reset the entity data
-                    player.ResetData(EntityData.PLAYER_LICENSE_TYPE);
-                    player.ResetSharedData(EntityData.PLAYER_LICENSE_QUESTION);
-
-                    // Exam window close
-                    player.TriggerEvent("finishLicenseExam");
-                }
+                });
             });
         }
 
@@ -359,20 +362,23 @@ namespace WiredPlayers.drivingschool
                                     {
                                         Task.Factory.StartNew(() =>
                                         {
-                                            // Add the questions
-                                            questions = Database.GetRandomQuestions(Constants.LICENSE_CAR + 1, Constants.MAX_LICENSE_QUESTIONS);
-                                            foreach (TestModel question in questions)
+                                            NAPI.Task.Run(() =>
                                             {
-                                                answers.AddRange(Database.GetQuestionAnswers(question.id));
-                                            }
+                                                // Add the questions
+                                                questions = Database.GetRandomQuestions(Constants.LICENSE_CAR + 1, Constants.MAX_LICENSE_QUESTIONS);
+                                                foreach (TestModel question in questions)
+                                                {
+                                                    answers.AddRange(Database.GetQuestionAnswers(question.id));
+                                                }
 
-                                            player.SetData(EntityData.PLAYER_LICENSE_TYPE, Constants.LICENSE_CAR);
-                                            player.SetSharedData(EntityData.PLAYER_LICENSE_QUESTION, 0);
+                                                player.SetData(EntityData.PLAYER_LICENSE_TYPE, Constants.LICENSE_CAR);
+                                                player.SetSharedData(EntityData.PLAYER_LICENSE_QUESTION, 0);
 
-                                            player.SetSharedData(EntityData.PLAYER_MONEY, money - Constants.PRICE_DRIVING_THEORICAL);
+                                                player.SetSharedData(EntityData.PLAYER_MONEY, money - Constants.PRICE_DRIVING_THEORICAL);
 
-                                            // Start the exam
-                                            player.TriggerEvent("startLicenseExam", NAPI.Util.ToJson(questions), NAPI.Util.ToJson(answers));
+                                                // Start the exam
+                                                player.TriggerEvent("startLicenseExam", NAPI.Util.ToJson(questions), NAPI.Util.ToJson(answers));
+                                            });
                                         });
                                     }
                                     else
@@ -417,20 +423,23 @@ namespace WiredPlayers.drivingschool
                                     {
                                         Task.Factory.StartNew(() =>
                                         {
-                                            // Add the questions
-                                            questions = Database.GetRandomQuestions(Constants.LICENSE_MOTORCYCLE + 1, Constants.MAX_LICENSE_QUESTIONS);
-                                            foreach (TestModel question in questions)
+                                            NAPI.Task.Run(() =>
                                             {
-                                                answers.AddRange(Database.GetQuestionAnswers(question.id));
-                                            }
+                                                // Add the questions
+                                                questions = Database.GetRandomQuestions(Constants.LICENSE_MOTORCYCLE + 1, Constants.MAX_LICENSE_QUESTIONS);
+                                                foreach (TestModel question in questions)
+                                                {
+                                                    answers.AddRange(Database.GetQuestionAnswers(question.id));
+                                                }
 
-                                            player.SetData(EntityData.PLAYER_LICENSE_TYPE, Constants.LICENSE_MOTORCYCLE);
-                                            player.SetSharedData(EntityData.PLAYER_LICENSE_QUESTION, 0);
+                                                player.SetData(EntityData.PLAYER_LICENSE_TYPE, Constants.LICENSE_MOTORCYCLE);
+                                                player.SetSharedData(EntityData.PLAYER_LICENSE_QUESTION, 0);
 
-                                            player.SetSharedData(EntityData.PLAYER_MONEY, money - Constants.PRICE_DRIVING_THEORICAL);
+                                                player.SetSharedData(EntityData.PLAYER_MONEY, money - Constants.PRICE_DRIVING_THEORICAL);
 
-                                            // Start the exam
-                                            player.TriggerEvent("startLicenseExam", NAPI.Util.ToJson(questions), NAPI.Util.ToJson(answers));
+                                                // Start the exam
+                                                player.TriggerEvent("startLicenseExam", NAPI.Util.ToJson(questions), NAPI.Util.ToJson(answers));
+                                            });
                                         });
                                     }
                                     else

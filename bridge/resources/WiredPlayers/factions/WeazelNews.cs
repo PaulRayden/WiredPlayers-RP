@@ -181,11 +181,14 @@ namespace WiredPlayers.factions
 
                     Task.Factory.StartNew(() =>
                     {
-                        prizeModel.id = Database.GivePrize(prizeModel);
-                        annoucementList.Add(prizeModel);
+                        NAPI.Task.Run(() =>
+                        {
+                            prizeModel.id = Database.GivePrize(prizeModel);
+                            annoucementList.Add(prizeModel);
 
-                        // Log the money won
-                        Database.LogPayment(player.Name, target.Name, GenRes.news_prize, prize);
+                            // Log the money won
+                            Database.LogPayment(player.Name, target.Name, GenRes.news_prize, prize);
+                        });
                     });
                 }
                 else
@@ -227,9 +230,12 @@ namespace WiredPlayers.factions
 
                     Task.Factory.StartNew(() =>
                     {
-                        // Log the announcement into the database
-                        annoucement.id = Database.SendAnnoucement(annoucement);
-                        Database.LogPayment(player.Name, GenRes.faction_news, GenRes.news_announce, Constants.PRICE_ANNOUNCEMENT);
+                        NAPI.Task.Run(() =>
+                        {
+                            // Log the announcement into the database
+                            annoucement.id = Database.SendAnnoucement(annoucement);
+                            Database.LogPayment(player.Name, GenRes.faction_news, GenRes.news_announce, Constants.PRICE_ANNOUNCEMENT);
+                        });
                     });
                 }
             }

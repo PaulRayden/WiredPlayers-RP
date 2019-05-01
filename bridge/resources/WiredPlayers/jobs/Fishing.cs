@@ -139,18 +139,24 @@ namespace WiredPlayers.jobs
 
                     Task.Factory.StartNew(() =>
                     {
-                        // Add the fish item to database
-                        fishItem.id = Database.AddNewItem(fishItem);
-                        Globals.itemList.Add(fishItem);
+                        NAPI.Task.Run(() =>
+                        {
+                            // Add the fish item to database
+                            fishItem.id = Database.AddNewItem(fishItem);
+                            Globals.itemList.Add(fishItem);
+                        });
                     });
                 }
                 else
                 {
                     Task.Factory.StartNew(() =>
-                    {  
-                        // Update the inventory
-                        fishItem.amount += fishWeight;
-                        Database.UpdateItem(fishItem);
+                    {
+                        NAPI.Task.Run(() =>
+                        {
+                            // Update the inventory
+                            fishItem.amount += fishWeight;
+                            Database.UpdateItem(fishItem);
+                        });
                     });
                 }
 
@@ -237,9 +243,12 @@ namespace WiredPlayers.jobs
                             {
                                 Task.Factory.StartNew(() =>
                                 {
-                                    // Remove the baits from the inventory
-                                    Globals.itemList.Remove(bait);
-                                    Database.RemoveItem(bait.id);
+                                    NAPI.Task.Run(() =>
+                                    {
+                                        // Remove the baits from the inventory
+                                        Globals.itemList.Remove(bait);
+                                        Database.RemoveItem(bait.id);
+                                    });
                                 });
                             }
                             else
@@ -248,8 +257,11 @@ namespace WiredPlayers.jobs
 
                                 Task.Factory.StartNew(() =>
                                 {
-                                    // Update the amount
-                                    Database.UpdateItem(bait);
+                                    NAPI.Task.Run(() =>
+                                    {
+                                        // Update the amount
+                                        Database.UpdateItem(bait);
+                                    });
                                 });
                             }
 

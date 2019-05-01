@@ -224,8 +224,11 @@ namespace WiredPlayers.vehicles
 
             Task.Factory.StartNew(() =>
             {
-                // Save all the vehicles
-                Database.SaveAllVehicles(vehicleList);
+                NAPI.Task.Run(() =>
+                {
+                    // Save all the vehicles
+                    Database.SaveAllVehicles(vehicleList);
+                });
             });
         }
 
@@ -304,8 +307,11 @@ namespace WiredPlayers.vehicles
 
                 Task.Factory.StartNew(() =>
                 {
-                    // Save vehicle data
-                    Database.SaveVehicle(vehicleModel);
+                    NAPI.Task.Run(() =>
+                    {
+                        // Save vehicle data
+                        Database.SaveVehicle(vehicleModel);
+                    });
                 });
             }
             else
@@ -727,8 +733,11 @@ namespace WiredPlayers.vehicles
 
                                     Task.Factory.StartNew(() =>
                                     {
-                                        // Update item into database
-                                        Database.UpdateItem(item);
+                                        NAPI.Task.Run(() =>
+                                        {
+                                            // Update item into database
+                                            Database.UpdateItem(item);
+                                        });
                                     });
 
                                     // Send the message to the player
@@ -1081,9 +1090,12 @@ namespace WiredPlayers.vehicles
 
                             Task.Factory.StartNew(() =>
                             {
-                                // Remove the item
-                                Database.RemoveItem(item.id);
-                                Globals.itemList.Remove(item);
+                                NAPI.Task.Run(() =>
+                                {
+                                    // Remove the item
+                                    Database.RemoveItem(item.id);
+                                    Globals.itemList.Remove(item);
+                                });
                             });
                             
                             player.SendChatMessage(Constants.COLOR_INFO + InfoRes.vehicle_refilled);
@@ -1147,8 +1159,11 @@ namespace WiredPlayers.vehicles
 
                         Task.Factory.StartNew(() =>
                         {
-                            // Delete the vehicle
-                            Database.RemoveVehicle(vehicleId);
+                            NAPI.Task.Run(() =>
+                            {
+                                // Delete the vehicle
+                                Database.RemoveVehicle(vehicleId);
+                            });
                         });
                         
                         player.SendChatMessage(Constants.COLOR_SUCCESS + string.Format(SuccRes.vehicle_scrapyard, amountGiven));
