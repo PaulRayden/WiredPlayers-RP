@@ -22,11 +22,23 @@ namespace WiredPlayers.jobs
 
         public static void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
         {
+            // Check if the player is fastfood deliverer
+            if (player.GetData(EntityData.PLAYER_JOB) != Constants.JOB_FASTFOOD) return;
+
             if (fastFoodTimerList.TryGetValue(player.Value, out Timer fastFoodTimer) == true)
             {
                 // Destroy the timer
                 fastFoodTimer.Dispose();
                 fastFoodTimerList.Remove(player.Value);
+
+                // Check if the player had a vehicle
+                Vehicle vehicle = player.GetData(EntityData.PLAYER_JOB_VEHICLE);
+
+                if(vehicle != null && vehicle.Exists)
+                {
+                    // Respawn the job vehicle
+                    RespawnFastfoodVehicle(vehicle);
+                }
             }
         }
 
@@ -75,7 +87,7 @@ namespace WiredPlayers.jobs
             return Globals.fastFoodOrderList.Where(orderModel => orderModel.id == orderId).FirstOrDefault();
         }
 
-        private void RespawnFastfoodVehicle(Vehicle vehicle)
+        private static void RespawnFastfoodVehicle(Vehicle vehicle)
         {
             vehicle.Repair();
             vehicle.Position = vehicle.GetData(EntityData.VEHICLE_POSITION);

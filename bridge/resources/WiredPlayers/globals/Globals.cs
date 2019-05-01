@@ -98,7 +98,7 @@ namespace WiredPlayers.globals
         public static Client GetPlayerById(int id)
         {
             // Get the player with the selected identifier
-            return NAPI.Pools.GetAllPlayers().Where(pl => pl.Value == id).FirstOrDefault();
+            return NAPI.Pools.GetAllPlayers().Where(pl => pl.GetData(EntityData.PLAYER_PLAYING) != null && pl.Value == id).FirstOrDefault();
         }
 
         public static int GetTotalSeconds()

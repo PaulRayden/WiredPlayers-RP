@@ -1612,10 +1612,10 @@ function populateWardrobeHome() {
 			itemDescription.textContent = i18next.t(type.description);
 			
 			itemContainer.onclick = (function() {
-				selected = i;
+				selected = type.slot;
 				
 				// Load the purchased clothes
-				mp.trigger('getPlayerPurchasedClothes', i);
+				mp.trigger('getPlayerPurchasedClothes', selected);
 			});
 			
 			content.appendChild(itemContainer);

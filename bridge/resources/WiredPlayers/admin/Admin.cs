@@ -1815,8 +1815,12 @@ namespace WiredPlayers.admin
                 foreach (AdminTicketModel adminTicket in Globals.adminTicketList)
                 {
                     Client target = Globals.GetPlayerById(adminTicket.playerId);
-                    string ticket = target.Name + " (" + adminTicket.playerId + "): " + adminTicket.question;
-                    player.SendChatMessage(Constants.COLOR_HELP + ticket);
+
+                    if(target != null && target.Exists)
+                    {
+                        string ticket = target.Name + " (" + adminTicket.playerId + "): " + adminTicket.question;
+                        player.SendChatMessage(Constants.COLOR_HELP + ticket);
+                    } 
                 }
             }
         }

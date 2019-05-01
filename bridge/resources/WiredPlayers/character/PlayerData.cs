@@ -96,7 +96,8 @@ namespace WiredPlayers.character
             {
                 // Get the name of the rented house
                 int houseId = target.GetData(EntityData.PLAYER_RENT_HOUSE);
-                rentedHouse = House.houseList.Where(h => h.id == houseId).First().name;
+                HouseModel rentedHouseModel = House.houseList.Where(h => h.id == houseId).FirstOrDefault();
+                rentedHouse = rentedHouseModel == null ? string.Empty : rentedHouseModel.name; 
             }
 
             // Show the data for the player

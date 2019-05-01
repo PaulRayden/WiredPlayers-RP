@@ -44,10 +44,10 @@ namespace WiredPlayers_Client.house
         private void GetPlayerPurchasedClothesEvent(object[] args)
         {
             // Get the variables from the array
-            int index = Convert.ToInt32(args[0]);
+            int slot = Convert.ToInt32(args[0]);
 
             // Get the player's clothes
-            Events.CallRemote("getPlayerPurchasedClothes", Constants.CLOTHES_TYPES[index].type, Constants.CLOTHES_TYPES[index].slot);
+            Events.CallRemote("getPlayerPurchasedClothes", 0, slot);
         }
 
         private void ShowPlayerClothesEvent(object[] args)
@@ -86,7 +86,7 @@ namespace WiredPlayers_Client.house
         private void ChangePlayerClothesEvent(object[] args)
         {
             // Get the variables from the array
-            int slot = Convert.ToInt32(args[0]) + 1;
+            int slot = Convert.ToInt32(args[0]);
             int index = Convert.ToInt32(args[1]);
 
             // Equip the clothes

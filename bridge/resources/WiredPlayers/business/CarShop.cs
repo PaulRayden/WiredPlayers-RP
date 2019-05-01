@@ -176,7 +176,7 @@ namespace WiredPlayers.business
             }
 
             Vehicle vehicle = null;
-            Vector3 testFinishCheckpoint = null;
+            Vector3 testFinishCheckpoint = null;            
             VehicleHash vehicleModel = (VehicleHash)uint.Parse(hash);
 
             switch (GetClosestCarShop(player))
