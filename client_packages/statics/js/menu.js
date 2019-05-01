@@ -1615,7 +1615,7 @@ function populateWardrobeHome() {
 				selected = i;
 				
 				// Load the purchased clothes
-				mp.trigger('getPlayedPurchasedClothes', i);
+				mp.trigger('getPlayerPurchasedClothes', i);
 			});
 			
 			content.appendChild(itemContainer);
@@ -1631,7 +1631,7 @@ function populateWardrobeHome() {
 		
 		exitButton.onclick = (function() {
 			// Exit the menu
-			mp.trigger('destroyBrowser');
+			mp.trigger('closeWardrobeMenu');
 		});
 		
 		options.appendChild(exitButton);
@@ -1680,8 +1680,6 @@ function populateWardrobeClothes(typeClothesJson) {
 			
 			itemDescription.textContent = clothes.description;
 			itemPrice.innerHTML = '<b>' + i18next.t('clothes.variation') + '</b>' + clothes.texture;
-			itemAdd.textContent = '+';
-			itemSubstract.textContent = '-';
 			
 			itemContainer.onclick = (function() {
 				if(drawable !== i) {
@@ -1708,12 +1706,6 @@ function populateWardrobeClothes(typeClothesJson) {
 			infoContainer.appendChild(purchaseContainer);
 			purchaseContainer.appendChild(priceContainer);
 			priceContainer.appendChild(itemPrice);
-			purchaseContainer.appendChild(itemAmountContainer);
-			itemAmountContainer.appendChild(amountTextContainer);
-			amountTextContainer.appendChild(itemAmount);
-			itemAmountContainer.appendChild(addSubstractContainer);
-			addSubstractContainer.appendChild(itemAdd);
-			addSubstractContainer.appendChild(itemSubstract);
 		}
 		
 		let dressButton = document.createElement('div');
@@ -1736,7 +1728,7 @@ function populateWardrobeClothes(typeClothesJson) {
 			populateWardrobeHome();
 			
 			// Clear not dressed clothes
-			mp.trigger('clearClothes');
+			mp.trigger('clearWardrobeClothes', selected);
 		});
 		
 		options.appendChild(dressButton);

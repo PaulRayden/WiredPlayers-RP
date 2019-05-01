@@ -130,16 +130,18 @@ namespace WiredPlayers.house
         }
 
         [RemoteEvent("wardrobeClothesItemSelected")]
-        public void WardrobeClothesItemSelectedEvent(Client player, int clothesId)
+        public void WardrobeClothesItemSelectedEvent(Client player, int slot, int index)
         {
             int playerId = player.GetData(EntityData.PLAYER_SQL_ID);
 
+            // Get the clothes from the player in the slot
+            List<ClothesModel> playerSlotClothes = Globals.clothesList.Where(c => c.slot == slot && c.player == playerId).ToList();
+
             // Replace player clothes for the new ones
-            foreach (ClothesModel clothes in Globals.clothesList)
+            foreach (ClothesModel clothes in playerSlotClothes)
             {
-                if (clothes.id == clothesId)
+                if (playerSlotClothes[index] == clothes)
                 {
-                    clothes.dressed = true;
                     if (clothes.type == 0)
                     {
                         player.SetClothes(clothes.slot, clothes.drawable, clothes.texture);
@@ -151,16 +153,20 @@ namespace WiredPlayers.house
 
                     Task.Factory.StartNew(() =>
                     {
+                        // Dress the clothes
+                        clothes.dressed = true;
+
                         // Update dressed clothes into database
                         Database.UpdateClothes(clothes);
                     });
                 }
-                else if (clothes.id != clothesId && clothes.dressed)
+                else if (clothes.dressed && playerSlotClothes[index] != clothes)
                 {
-                    clothes.dressed = false;
-
                     Task.Factory.StartNew(() =>
                     {
+                        // Undress the clothes
+                        clothes.dressed = false;
+
                         // Update dressed clothes into database
                         Database.UpdateClothes(clothes);
                     });

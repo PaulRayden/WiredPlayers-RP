@@ -19,10 +19,12 @@
 /client_packages/cs_packages/WiredPlayers-Client/.vs
 /client_packages/cs_packages/WiredPlayers-Client/bin
 /client_packages/cs_packages/WiredPlayers-Client/obj
+/client_packages_fastdl/*
 !/client_packages/index.js
 !/client_packages/statics
 !/client_packages/cs_packages
 !/client_packages/WiredPlayers
+!/bridge/runtime/BouncyCastle.Crypto.dll
 !/bridge/runtime/MySql.Data.dll
 !/bridge/runtime/Newtonsoft.Json.dll
 !/bridge/runtime/System.ComponentModel.Primitives.dll
