@@ -73,28 +73,31 @@ namespace WiredPlayers.factions
 
         private void UpdateReinforcesRequests(object unused)
         {
-            List<ReinforcesModel> policeReinforces = new List<ReinforcesModel>();
-            List<Client> policeMembers = NAPI.Pools.GetAllPlayers().Where(x => x.GetData(EntityData.PLAYER_PLAYING) != null && Faction.IsPoliceMember(x)).ToList();
-            
-            foreach (Client police in policeMembers)
+            NAPI.Task.Run(() =>
             {
-                if (police.GetData(EntityData.PLAYER_REINFORCES) != null)
-                {
-                    ReinforcesModel reinforces = new ReinforcesModel(police.Value, police.Position);
-                    policeReinforces.Add(reinforces);
-                }
-            }
-            
-            string reinforcesJsonList = NAPI.Util.ToJson(policeReinforces);
+                List<ReinforcesModel> policeReinforces = new List<ReinforcesModel>();
+                List<Client> policeMembers = NAPI.Pools.GetAllPlayers().Where(x => x.GetData(EntityData.PLAYER_PLAYING) != null && Faction.IsPoliceMember(x)).ToList();
 
-            foreach (Client police in policeMembers)
-            {
-                if (police.GetData(EntityData.PLAYER_PLAYING) != null)
+                foreach (Client police in policeMembers)
                 {
-                    // Update reinforces position for each policeman
-                    police.TriggerEvent("updatePoliceReinforces", reinforcesJsonList);
+                    if (police.GetData(EntityData.PLAYER_REINFORCES) != null)
+                    {
+                        ReinforcesModel reinforces = new ReinforcesModel(police.Value, police.Position);
+                        policeReinforces.Add(reinforces);
+                    }
                 }
-            }
+
+                string reinforcesJsonList = NAPI.Util.ToJson(policeReinforces);
+
+                foreach (Client police in policeMembers)
+                {
+                    if (police.GetData(EntityData.PLAYER_PLAYING) != null)
+                    {
+                        // Update reinforces position for each policeman
+                        police.TriggerEvent("updatePoliceReinforces", reinforcesJsonList);
+                    }
+                }
+            });
         }
 
         private bool IsCloseToEquipmentLockers(Client player)

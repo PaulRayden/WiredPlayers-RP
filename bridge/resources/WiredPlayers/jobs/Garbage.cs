@@ -39,42 +39,45 @@ namespace WiredPlayers.jobs
 
         private void OnGarbageTimer(object playerObject)
         {
-            Client player = (Client)playerObject;
-            Client target = player.GetData(EntityData.PLAYER_JOB_PARTNER);
-            Vehicle vehicle = player.GetData(EntityData.PLAYER_JOB_VEHICLE);
-            
-            RespawnGarbageVehicle(vehicle);
-
-            // Cancel the garbage route
-            player.ResetData(EntityData.PLAYER_JOB_VEHICLE);
-            player.ResetData(EntityData.PLAYER_JOB_CHECKPOINT);
-            target.ResetData(EntityData.PLAYER_JOB_CHECKPOINT);
-            
-            if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == true)
+            NAPI.Task.Run(() =>
             {
-                // Remove the timer
-                garbageTimer.Dispose();
-                garbageTimerList.Remove(player.Value);
-            }
+                Client player = (Client)playerObject;
+                Client target = player.GetData(EntityData.PLAYER_JOB_PARTNER);
+                Vehicle vehicle = player.GetData(EntityData.PLAYER_JOB_VEHICLE);
 
-            // Send the message to both players
-            player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.job_vehicle_abandoned);
-            target.SendChatMessage(Constants.COLOR_ERROR + ErrRes.job_vehicle_abandoned);
+                RespawnGarbageVehicle(vehicle);
+
+                // Cancel the garbage route
+                player.ResetData(EntityData.PLAYER_JOB_VEHICLE);
+                player.ResetData(EntityData.PLAYER_JOB_CHECKPOINT);
+                target.ResetData(EntityData.PLAYER_JOB_CHECKPOINT);
+
+                if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == true)
+                {
+                    // Remove the timer
+                    garbageTimer.Dispose();
+                    garbageTimerList.Remove(player.Value);
+                }
+
+                // Send the message to both players
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.job_vehicle_abandoned);
+                target.SendChatMessage(Constants.COLOR_ERROR + ErrRes.job_vehicle_abandoned);
+            });
         }
 
         private void OnGarbageCollectedTimer(object playerObject)
         {
-            Client player = (Client)playerObject;
-            Client driver = player.GetData(EntityData.PLAYER_JOB_PARTNER);
-
-            if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == true)
-            {
-                garbageTimer.Dispose();
-                garbageTimerList.Remove(player.Value);
-            }
-
             NAPI.Task.Run(() =>
             {
+                Client player = (Client)playerObject;
+                Client driver = player.GetData(EntityData.PLAYER_JOB_PARTNER);
+
+                if (garbageTimerList.TryGetValue(player.Value, out Timer garbageTimer) == true)
+                {
+                    garbageTimer.Dispose();
+                    garbageTimerList.Remove(player.Value);
+                }
+
                 // Get garbage bag
                 GTANetworkAPI.Object garbageBag = player.GetData(EntityData.PLAYER_GARBAGE_BAG);
                 player.StopAnimation();

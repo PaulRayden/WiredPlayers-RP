@@ -33,21 +33,24 @@ namespace WiredPlayers.jobs
 
         private void OnFishingPrewarnTimer(object playerObject)
         {
-            Client player = (Client)playerObject;
-            
-            if (fishingTimerList.TryGetValue(player.Value, out Timer fishingTimer) == true)
+            NAPI.Task.Run(() =>
             {
-                // Remove the timer
-                fishingTimer.Dispose();
-                fishingTimerList.Remove(player.Value);
-            }
+                Client player = (Client)playerObject;
 
-            // Start the minigame
-            player.TriggerEvent("fishingBaitTaken");
+                if (fishingTimerList.TryGetValue(player.Value, out Timer fishingTimer) == true)
+                {
+                    // Remove the timer
+                    fishingTimer.Dispose();
+                    fishingTimerList.Remove(player.Value);
+                }
 
-            // Send the message and play fishing animation
-            player.PlayAnimation("amb@world_human_stand_fishing@idle_a", "idle_c", (int)Constants.AnimationFlags.Loop);
-            player.SendChatMessage(Constants.COLOR_INFO + InfoRes.something_baited);
+                // Start the minigame
+                player.TriggerEvent("fishingBaitTaken");
+
+                // Send the message and play fishing animation
+                player.PlayAnimation("amb@world_human_stand_fishing@idle_a", "idle_c", (int)Constants.AnimationFlags.Loop);
+                player.SendChatMessage(Constants.COLOR_INFO + InfoRes.something_baited);
+            });
         }
 
         private int GetPlayerFishingLevel(Client player)

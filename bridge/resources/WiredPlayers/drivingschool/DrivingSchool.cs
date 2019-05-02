@@ -36,22 +36,25 @@ namespace WiredPlayers.drivingschool
 
         private void OnDrivingTimer(object playerObject)
         {
-            // We get the player and his vehicle
-            Client player = (Client)playerObject;
-            Vehicle vehicle = player.GetData(EntityData.PLAYER_VEHICLE);
-
-            // We finish the exam
-            FinishDrivingExam(player, vehicle);
-
-            // Deleting timer from the list
-            if (drivingSchoolTimerList.TryGetValue(player.Value, out Timer drivingSchoolTimer) == true)
+            NAPI.Task.Run(() =>
             {
-                drivingSchoolTimer.Dispose();
-                drivingSchoolTimerList.Remove(player.Value);
-            }
+                // We get the player and his vehicle
+                Client player = (Client)playerObject;
+                Vehicle vehicle = player.GetData(EntityData.PLAYER_VEHICLE);
 
-            // Confirmation message sent to the player
-            player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.license_failed_not_in_vehicle);
+                // We finish the exam
+                FinishDrivingExam(player, vehicle);
+
+                // Deleting timer from the list
+                if (drivingSchoolTimerList.TryGetValue(player.Value, out Timer drivingSchoolTimer) == true)
+                {
+                    drivingSchoolTimer.Dispose();
+                    drivingSchoolTimerList.Remove(player.Value);
+                }
+
+                // Confirmation message sent to the player
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.license_failed_not_in_vehicle);
+            });
         }
 
         private void FinishDrivingExam(Client player, Vehicle vehicle)

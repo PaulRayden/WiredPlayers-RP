@@ -96,30 +96,33 @@ namespace WiredPlayers.jobs
 
         private void OnFastFoodTimer(object playerObject)
         {
-            Client player = (Client)playerObject;
-            Vehicle vehicle = player.GetData(EntityData.PLAYER_JOB_VEHICLE);
-
-            // Vehicle respawn
-            RespawnFastfoodVehicle(vehicle);
-
-            // Cancel the order
-            player.ResetData(EntityData.PLAYER_DELIVER_ORDER);
-            player.ResetData(EntityData.PLAYER_JOB_VEHICLE);
-            player.ResetData(EntityData.PLAYER_JOB_WON);
-
-            // Delete map blip
-            player.TriggerEvent("fastFoodDeliverFinished");
-
-            // Remove timer from the list
-            Timer fastFoodTimer = fastFoodTimerList[player.Value];
-            if (fastFoodTimer != null)
+            NAPI.Task.Run(() =>
             {
-                fastFoodTimer.Dispose();
-                fastFoodTimerList.Remove(player.Value);
-            }
+                Client player = (Client)playerObject;
+                Vehicle vehicle = player.GetData(EntityData.PLAYER_JOB_VEHICLE);
 
-            // Send the message to the player
-            player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.job_vehicle_abandoned);
+                // Vehicle respawn
+                RespawnFastfoodVehicle(vehicle);
+
+                // Cancel the order
+                player.ResetData(EntityData.PLAYER_DELIVER_ORDER);
+                player.ResetData(EntityData.PLAYER_JOB_VEHICLE);
+                player.ResetData(EntityData.PLAYER_JOB_WON);
+
+                // Delete map blip
+                player.TriggerEvent("fastFoodDeliverFinished");
+
+                // Remove timer from the list
+                Timer fastFoodTimer = fastFoodTimerList[player.Value];
+                if (fastFoodTimer != null)
+                {
+                    fastFoodTimer.Dispose();
+                    fastFoodTimerList.Remove(player.Value);
+                }
+
+                // Send the message to the player
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.job_vehicle_abandoned);
+            });
         }
 
         [ServerEvent(Event.PlayerEnterVehicle)]

@@ -45,128 +45,137 @@ namespace WiredPlayers.jobs
 
         private void OnLockpickTimer(object playerObject)
         {
-            Client player = (Client)playerObject;
-
-            Vehicle vehicle = player.GetData(EntityData.PLAYER_LOCKPICKING);
-            vehicle.Locked = false;
-
-            player.StopAnimation();
-            player.ResetData(EntityData.PLAYER_LOCKPICKING);
-            player.ResetData(EntityData.PLAYER_ANIMATION);
-            
-            if (robberyTimerList.TryGetValue(player.Value, out Timer robberyTimer) == true)
+            NAPI.Task.Run(() =>
             {
-                robberyTimer.Dispose();
-                robberyTimerList.Remove(player.Value);
-            }
-            
-            player.SendChatMessage(Constants.COLOR_SUCCESS + SuccRes.lockpicked);
+                Client player = (Client)playerObject;
+
+                Vehicle vehicle = player.GetData(EntityData.PLAYER_LOCKPICKING);
+                vehicle.Locked = false;
+
+                player.StopAnimation();
+                player.ResetData(EntityData.PLAYER_LOCKPICKING);
+                player.ResetData(EntityData.PLAYER_ANIMATION);
+
+                if (robberyTimerList.TryGetValue(player.Value, out Timer robberyTimer) == true)
+                {
+                    robberyTimer.Dispose();
+                    robberyTimerList.Remove(player.Value);
+                }
+
+                player.SendChatMessage(Constants.COLOR_SUCCESS + SuccRes.lockpicked);
+            });
         }
 
         private void OnHotwireTimer(object playerObject)
         {
-            Client player = (Client)playerObject;
-
-            Vehicle vehicle = player.GetData(EntityData.PLAYER_HOTWIRING);
-            vehicle.EngineStatus = true;
-
-            player.StopAnimation();
-            player.ResetData(EntityData.PLAYER_HOTWIRING);
-            player.ResetData(EntityData.PLAYER_ANIMATION);
-            
-            if (robberyTimerList.TryGetValue(player.Value, out Timer robberyTimer) == true)
+            NAPI.Task.Run(() =>
             {
-                robberyTimer.Dispose();
-                robberyTimerList.Remove(player.Value);
-            }
+                Client player = (Client)playerObject;
 
-            // Get all the members from any police faction
-            List<Client> members = NAPI.Pools.GetAllPlayers().Where(m => Faction.IsPoliceMember(m) && m.GetData(EntityData.PLAYER_ON_DUTY) == 1).ToList();
+                Vehicle vehicle = player.GetData(EntityData.PLAYER_HOTWIRING);
+                vehicle.EngineStatus = true;
 
-            foreach (Client target in members)
-            {
-                target.SendChatMessage(Constants.COLOR_INFO + InfoRes.police_warning);
-                target.SetData(EntityData.PLAYER_EMERGENCY_WITH_WARN, player.Position);
-            }
-            
-            player.SendChatMessage(Constants.COLOR_SUCCESS + SuccRes.veh_hotwireed);
+                player.StopAnimation();
+                player.ResetData(EntityData.PLAYER_HOTWIRING);
+                player.ResetData(EntityData.PLAYER_ANIMATION);
+
+                if (robberyTimerList.TryGetValue(player.Value, out Timer robberyTimer) == true)
+                {
+                    robberyTimer.Dispose();
+                    robberyTimerList.Remove(player.Value);
+                }
+
+                // Get all the members from any police faction
+                List<Client> members = NAPI.Pools.GetAllPlayers().Where(m => Faction.IsPoliceMember(m) && m.GetData(EntityData.PLAYER_ON_DUTY) == 1).ToList();
+
+                foreach (Client target in members)
+                {
+                    target.SendChatMessage(Constants.COLOR_INFO + InfoRes.police_warning);
+                    target.SetData(EntityData.PLAYER_EMERGENCY_WITH_WARN, player.Position);
+                }
+
+                player.SendChatMessage(Constants.COLOR_SUCCESS + SuccRes.veh_hotwireed);
+            });
         }
 
         private void OnPlayerRob(object playerObject)
         {
-            Client player = (Client)playerObject;
-            int playerSqlId = player.GetData(EntityData.PLAYER_SQL_ID);
-            int timeElapsed = Globals.GetTotalSeconds() - player.GetData(EntityData.PLAYER_ROBBERY_START);
-            decimal stolenItemsDecimal = timeElapsed / Constants.ITEMS_ROBBED_PER_TIME;
-            int totalStolenItems = (int)Math.Round(stolenItemsDecimal);
-
-            // Check if the player has stolen items
-            ItemModel stolenItemModel = Globals.GetPlayerItemModelFromHash(playerSqlId, Constants.ITEM_HASH_STOLEN_OBJECTS);
-
-            if (stolenItemModel == null)
+            NAPI.Task.Run(() =>
             {
-                stolenItemModel = new ItemModel();
+                Client player = (Client)playerObject;
+                int playerSqlId = player.GetData(EntityData.PLAYER_SQL_ID);
+                int timeElapsed = Globals.GetTotalSeconds() - player.GetData(EntityData.PLAYER_ROBBERY_START);
+                decimal stolenItemsDecimal = timeElapsed / Constants.ITEMS_ROBBED_PER_TIME;
+                int totalStolenItems = (int)Math.Round(stolenItemsDecimal);
+
+                // Check if the player has stolen items
+                ItemModel stolenItemModel = Globals.GetPlayerItemModelFromHash(playerSqlId, Constants.ITEM_HASH_STOLEN_OBJECTS);
+
+                if (stolenItemModel == null)
                 {
-                    stolenItemModel.amount = totalStolenItems;
-                    stolenItemModel.hash = Constants.ITEM_HASH_STOLEN_OBJECTS;
-                    stolenItemModel.ownerEntity = Constants.ITEM_ENTITY_PLAYER;
-                    stolenItemModel.ownerIdentifier = playerSqlId;
-                    stolenItemModel.dimension = 0;
-                    stolenItemModel.position = new Vector3(0.0f, 0.0f, 0.0f);
+                    stolenItemModel = new ItemModel();
+                    {
+                        stolenItemModel.amount = totalStolenItems;
+                        stolenItemModel.hash = Constants.ITEM_HASH_STOLEN_OBJECTS;
+                        stolenItemModel.ownerEntity = Constants.ITEM_ENTITY_PLAYER;
+                        stolenItemModel.ownerIdentifier = playerSqlId;
+                        stolenItemModel.dimension = 0;
+                        stolenItemModel.position = new Vector3(0.0f, 0.0f, 0.0f);
+                    }
+
+                    Task.Factory.StartNew(() =>
+                    {
+                        NAPI.Task.Run(() =>
+                        {
+                            stolenItemModel.id = Database.AddNewItem(stolenItemModel);
+                            Globals.itemList.Add(stolenItemModel);
+                        });
+                    });
+                }
+                else
+                {
+                    stolenItemModel.amount += totalStolenItems;
+
+                    Task.Factory.StartNew(() =>
+                    {
+                        NAPI.Task.Run(() =>
+                        {
+                            // Update the amount into the database
+                            Database.UpdateItem(stolenItemModel);
+                        });
+                    });
                 }
 
-                Task.Factory.StartNew(() =>
+                // Allow player movement
+                player.Freeze(false);
+                player.StopAnimation();
+                player.ResetData(EntityData.PLAYER_ANIMATION);
+                player.ResetData(EntityData.PLAYER_ROBBERY_START);
+
+                if (robberyTimerList.TryGetValue(player.Value, out Timer robberyTimer) == true)
                 {
-                    NAPI.Task.Run(() =>
-                    {
-                        stolenItemModel.id = Database.AddNewItem(stolenItemModel);
-                        Globals.itemList.Add(stolenItemModel);
-                    });
-                });
-            }
-            else
-            {
-                stolenItemModel.amount += totalStolenItems;
+                    robberyTimer.Dispose();
+                    robberyTimerList.Remove(player.Value);
+                }
 
-                Task.Factory.StartNew(() =>
+                // Avisamos de los objetos robados
+                string message = string.Format(InfoRes.player_robbed, totalStolenItems);
+                player.SendChatMessage(Constants.COLOR_INFO + message);
+
+                // Check if the player commited the maximum thefts allowed
+                int totalThefts = player.GetData(EntityData.PLAYER_JOB_DELIVER);
+                if (Constants.MAX_THEFTS_IN_ROW == totalThefts)
                 {
-                    NAPI.Task.Run(() =>
-                    {
-                        // Update the amount into the database
-                        Database.UpdateItem(stolenItemModel);
-                    });
-                });
-            }
-
-            // Allow player movement
-            player.Freeze(false);
-            player.StopAnimation();
-            player.ResetData(EntityData.PLAYER_ANIMATION);
-            player.ResetData(EntityData.PLAYER_ROBBERY_START);
-            
-            if (robberyTimerList.TryGetValue(player.Value, out Timer robberyTimer) == true)
-            {
-                robberyTimer.Dispose();
-                robberyTimerList.Remove(player.Value);
-            }
-
-            // Avisamos de los objetos robados
-            string message = string.Format(InfoRes.player_robbed, totalStolenItems);
-            player.SendChatMessage(Constants.COLOR_INFO + message);
-
-            // Check if the player commited the maximum thefts allowed
-            int totalThefts = player.GetData(EntityData.PLAYER_JOB_DELIVER);
-            if (Constants.MAX_THEFTS_IN_ROW == totalThefts)
-            {
-                // Apply a cooldown to the player
-                player.SetData(EntityData.PLAYER_JOB_DELIVER, 0);
-                player.SetData(EntityData.PLAYER_JOB_COOLDOWN, 60);
-                player.SendChatMessage(Constants.COLOR_INFO + InfoRes.player_rob_pressure);
-            }
-            else
-            {
-                player.SetData(EntityData.PLAYER_JOB_DELIVER, totalThefts + 1);
-            }
+                    // Apply a cooldown to the player
+                    player.SetData(EntityData.PLAYER_JOB_DELIVER, 0);
+                    player.SetData(EntityData.PLAYER_JOB_COOLDOWN, 60);
+                    player.SendChatMessage(Constants.COLOR_INFO + InfoRes.player_rob_pressure);
+                }
+                else
+                {
+                    player.SetData(EntityData.PLAYER_JOB_DELIVER, totalThefts + 1);
+                }
+            });
         }
 
         private void GeneratePoliceRobberyWarning(Client player)

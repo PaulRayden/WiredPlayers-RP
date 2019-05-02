@@ -182,19 +182,19 @@ namespace WiredPlayers.weapons
 
         private static void OnWeaponPrewarn(object unused)
         {
-            weaponTimer.Dispose();
-
-            int currentSpawn = 0;
-            weaponCrateList = new List<WeaponCrateModel>();
-            
-            Random random = new Random();
-            int spawnPosition = random.Next(Constants.MAX_WEAPON_SPAWNS);
-
-            // Get crates' spawn points
-            List<Vector3> weaponSpawns = GetRandomWeaponSpawns(spawnPosition);
-
             NAPI.Task.Run(() =>
             {
+                weaponTimer.Dispose();
+
+                int currentSpawn = 0;
+                weaponCrateList = new List<WeaponCrateModel>();
+            
+                Random random = new Random();
+                int spawnPosition = random.Next(Constants.MAX_WEAPON_SPAWNS);
+
+                // Get crates' spawn points
+                List<Vector3> weaponSpawns = GetRandomWeaponSpawns(spawnPosition);
+
                 foreach (Vector3 spawn in weaponSpawns)
                 {
                     // Calculate weapon or ammunition crate
@@ -215,83 +215,89 @@ namespace WiredPlayers.weapons
                     weaponCrateList.Add(weaponCrate);
                     currentSpawn++;
                 }
-            });
 
-            // Warn all the factions about the place
-            foreach (Client player in NAPI.Pools.GetAllPlayers())
-            {
-                if (player.GetData(EntityData.PLAYER_PLAYING) != null && player.GetData(EntityData.PLAYER_FACTION) > Constants.LAST_STATE_FACTION)
+                // Warn all the factions about the place
+                foreach (Client player in NAPI.Pools.GetAllPlayers())
                 {
-                    player.SendChatMessage(Constants.COLOR_INFO + InfoRes.weapon_spawn_island);
+                    if (player.GetData(EntityData.PLAYER_PLAYING) != null && player.GetData(EntityData.PLAYER_FACTION) > Constants.LAST_STATE_FACTION)
+                    {
+                        player.SendChatMessage(Constants.COLOR_INFO + InfoRes.weapon_spawn_island);
+                    }
                 }
-            }
 
-            // Timer to warn the police
-            weaponTimer = new Timer(OnPoliceCalled, null, 240000, Timeout.Infinite);
+                // Timer to warn the police
+                weaponTimer = new Timer(OnPoliceCalled, null, 240000, Timeout.Infinite);
+            });
         }
 
         private static void OnPoliceCalled(object unused)
         {
-            weaponTimer.Dispose();
-
-            // Send the warning message to all the police members
-            foreach (Client player in NAPI.Pools.GetAllPlayers())
+            NAPI.Task.Run(() =>
             {
-                if (player.GetData(EntityData.PLAYER_PLAYING) != null && Faction.IsPoliceMember(player))
-                {
-                    player.SendChatMessage(Constants.COLOR_INFO + InfoRes.weapon_spawn_island);
-                }
-            }
+                weaponTimer.Dispose();
 
-            // Finish the event
-            weaponTimer = new Timer(OnWeaponEventFinished, null, 3600000, Timeout.Infinite);
+                // Send the warning message to all the police members
+                foreach (Client player in NAPI.Pools.GetAllPlayers())
+                {
+                    if (player.GetData(EntityData.PLAYER_PLAYING) != null && Faction.IsPoliceMember(player))
+                    {
+                        player.SendChatMessage(Constants.COLOR_INFO + InfoRes.weapon_spawn_island);
+                    }
+                }
+
+                // Finish the event
+                weaponTimer = new Timer(OnWeaponEventFinished, null, 3600000, Timeout.Infinite);
+            });
         }
 
         private static void OnVehicleUnpackWeapons(object vehicleObject)
         {
-            Vehicle vehicle = (Vehicle)vehicleObject;
-            int vehicleId = vehicle.GetData(EntityData.VEHICLE_ID);
-            
-            foreach (WeaponCrateModel weaponCrate in weaponCrateList)
+            NAPI.Task.Run(() =>
             {
-                if (weaponCrate.carriedEntity == Constants.ITEM_ENTITY_VEHICLE && weaponCrate.carriedIdentifier == vehicleId)
+                Vehicle vehicle = (Vehicle)vehicleObject;
+                int vehicleId = vehicle.GetData(EntityData.VEHICLE_ID);
+
+                foreach (WeaponCrateModel weaponCrate in weaponCrateList)
                 {
-                    // Unpack the weapon in the crate
-                    ItemModel item = new ItemModel();
+                    if (weaponCrate.carriedEntity == Constants.ITEM_ENTITY_VEHICLE && weaponCrate.carriedIdentifier == vehicleId)
                     {
-                        item.hash = weaponCrate.contentItem;
-                        item.amount = weaponCrate.contentAmount;
-                        item.ownerEntity = Constants.ITEM_ENTITY_VEHICLE;
-                        item.ownerIdentifier = vehicleId;
-                    }
-
-                    // Delete the crate
-                    weaponCrate.carriedIdentifier = 0;
-                    weaponCrate.carriedEntity = string.Empty;
-
-                    Task.Factory.StartNew(() =>
-                    {
-                        NAPI.Task.Run(() =>
+                        // Unpack the weapon in the crate
+                        ItemModel item = new ItemModel();
                         {
-                            item.id = Database.AddNewItem(item);
-                            Globals.itemList.Add(item);
+                            item.hash = weaponCrate.contentItem;
+                            item.amount = weaponCrate.contentAmount;
+                            item.ownerEntity = Constants.ITEM_ENTITY_VEHICLE;
+                            item.ownerIdentifier = vehicleId;
+                        }
+
+                        // Delete the crate
+                        weaponCrate.carriedIdentifier = 0;
+                        weaponCrate.carriedEntity = string.Empty;
+
+                        Task.Factory.StartNew(() =>
+                        {
+                            NAPI.Task.Run(() =>
+                            {
+                                item.id = Database.AddNewItem(item);
+                                Globals.itemList.Add(item);
+                            });
                         });
-                    });
+                    }
                 }
-            }
 
-            // Warn driver about unpacked crates
-            foreach (Client player in NAPI.Pools.GetAllPlayers())
-            {
-                if (player.GetData(EntityData.PLAYER_VEHICLE) == vehicle)
+                // Warn driver about unpacked crates
+                foreach (Client player in NAPI.Pools.GetAllPlayers())
                 {
-                    player.ResetData(EntityData.PLAYER_VEHICLE);
-                    player.SendChatMessage(Constants.COLOR_INFO + InfoRes.weapons_unpacked);
-                    break;
+                    if (player.GetData(EntityData.PLAYER_VEHICLE) == vehicle)
+                    {
+                        player.ResetData(EntityData.PLAYER_VEHICLE);
+                        player.SendChatMessage(Constants.COLOR_INFO + InfoRes.weapons_unpacked);
+                        break;
+                    }
                 }
-            }
 
-            vehicle.ResetData(EntityData.VEHICLE_WEAPON_UNPACKING);
+                vehicle.ResetData(EntityData.VEHICLE_WEAPON_UNPACKING);
+            });
         }
 
         private static void OnWeaponEventFinished(object unused)

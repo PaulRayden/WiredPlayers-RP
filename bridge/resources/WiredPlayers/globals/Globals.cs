@@ -108,139 +108,145 @@ namespace WiredPlayers.globals
 
         private void UpdatePlayerList(object unused)
         {
-            // Initialize the score list
-            List<ScoreModel> scoreList = new List<ScoreModel>();
-
-            // Get all the players ingame
-            List<Client> playingPlayers = NAPI.Pools.GetAllPlayers().Where(p => p.GetData(EntityData.PLAYER_PLAYING) != null).ToList();
-
-            // Update the score list
-            foreach (Client player in playingPlayers)
+            NAPI.Task.Run(() =>
             {
-                ScoreModel score = new ScoreModel(player.Value, player.Name, player.Ping);
-                scoreList.Add(score);
-            }
+                // Initialize the score list
+                List<ScoreModel> scoreList = new List<ScoreModel>();
 
-            // Update the list for all the players
-            playingPlayers.ForEach(p => p.TriggerEvent("updatePlayerList", NAPI.Util.ToJson(scoreList)));
+                // Get all the players ingame
+                List<Client> playingPlayers = NAPI.Pools.GetAllPlayers().Where(p => p.GetData(EntityData.PLAYER_PLAYING) != null).ToList();
+
+                // Update the score list
+                foreach (Client player in playingPlayers)
+                {
+                    ScoreModel score = new ScoreModel(player.Value, player.Name, player.Ping);
+                    scoreList.Add(score);
+                }
+
+                // Update the list for all the players
+                playingPlayers.ForEach(p => p.TriggerEvent("updatePlayerList", NAPI.Util.ToJson(scoreList)));
+            });
         }
 
         private void OnMinuteSpent(object unused)
         {
-            // Adjust server's time
-            TimeSpan currentTime = TimeSpan.FromTicks(DateTime.Now.Ticks);
-            NAPI.World.SetTime(currentTime.Hours, currentTime.Minutes, currentTime.Seconds);
-
-            int totalSeconds = GetTotalSeconds();
-            List<Client> onlinePlayers = NAPI.Pools.GetAllPlayers().Where(pl => pl.GetData(EntityData.PLAYER_PLAYING) != null).ToList();
-
-            foreach (Client player in onlinePlayers)
+            NAPI.Task.Run(() =>
             {
-                int played = player.GetData(EntityData.PLAYER_PLAYED);
-                if (played > 0 && played % 60 == 0)
+                // Adjust server's time
+                TimeSpan currentTime = TimeSpan.FromTicks(DateTime.Now.Ticks);
+                NAPI.World.SetTime(currentTime.Hours, currentTime.Minutes, currentTime.Seconds);
+
+                int totalSeconds = GetTotalSeconds();
+                List<Client> onlinePlayers = NAPI.Pools.GetAllPlayers().Where(pl => pl.GetData(EntityData.PLAYER_PLAYING) != null).ToList();
+
+                foreach (Client player in onlinePlayers)
                 {
-                    // Reduce job cooldown
-                    int employeeCooldown = player.GetData(EntityData.PLAYER_EMPLOYEE_COOLDOWN);
-                    if (employeeCooldown > 0)
+                    int played = player.GetData(EntityData.PLAYER_PLAYED);
+                    if (played > 0 && played % 60 == 0)
                     {
-                        player.SetData(EntityData.PLAYER_EMPLOYEE_COOLDOWN, employeeCooldown - 1);
-                    }
-
-                    // Generate the payday
-                    GeneratePlayerPayday(player);
-                }
-                player.SetData(EntityData.PLAYER_PLAYED, played + 1);
-                
-                // Check if the player is injured waiting for the hospital respawn
-                if (player.GetData(EntityData.TIME_HOSPITAL_RESPAWN) != null && player.GetData(EntityData.TIME_HOSPITAL_RESPAWN) <= totalSeconds)
-                {
-                    // Send the death warning
-                    player.SendChatMessage(Constants.COLOR_INFO + InfoRes.player_can_die);
-                }
-
-                // Check if the player has job cooldown
-                int jobCooldown = player.GetData(EntityData.PLAYER_JOB_COOLDOWN);
-                if (jobCooldown > 0)
-                {
-                    player.SetData(EntityData.PLAYER_JOB_COOLDOWN, jobCooldown - 1);
-                }
-
-                // Get the remaining jail time
-                int jailTime = player.GetData(EntityData.PLAYER_JAILED);
-
-                if (jailTime > 0)
-                {
-                    jailTime--;
-                    player.SetData(EntityData.PLAYER_JAILED, jailTime);
-                }
-                else if (jailTime == 0)
-                {
-                    // Set the player position
-                    player.Position = Constants.JAIL_SPAWNS[player.GetData(EntityData.PLAYER_JAIL_TYPE) == Constants.JAIL_TYPE_IC ? 3 : 4];
-
-                    // Remove player from jail
-                    player.SetData(EntityData.PLAYER_JAILED, -1);
-                    player.SetData(EntityData.PLAYER_JAIL_TYPE, -1);
-
-                    player.SendChatMessage(Constants.COLOR_INFO + InfoRes.player_unjailed);
-                }
-
-                if (player.GetData(EntityData.PLAYER_DRUNK_LEVEL) != null)
-                {
-                    // Lower alcohol level
-                    float drunkLevel = player.GetData(EntityData.PLAYER_DRUNK_LEVEL) - 0.05f;
-
-                    if (drunkLevel <= 0.0f)
-                    {
-                        player.ResetData(EntityData.PLAYER_DRUNK_LEVEL);
-                    }
-                    else
-                    {
-                        if (drunkLevel < Constants.WASTED_LEVEL)
+                        // Reduce job cooldown
+                        int employeeCooldown = player.GetData(EntityData.PLAYER_EMPLOYEE_COOLDOWN);
+                        if (employeeCooldown > 0)
                         {
-                            player.ResetSharedData(EntityData.PLAYER_WALKING_STYLE);
-                            NAPI.ClientEvent.TriggerClientEventForAll("resetPlayerWalkingStyle", player.Handle);
+                            player.SetData(EntityData.PLAYER_EMPLOYEE_COOLDOWN, employeeCooldown - 1);
                         }
 
-                        player.SetData(EntityData.PLAYER_DRUNK_LEVEL, drunkLevel);
+                        // Generate the payday
+                        GeneratePlayerPayday(player);
                     }
-                }
+                    player.SetData(EntityData.PLAYER_PLAYED, played + 1);
 
-                // Save the character's data
-                Character.SaveCharacterData(player);
-            }
-
-            // Generate new fastfood orders
-            if (orderGenerationTime <= totalSeconds && House.houseList.Count > 0)
-            {
-                Random rnd = new Random();
-                int generatedOrders = rnd.Next(7, 20);
-                for (int i = 0; i < generatedOrders; i++)
-                {
-                    FastfoodOrderModel order = new FastfoodOrderModel();
+                    // Check if the player is injured waiting for the hospital respawn
+                    if (player.GetData(EntityData.TIME_HOSPITAL_RESPAWN) != null && player.GetData(EntityData.TIME_HOSPITAL_RESPAWN) <= totalSeconds)
                     {
-                        order.id = fastFoodId;
-                        order.pizzas = rnd.Next(0, 4);
-                        order.hamburgers = rnd.Next(0, 4);
-                        order.sandwitches = rnd.Next(0, 4);
-                        order.position = GetPlayerFastFoodDeliveryDestination();
-                        order.limit = totalSeconds + 300;
-                        order.taken = false;
+                        // Send the death warning
+                        player.SendChatMessage(Constants.COLOR_INFO + InfoRes.player_can_die);
                     }
 
-                    fastFoodOrderList.Add(order);
-                    fastFoodId++;
+                    // Check if the player has job cooldown
+                    int jobCooldown = player.GetData(EntityData.PLAYER_JOB_COOLDOWN);
+                    if (jobCooldown > 0)
+                    {
+                        player.SetData(EntityData.PLAYER_JOB_COOLDOWN, jobCooldown - 1);
+                    }
+
+                    // Get the remaining jail time
+                    int jailTime = player.GetData(EntityData.PLAYER_JAILED);
+
+                    if (jailTime > 0)
+                    {
+                        jailTime--;
+                        player.SetData(EntityData.PLAYER_JAILED, jailTime);
+                    }
+                    else if (jailTime == 0)
+                    {
+                        // Set the player position
+                        player.Position = Constants.JAIL_SPAWNS[player.GetData(EntityData.PLAYER_JAIL_TYPE) == Constants.JAIL_TYPE_IC ? 3 : 4];
+
+                        // Remove player from jail
+                        player.SetData(EntityData.PLAYER_JAILED, -1);
+                        player.SetData(EntityData.PLAYER_JAIL_TYPE, -1);
+
+                        player.SendChatMessage(Constants.COLOR_INFO + InfoRes.player_unjailed);
+                    }
+
+                    if (player.GetData(EntityData.PLAYER_DRUNK_LEVEL) != null)
+                    {
+                        // Lower alcohol level
+                        float drunkLevel = player.GetData(EntityData.PLAYER_DRUNK_LEVEL) - 0.05f;
+
+                        if (drunkLevel <= 0.0f)
+                        {
+                            player.ResetData(EntityData.PLAYER_DRUNK_LEVEL);
+                        }
+                        else
+                        {
+                            if (drunkLevel < Constants.WASTED_LEVEL)
+                            {
+                                player.ResetSharedData(EntityData.PLAYER_WALKING_STYLE);
+                                NAPI.ClientEvent.TriggerClientEventForAll("resetPlayerWalkingStyle", player.Handle);
+                            }
+
+                            player.SetData(EntityData.PLAYER_DRUNK_LEVEL, drunkLevel);
+                        }
+                    }
+
+                    // Save the character's data
+                    Character.SaveCharacterData(player);
                 }
 
-                // Update the new timer time
-                orderGenerationTime = totalSeconds + rnd.Next(2, 5) * 60;
-            }
+                // Generate new fastfood orders
+                if (orderGenerationTime <= totalSeconds && House.houseList.Count > 0)
+                {
+                    Random rnd = new Random();
+                    int generatedOrders = rnd.Next(7, 20);
+                    for (int i = 0; i < generatedOrders; i++)
+                    {
+                        FastfoodOrderModel order = new FastfoodOrderModel();
+                        {
+                            order.id = fastFoodId;
+                            order.pizzas = rnd.Next(0, 4);
+                            order.hamburgers = rnd.Next(0, 4);
+                            order.sandwitches = rnd.Next(0, 4);
+                            order.position = GetPlayerFastFoodDeliveryDestination();
+                            order.limit = totalSeconds + 300;
+                            order.taken = false;
+                        }
 
-            // Remove old orders
-            fastFoodOrderList.RemoveAll(order => !order.taken && order.limit <= totalSeconds);
+                        fastFoodOrderList.Add(order);
+                        fastFoodId++;
+                    }
 
-            // Save all the vehicles
-            Vehicles.SaveAllVehicles();
+                    // Update the new timer time
+                    orderGenerationTime = totalSeconds + rnd.Next(2, 5) * 60;
+                }
+
+                // Remove old orders
+                fastFoodOrderList.RemoveAll(order => !order.taken && order.limit <= totalSeconds);
+
+                // Save all the vehicles
+                Vehicles.SaveAllVehicles();
+            });
         }
 
         private void GeneratePlayerPayday(Client player)
@@ -2036,30 +2042,69 @@ namespace WiredPlayers.globals
             }
         }
 
-        [Command(Commands.COM_PAY, Commands.HLP_PAY_COMMAND)]
-        public void PayCommand(Client player, string targetString, int price)
+        [Command(Commands.COM_PAY, Commands.HLP_PAY_COMMAND, GreedyArg = true)]
+        public void PayCommand(Client player, string arguments)
         {
             if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
+                return;
+            }
+
+            // Get the message splitted
+            string[] args = arguments.Split(' ');
+
+            if (args.Length < 2 || args.Length > 3)
+            {
+                player.SendChatMessage(Constants.COLOR_HELP + Commands.HLP_PAY_COMMAND);
+                return;
+            }
+
+            // Initialize the target player
+            Client target = null;
+
+            if (int.TryParse(args[0], out int playerId))
+            {
+                // The player sent the player's identifier
+                target = Globals.GetPlayerById(playerId);
+
+                // Remove the id from the parameters
+                args = args.Skip(1).ToArray();
             }
             else
             {
-                Client target = int.TryParse(targetString, out int targetId) ? GetPlayerById(targetId) : NAPI.Player.GetPlayerFromName(targetString);
-                if (target == player)
-                {
-                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.hooker_offered_himself);
-                }
-                else
-                {
-                    target.SetData(EntityData.PLAYER_PAYMENT, player);
-                    target.SetData(EntityData.JOB_OFFER_PRICE, price);
+                // The player sent the name and surname
+                target = NAPI.Player.GetPlayerFromName(args[0] + " " + args[1]);
 
-                    string playerMessage = string.Format(InfoRes.payment_offer, price, target.Name);
-                    string targetMessage = string.Format(InfoRes.payment_received, player.Name, price);
-                    player.SendChatMessage(Constants.COLOR_INFO + playerMessage);
-                    target.SendChatMessage(Constants.COLOR_INFO + targetMessage);
-                }
+                // Remove the name and surname from the parameters
+                args = args.Skip(2).ToArray();
+            }
+
+            if (target == null || player.Position.DistanceTo(target.Position) > 2.5f)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_too_far);
+                return;
+            }
+
+            if (target == player)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.hooker_offered_himself);
+                return;
+            }
+
+            if (int.TryParse(args[0], out int amount))
+            {
+                // Send the payment
+                target.SetData(EntityData.PLAYER_PAYMENT, player);
+                target.SetData(EntityData.JOB_OFFER_PRICE, amount);
+
+                player.SendChatMessage(Constants.COLOR_INFO + string.Format(InfoRes.payment_offer, amount, target.Name));
+                target.SendChatMessage(Constants.COLOR_INFO + string.Format(InfoRes.payment_received, player.Name, amount));
+            }
+            else
+            {
+                // The amount is not numeric
+                player.SendChatMessage(Constants.COLOR_HELP + Commands.HLP_PAY_COMMAND);
             }
         }
 

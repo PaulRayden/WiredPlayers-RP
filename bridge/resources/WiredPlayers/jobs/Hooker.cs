@@ -29,30 +29,33 @@ namespace WiredPlayers.jobs
 
         public static void OnSexServiceTimer(object playerObject)
         {
-            Client player = (Client)playerObject;
-            Client target = player.GetData(EntityData.PLAYER_ALREADY_FUCKING);
-
-            // We stop both animations
-            player.StopAnimation();
-            target.StopAnimation();
-
-            // Health the player
-            player.Health = 100;
-            
-            player.ResetData(EntityData.PLAYER_ANIMATION);
-            player.ResetData(EntityData.HOOKER_TYPE_SERVICE);
-            player.ResetData(EntityData.PLAYER_ALREADY_FUCKING);
-            target.ResetData(EntityData.PLAYER_ALREADY_FUCKING);
-            
-            if (sexTimerList.TryGetValue(player.Value, out Timer sexTimer) == true)
+            NAPI.Task.Run(() =>
             {
-                sexTimer.Dispose();
-                sexTimerList.Remove(player.Value);
-            }
+                Client player = (Client)playerObject;
+                Client target = player.GetData(EntityData.PLAYER_ALREADY_FUCKING);
 
-            // Send finish message to both players
-           target.SendChatMessage(Constants.COLOR_SUCCESS + SuccRes.hooker_client_satisfied);
-            player.SendChatMessage(Constants.COLOR_SUCCESS + SuccRes.hooker_service_finished);
+                // We stop both animations
+                player.StopAnimation();
+                target.StopAnimation();
+
+                // Health the player
+                player.Health = 100;
+
+                player.ResetData(EntityData.PLAYER_ANIMATION);
+                player.ResetData(EntityData.HOOKER_TYPE_SERVICE);
+                player.ResetData(EntityData.PLAYER_ALREADY_FUCKING);
+                target.ResetData(EntityData.PLAYER_ALREADY_FUCKING);
+
+                if (sexTimerList.TryGetValue(player.Value, out Timer sexTimer) == true)
+                {
+                    sexTimer.Dispose();
+                    sexTimerList.Remove(player.Value);
+                }
+
+                // Send finish message to both players
+                target.SendChatMessage(Constants.COLOR_SUCCESS + SuccRes.hooker_client_satisfied);
+                player.SendChatMessage(Constants.COLOR_SUCCESS + SuccRes.hooker_service_finished);
+            });
         }
 
         [Command(Commands.COM_SERVICE, Commands.HLP_HOOKER_SERVICE_COMMAND)]

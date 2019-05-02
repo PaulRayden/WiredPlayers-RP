@@ -254,98 +254,101 @@ namespace WiredPlayers.vehicles
 
         private void OnVehicleDeathTimer(object vehicleObject)
         {
-            Vehicle vehicle = (Vehicle)vehicleObject;
-
-            // Get the needed data for recreating the vehicle
-            VehicleModel vehicleModel = new VehicleModel();
-            {
-                vehicleModel.id = vehicle.GetData(EntityData.VEHICLE_ID);
-                vehicleModel.model = vehicle.GetData(EntityData.VEHICLE_MODEL);
-                vehicleModel.position = vehicle.GetData(EntityData.VEHICLE_POSITION);
-                vehicleModel.rotation = vehicle.GetData(EntityData.VEHICLE_ROTATION);
-                vehicleModel.dimension = vehicle.GetData(EntityData.VEHICLE_DIMENSION);
-                vehicleModel.colorType = vehicle.GetData(EntityData.VEHICLE_COLOR_TYPE);
-                vehicleModel.firstColor = vehicle.GetData(EntityData.VEHICLE_FIRST_COLOR);
-                vehicleModel.secondColor = vehicle.GetData(EntityData.VEHICLE_SECOND_COLOR);
-                vehicleModel.pearlescent = vehicle.GetData(EntityData.VEHICLE_PEARLESCENT_COLOR);
-                vehicleModel.faction = vehicle.GetData(EntityData.VEHICLE_FACTION);
-                vehicleModel.plate = vehicle.GetData(EntityData.VEHICLE_PLATE);
-                vehicleModel.owner = vehicle.GetData(EntityData.VEHICLE_OWNER);
-                vehicleModel.price = vehicle.GetData(EntityData.VEHICLE_PRICE);
-                vehicleModel.parking = vehicle.GetData(EntityData.VEHICLE_PARKING);
-                vehicleModel.parked = vehicle.GetData(EntityData.VEHICLE_PARKED);
-                vehicleModel.gas = vehicle.GetData(EntityData.VEHICLE_GAS);
-                vehicleModel.kms = vehicle.GetData(EntityData.VEHICLE_KMS);
-            }
-
             NAPI.Task.Run(() =>
             {
+                Vehicle vehicle = (Vehicle)vehicleObject;
+
+                // Get the needed data for recreating the vehicle
+                VehicleModel vehicleModel = new VehicleModel();
+                {
+                    vehicleModel.id = vehicle.GetData(EntityData.VEHICLE_ID);
+                    vehicleModel.model = vehicle.GetData(EntityData.VEHICLE_MODEL);
+                    vehicleModel.position = vehicle.GetData(EntityData.VEHICLE_POSITION);
+                    vehicleModel.rotation = vehicle.GetData(EntityData.VEHICLE_ROTATION);
+                    vehicleModel.dimension = vehicle.GetData(EntityData.VEHICLE_DIMENSION);
+                    vehicleModel.colorType = vehicle.GetData(EntityData.VEHICLE_COLOR_TYPE);
+                    vehicleModel.firstColor = vehicle.GetData(EntityData.VEHICLE_FIRST_COLOR);
+                    vehicleModel.secondColor = vehicle.GetData(EntityData.VEHICLE_SECOND_COLOR);
+                    vehicleModel.pearlescent = vehicle.GetData(EntityData.VEHICLE_PEARLESCENT_COLOR);
+                    vehicleModel.faction = vehicle.GetData(EntityData.VEHICLE_FACTION);
+                    vehicleModel.plate = vehicle.GetData(EntityData.VEHICLE_PLATE);
+                    vehicleModel.owner = vehicle.GetData(EntityData.VEHICLE_OWNER);
+                    vehicleModel.price = vehicle.GetData(EntityData.VEHICLE_PRICE);
+                    vehicleModel.parking = vehicle.GetData(EntityData.VEHICLE_PARKING);
+                    vehicleModel.parked = vehicle.GetData(EntityData.VEHICLE_PARKED);
+                    vehicleModel.gas = vehicle.GetData(EntityData.VEHICLE_GAS);
+                    vehicleModel.kms = vehicle.GetData(EntityData.VEHICLE_KMS);
+                }
+
                 // Kick all the players from the vehicle if any
                 vehicle.Occupants.ForEach(p => p.WarpOutOfVehicle());
 
                 // Delete the vehicle
                 vehicle.Delete();
-            });
 
-            if (vehicleModel.faction == Constants.FACTION_NONE && vehicle.Occupants.Count > 0)
-            {
-                ParkingModel scrapyard = Parking.parkingList.Where(p => p.type == Constants.PARKING_TYPE_SCRAPYARD).FirstOrDefault();
-
-                if (scrapyard != null)
+                if (vehicleModel.faction == Constants.FACTION_NONE && vehicle.Occupants.Count > 0)
                 {
-                    // Link the vehicle to the scrapyard
-                    ParkedCarModel parkedCar = new ParkedCarModel();
+                    ParkingModel scrapyard = Parking.parkingList.Where(p => p.type == Constants.PARKING_TYPE_SCRAPYARD).FirstOrDefault();
+
+                    if (scrapyard != null)
                     {
-                        parkedCar.parkingId = scrapyard.id;
-                        parkedCar.vehicle = vehicleModel;
+                        // Link the vehicle to the scrapyard
+                        ParkedCarModel parkedCar = new ParkedCarModel();
+                        {
+                            parkedCar.parkingId = scrapyard.id;
+                            parkedCar.vehicle = vehicleModel;
+                        }
+
+                        // Add the vehicle to the parking
+                        Parking.parkedCars.Add(parkedCar);
+                        vehicleModel.parking = scrapyard.id;
                     }
 
-                    // Add the vehicle to the parking
-                    Parking.parkedCars.Add(parkedCar);
-                    vehicleModel.parking = scrapyard.id;
+                    Task.Factory.StartNew(() =>
+                    {
+                        NAPI.Task.Run(() =>
+                        {
+                            // Save vehicle data
+                            Database.SaveVehicle(vehicleModel);
+                        });
+                    });
                 }
-
-                Task.Factory.StartNew(() =>
+                else
                 {
                     NAPI.Task.Run(() =>
                     {
-                        // Save vehicle data
-                        Database.SaveVehicle(vehicleModel);
+                        // Recreate the vehicle in the same position
+                        CreateIngameVehicle(vehicleModel);
                     });
-                });
-            }
-            else
-            {
-                NAPI.Task.Run(() =>
+                }
+
+                Timer vehicleRespawnTimer = vehicleRespawnTimerList[vehicleModel.id];
+                if (vehicleRespawnTimer != null)
                 {
-                    // Recreate the vehicle in the same position
-                    CreateIngameVehicle(vehicleModel);
-                });
-            }
-            
-            Timer vehicleRespawnTimer = vehicleRespawnTimerList[vehicleModel.id];
-            if (vehicleRespawnTimer != null)
-            {
-                vehicleRespawnTimer.Dispose();
-                vehicleRespawnTimerList.Remove(vehicleModel.id);
-            }
+                    vehicleRespawnTimer.Dispose();
+                    vehicleRespawnTimerList.Remove(vehicleModel.id);
+                }
+            });
         }
 
         private void OnVehicleRefueled(object vehicleObject)
         {
-            Vehicle vehicle = (Vehicle)vehicleObject;
-            Client player = vehicle.GetData(EntityData.VEHICLE_REFUELING);
-
-            vehicle.ResetData(EntityData.VEHICLE_REFUELING);
-            player.ResetData(EntityData.PLAYER_REFUELING);
-            
-            if (gasTimerList.TryGetValue(player.Value, out Timer gasTimer) == true)
+            NAPI.Task.Run(() =>
             {
-                gasTimer.Dispose();
-                gasTimerList.Remove(player.Value);
-            }
-            
-            player.SendChatMessage(Constants.COLOR_INFO + InfoRes.vehicle_refueled);
+                Vehicle vehicle = (Vehicle)vehicleObject;
+                Client player = vehicle.GetData(EntityData.VEHICLE_REFUELING);
+
+                vehicle.ResetData(EntityData.VEHICLE_REFUELING);
+                player.ResetData(EntityData.PLAYER_REFUELING);
+
+                if (gasTimerList.TryGetValue(player.Value, out Timer gasTimer) == true)
+                {
+                    gasTimer.Dispose();
+                    gasTimerList.Remove(player.Value);
+                }
+
+                player.SendChatMessage(Constants.COLOR_INFO + InfoRes.vehicle_refueled);
+            });
         }
 
         [ServerEvent(Event.PlayerEnterVehicle)]

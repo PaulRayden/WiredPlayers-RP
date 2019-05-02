@@ -63,6 +63,9 @@ namespace WiredPlayers.character
 
         public static void ApplyPlayerClothes(Client player)
         {
+            // Initialize player clothes
+            SetDefaultClothes(player);
+
             int playerId = player.GetData(EntityData.PLAYER_SQL_ID);
             foreach (ClothesModel clothes in Globals.clothesList)
             {
@@ -174,6 +177,11 @@ namespace WiredPlayers.character
             }
 
             return overlayData;
+        }
+
+        private static void SetDefaultClothes(Client player)
+        {
+
         }
     }
 }
