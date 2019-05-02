@@ -2066,12 +2066,12 @@ namespace WiredPlayers.globals
             if (int.TryParse(args[0], out int playerId))
             {
                 // The player sent the player's identifier
-                target = Globals.GetPlayerById(playerId);
+                target = GetPlayerById(playerId);
 
                 // Remove the id from the parameters
                 args = args.Skip(1).ToArray();
             }
-            else
+            else if(args.Length == 3)
             {
                 // The player sent the name and surname
                 target = NAPI.Player.GetPlayerFromName(args[0] + " " + args[1]);
@@ -2094,6 +2094,21 @@ namespace WiredPlayers.globals
 
             if (int.TryParse(args[0], out int amount))
             {
+                if(amount < 0)
+                {
+                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.money_amount_positive);
+                    return;
+                }
+
+                // Get the player's money
+                int money = player.GetSharedData(EntityData.PLAYER_MONEY);
+
+                if (money < amount)
+                {
+                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_enough_money);
+                    return;
+                }
+
                 // Send the payment
                 target.SetData(EntityData.PLAYER_PAYMENT, player);
                 target.SetData(EntityData.JOB_OFFER_PRICE, amount);
