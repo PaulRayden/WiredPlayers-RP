@@ -247,23 +247,29 @@ namespace WiredPlayers.factions
             if (player.GetSharedData(EntityData.PLAYER_KILLED) != 0)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_is_dead);
+                return;
             }
-            else if (player.GetData(EntityData.PLAYER_FACTION) != Constants.FACTION_NEWS)
+
+            if (player.GetData(EntityData.PLAYER_FACTION) != Constants.FACTION_NEWS)
             {
                 player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_news_faction);
+                return;
             }
-            else
+
+            if(!player.IsInVehicle)
             {
-                Vehicle vehicle = Vehicles.GetClosestVehicle(player);
-                if (vehicle.GetData(EntityData.VEHICLE_FACTION) != Constants.FACTION_NEWS && player.VehicleSeat != (int)VehicleSeat.LeftRear)
-                {
-                    player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_in_news_van);
-                }
-                else
-                {
-                    SendNewsMessage(player, message);
-                }
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.not_in_vehicle);
+                return;
             }
+
+            if (player.Vehicle.GetData(EntityData.VEHICLE_FACTION) != Constants.FACTION_NEWS && player.VehicleSeat != (int)VehicleSeat.LeftRear && player.VehicleSeat != (int)VehicleSeat.RightRear)
+            {
+                player.SendChatMessage(Constants.COLOR_ERROR + ErrRes.player_not_in_news_van);
+                return;
+            }
+
+            // Send the news message to the players
+            SendNewsMessage(player, message);
         }
     }
 }

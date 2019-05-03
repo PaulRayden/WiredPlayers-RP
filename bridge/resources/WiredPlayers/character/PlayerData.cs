@@ -33,9 +33,9 @@ namespace WiredPlayers.character
             if (jobModel.job == 0)
             {
                 // Get the player's faction
-                FactionModel factionModel = Constants.FACTION_RANK_LIST.Where(f => target.GetData(EntityData.PLAYER_FACTION) == f.faction && target.GetData(EntityData.PLAYER_RANK) == f.rank).First();
+                FactionModel factionModel = Constants.FACTION_RANK_LIST.Where(f => target.GetData(EntityData.PLAYER_FACTION) == f.faction && target.GetData(EntityData.PLAYER_RANK) == f.rank).FirstOrDefault();
 
-                if (factionModel.faction > 0)
+                if (factionModel != null && factionModel.faction > 0)
                 {
                     switch (factionModel.faction)
                     {

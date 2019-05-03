@@ -12,6 +12,7 @@ let selected = undefined;
 let drawable = undefined;
 let messagesLoaded = false;
 let timeout = undefined;
+let police = false;
 
 $(document).ready(function() {
 	i18next.use(window.i18nextXHRBackend).init({
@@ -685,7 +686,7 @@ function populateCharacterList(charactersJson) {
 	}
 }
 
-function populateClothesShopMenu(clothesTypeArray, businessName, priceMultiplier) {
+function populateClothesShopMenu(clothesTypeArray, businessName, priceMultiplier, isPolice) {
 	if(messagesLoaded) {
 		// Add the business name to the header
 		let header = document.getElementById('header');
@@ -694,7 +695,8 @@ function populateClothesShopMenu(clothesTypeArray, businessName, priceMultiplier
 		// Load the clothes list
 		clothesTypes = JSON.parse(clothesTypeArray);
 		multiplier = priceMultiplier;
-		
+		police = (isPolice.toLowerCase() === 'true');
+
 		// Show the main menu
 		populateClothesShopHome();
 		
@@ -707,69 +709,64 @@ function populateClothesShopMenu(clothesTypeArray, businessName, priceMultiplier
 }
 
 function populateClothesShopHome() {
-	if(messagesLoaded) {
-		// Get the container node
-		let content = document.getElementById('content');
-		let options = document.getElementById('options');
+	// Get the container node
+	let content = document.getElementById('content');
+	let options = document.getElementById('options');
+	
+	selected = undefined;
+	drawable = undefined;
+	
+	while(content.firstChild) {
+		content.removeChild(content.firstChild);
+	}
+	
+	while(options.firstChild) {
+		options.removeChild(options.firstChild);
+	}
+	
+	for(let i = 0; i < clothesTypes.length; i++) {
+		// Get the current zone
+		let type = clothesTypes[i];
+
+		// Check if police and slot
+		if(type.slot === 9 && !police) continue;
 		
-		selected = undefined;
-		drawable = undefined;
+		let itemContainer = document.createElement('div');
+		let infoContainer = document.createElement('div');
+		let descContainer = document.createElement('div');
+		let itemDescription = document.createElement('span');
 		
-		while(content.firstChild) {
-			content.removeChild(content.firstChild);
-		}
+		itemContainer.classList.add('item-row');
+		infoContainer.classList.add('item-content');
+		descContainer.classList.add('item-header');
+		itemDescription.classList.add('item-description');
 		
-		while(options.firstChild) {
-			options.removeChild(options.firstChild);
-		}
+		itemDescription.textContent = i18next.t(type.description);
 		
-		for(let i = 0; i < clothesTypes.length; i++) {
-			// Get the current zone
-			let type = clothesTypes[i];
+		itemContainer.onclick = (function() {
+			selected = i;
 			
-			let itemContainer = document.createElement('div');
-			let infoContainer = document.createElement('div');
-			let descContainer = document.createElement('div');
-			let itemDescription = document.createElement('span');
-			
-			itemContainer.classList.add('item-row');
-			infoContainer.classList.add('item-content');
-			descContainer.classList.add('item-header');
-			itemDescription.classList.add('item-description');
-			
-			itemDescription.textContent = i18next.t(type.description);
-			
-			itemContainer.onclick = (function() {
-				selected = i;
-				
-				// Load the clothes from the zone
-				mp.trigger('getClothesByType', i);
-			});
-			
-			content.appendChild(itemContainer);
-			itemContainer.appendChild(infoContainer);
-			infoContainer.appendChild(descContainer);
-			descContainer.appendChild(itemDescription);
-		}
-		
-		let exitButton = document.createElement('div');
-		
-		exitButton.classList.add('single-button', 'cancel-button');
-		exitButton.textContent = i18next.t('general.exit');
-		
-		exitButton.onclick = (function() {
-			// Exit the menu
-			mp.trigger('closeClothesMenu');
+			// Load the clothes from the zone
+			mp.trigger('getClothesByType', i);
 		});
 		
-		options.appendChild(exitButton);
-		
-		clearTimeout(timeout);
-	} else {
-		// Wait for the messages to be loaded
-		clearTimeout(timeout);
-		timeout = setTimeout(function() { populateClothesShopHome(); }, 100);
+		content.appendChild(itemContainer);
+		itemContainer.appendChild(infoContainer);
+		infoContainer.appendChild(descContainer);
+		descContainer.appendChild(itemDescription);
 	}
+	
+	let exitButton = document.createElement('div');
+	
+	exitButton.classList.add('single-button', 'cancel-button');
+	exitButton.textContent = i18next.t('general.exit');
+	
+	exitButton.onclick = (function() {
+		// Exit the menu
+		mp.trigger('closeClothesMenu');
+	});
+	
+	options.appendChild(exitButton);
 }
 
 function populateTypeClothes(typeClothesJson) {
@@ -1580,13 +1577,14 @@ function populateWardrobeMenu(clothesTypeArray) {
 	}
 }
 
-function populateWardrobeHome() {
+function populateWardrobeHome(isPolice) {
 	if(messagesLoaded) {
 		let content = document.getElementById('content');
 		let options = document.getElementById('options');
 		
 		selected = undefined;
 		drawable = undefined;
+		police = (isPolice.toLowerCase() === 'true');
 		
 		while(content.firstChild) {
 			content.removeChild(content.firstChild);
@@ -1598,6 +1596,8 @@ function populateWardrobeHome() {
 		
 		for(let i = 0; i < clothesTypes.length; i++) {
 			let type = clothesTypes[i];
+
+			if(clothesTypes[i].slot === 9 && !police) continue;
 			
 			let itemContainer = document.createElement('div');
 			let infoContainer = document.createElement('div');

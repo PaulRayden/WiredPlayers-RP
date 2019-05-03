@@ -51,9 +51,9 @@ namespace WiredPlayers_Client.globals
         {
             new ClothesModel(0, 1, "clothes.masks"), new ClothesModel(0, 3, "clothes.torso"), new ClothesModel(0, 4, "clothes.legs"),
             new ClothesModel(0, 5, "clothes.bags"), new ClothesModel(0, 6, "clothes.feet"), new ClothesModel(0, 7, "clothes.complements"),
-            new ClothesModel(0, 8, "clothes.undershirt"), new ClothesModel(0, 11, "clothes.tops"), new ClothesModel(1, 0, "clothes.hats"),
-            new ClothesModel(1, 1, "clothes.glasses"), new ClothesModel(1, 2, "clothes.earrings"), new ClothesModel(1, 6, "clothes.watches"),
-            new ClothesModel(1, 7, "clothes.bracelets")
+            new ClothesModel(0, 8, "clothes.undershirt"), new ClothesModel(0, 9, "clothes.body-armor"), new ClothesModel(0, 11, "clothes.tops"),
+            new ClothesModel(1, 0, "clothes.hats"), new ClothesModel(1, 1, "clothes.glasses"), new ClothesModel(1, 2, "clothes.earrings"),
+            new ClothesModel(1, 6, "clothes.watches"), new ClothesModel(1, 7, "clothes.bracelets")
         };
 
         public static readonly List<string> TATTOO_ZONES = new List<string>()

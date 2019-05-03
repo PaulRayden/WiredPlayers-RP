@@ -46,7 +46,7 @@ namespace WiredPlayers_Client.business
             RAGE.Game.Cam.RenderScriptCams(true, false, 0, true, false, 0);
 
             // Show clothes menu
-            Browser.CreateBrowserEvent(new object[] { "package://statics/html/sideMenu.html", "populateClothesShopMenu", JsonConvert.SerializeObject(Constants.CLOTHES_TYPES), business, price });
+            Browser.CreateBrowserEvent(new object[] { "package://statics/html/sideMenu.html", "populateClothesShopMenu", JsonConvert.SerializeObject(Constants.CLOTHES_TYPES), business, price, args[2].ToString() });
         }
 
         private void GetClothesByTypeEvent(object[] args)

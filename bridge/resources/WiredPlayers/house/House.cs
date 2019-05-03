@@ -2,6 +2,7 @@
 using WiredPlayers.database;
 using WiredPlayers.globals;
 using WiredPlayers.model;
+using WiredPlayers.factions;
 using WiredPlayers.messages.error;
 using WiredPlayers.messages.general;
 using WiredPlayers.messages.information;
@@ -359,7 +360,7 @@ namespace WiredPlayers.house
 
                     if (Globals.GetPlayerClothes(playerId).Count > 0)
                     {
-                        player.TriggerEvent("showPlayerWardrobe");
+                        player.TriggerEvent("showPlayerWardrobe", Faction.IsPoliceMember(player));
                     }
                     else
                     {

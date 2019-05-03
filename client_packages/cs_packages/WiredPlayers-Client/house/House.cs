@@ -38,7 +38,7 @@ namespace WiredPlayers_Client.house
             RAGE.Game.Cam.RenderScriptCams(true, false, 0, true, false, 0);
 
             // Show wardrobe's menu
-            Browser.CreateBrowserEvent(new object[] { "package://statics/html/sideMenu.html", "populateWardrobeMenu", JsonConvert.SerializeObject(Constants.CLOTHES_TYPES) });
+            Browser.CreateBrowserEvent(new object[] { "package://statics/html/sideMenu.html", "populateWardrobeMenu", JsonConvert.SerializeObject(Constants.CLOTHES_TYPES), args[0].ToString() });
         }
 
         private void GetPlayerPurchasedClothesEvent(object[] args)

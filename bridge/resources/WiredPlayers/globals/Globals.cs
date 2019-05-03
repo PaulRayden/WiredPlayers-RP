@@ -1510,7 +1510,7 @@ namespace WiredPlayers.globals
                         player.SendChatMessage(Constants.COLOR_INFO + InfoRes.about_complements);
                         player.SendChatMessage(Constants.COLOR_INFO + InfoRes.for_avoid_clipping1);
                         player.SendChatMessage(Constants.COLOR_INFO + InfoRes.for_avoid_clipping2);
-                        player.TriggerEvent("showClothesBusinessPurchaseMenu", business.name, business.multiplier);
+                        player.TriggerEvent("showClothesBusinessPurchaseMenu", business.name, business.multiplier, Faction.IsPoliceMember(player));
                         break;
                     case Constants.BUSINESS_TYPE_BARBER_SHOP:
                         // Load the players skin model
